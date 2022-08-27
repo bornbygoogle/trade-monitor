@@ -1,0 +1,128 @@
+@page "/logtdcombo"
+@using BlazorApp.Shared.CoreDto
+@inject HttpClient Http
+
+<PageTitle>Log klines TD Combo</PageTitle>
+
+<h1>Klines TD Combo</h1>
+
+@if (log == null)
+{
+    <div class="spinner"></div>
+}
+else
+{
+    <select id="SearchSymbolId" name="SearchSymbol" @onchange="SelectedSymbolChanged" class="form-control1">
+        <option>@string.Empty</option>
+        @foreach (var symbol in symbols)
+        {
+            <option value="@symbol">@symbol</option>
+        }
+    </select>
+
+    if (!string.IsNullOrEmpty(@log.Symbol))
+    {
+        <p>Current observed symbol : @log.Symbol</p>
+    }
+
+    if (spinner)
+    {
+        <div class="spinner"></div>
+    }
+    else if (log.Logs != null) 
+    {
+        <div class="container m-0">
+            @foreach (var log in log.Logs)
+            {
+                <div name="row-content" class="row my-1 py-1 align-self-baseline border border-secondary">
+                    <div class="d-block d-inline col-lg-2 col-md-2 col-sm-4 col-4 align-self-center text-center">
+                        <Tooltip Text=@($"{@log.Side}")><a href="@($"https://www.binance.com/en/trade/{@log.Symbol}")" target="_blank">@log.Symbol</a></Tooltip>
+                    </div>
+                    <div class="d-block d-inline col-lg-10 col-md-10 col-sm-8 col-8">
+                        <div class="row align-self-center">
+                            <div class="col-lg-6 col-md-6 col-12">
+                                <div class="row align-self-center">
+                                    <div class="col-lg-6 col-md-6 col-12"> </div>
+                                    <div class="col-lg-6 col-md-6 col-12">
+                                        <Tooltip Text=@($"Kline at {@log.OpenTime.Value.ToString("dd/MM/yyyy HH:mm:ss")}")>TD Combo : @log.TdCombo</Tooltip>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="col-lg-6 col-md-6 col-12">
+                                <div class="row align-self-center">
+
+                                    @if (log.TdResistanceCombo > 0)
+                                    {
+                                        <div class="col-lg-6 col-md-6 col-12">Resistance : @log.TdResistanceCombo</div>
+                                    }
+                                    else
+                                    {
+                                        <div class="col-lg-6 col-md-6 col-12"> </div>
+                                    }
+
+                                    @if (log.TdSupportCombo > 0)
+                                    {
+                                        <div class="col-lg-6 col-md-6 col-12">Support : @log.TdSupportCombo</div>
+                                    }
+                                    else
+                                    {
+                                        <div class="col-lg-6 col-md-6 col-12"> </div>
+                                    }
+
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            }
+        </div>
+    }
+
+
+}
+
+@code {
+    private bool spinner = false;
+    private List<string> symbols = new List<string>();
+    private LogInfoDto log = new LogInfoDto();
+
+    private string _url = $"/api/GetLogKlineTDCombo?accType=Spot&accHolder=An";
+
+    protected override async Task OnInitializedAsync()
+    {
+        symbols = await Http.GetFromJsonAsync<List<string>>($"/api/GetListStringSymbols?accType=Spot&accHolder=An");
+
+        // Add your update logic here
+        log.Logs = await Http.GetFromJsonAsync<List<LogInfoItemDto>>(_url);
+
+        // Update the UI
+        StateHasChanged();
+    }
+
+
+    private async void SelectedSymbolChanged(ChangeEventArgs e)
+    {
+        spinner = true;
+
+        if (log != null)
+        {
+            if (!string.IsNullOrEmpty(e.Value.ToString()))
+            {
+                log.Symbol = e.Value.ToString();
+                log.Logs.Clear();
+                log.Logs = await Http.GetFromJsonAsync<List<LogInfoItemDto>>($"{_url}&symbolName={e.Value.ToString()}");
+            }
+        else
+            {
+                log.Symbol = string.Empty;
+                log.Logs.Clear();
+                log.Logs = await Http.GetFromJsonAsync<List<LogInfoItemDto>>($"{_url}");
+            }
+        }
+
+        spinner = false;
+
+        // Update the UI
+        StateHasChanged();
+    }
+}

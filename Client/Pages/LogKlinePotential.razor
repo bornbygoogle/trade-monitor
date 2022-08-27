@@ -1,0 +1,150 @@
+@page "/logpotential"
+@using BlazorApp.Shared.CoreDto
+@inject HttpClient Http
+
+@*<PageTitle>@(Properties.Resources.ACC_TYPE) - @(Properties.Resources.ACC_HOLDER) - Log klines potential</PageTitle>
+*@
+<h1>Klines potential</h1>
+
+@if (log == null)
+{
+    <div class="spinner"></div>
+}
+else
+{
+    <select id="SearchSymbolId" name="SearchSymbol" @onchange="SelectedSymbolChanged" class="form-control1">
+        <option>@string.Empty</option>
+        @foreach (var symbol in symbols)
+        {
+            <option value="@symbol">@symbol</option>
+        }
+    </select>
+
+    if (!string.IsNullOrEmpty(@log.Symbol))
+    {
+        <p>Current observed symbol : @log.Symbol</p>
+    }
+
+    if (spinner)
+    {
+        <div class="spinner"></div>
+    }
+    else if (log.Logs != null) 
+    {
+        <div class="container m-0">
+            @foreach (var log in log.Logs)
+            {
+                <div name="row-content" class="row my-1 py-1 align-self-baseline border border-secondary">
+                    <div class="d-block d-inline col-lg-2 col-md-2 col-sm-4 col-4 align-self-center text-center">
+                        <Tooltip Text=@($"{@log.Side}")><a href="@($"https://www.binance.com/en/trade/{@log.Symbol}")" target="_blank">@log.Symbol</a></Tooltip>
+                    </div>
+                    <div class="d-block d-inline col-lg-10 col-md-10 col-sm-8 col-8">
+                        <div class="row align-self-center">
+                            <div class="col-lg-8 col-md-8 col-12">
+                                <div class="row align-self-center">
+                                    <div class="col-lg-4 col-md-4 col-12">Close : @log.Close</div>
+                                    @if (log.TdCombo > 0)
+                                    {
+                                        <div class="col-lg-8 col-md-8 col-12">
+                                            <Tooltip Text=@($"First Kline at {@log.OpenTime.Value.ToString("dd/MM/yyyy HH:mm:ss")}")>Combo (@log.TdCombo)</Tooltip>
+
+                                            @if (@log.Side == "BUY" || @log.Side == "Buy")
+                                            {
+                                                <div>Resistance : @log.TdResistanceCombo</div>
+                                            }
+
+                                            @if (@log.Side == "SELL" || @log.Side == "Sell")
+                                            {
+                                                <div>Support : @log.TdSupportCombo</div>
+                                            }
+
+                                        </div>
+                                    }
+                                    else
+                                    {
+                                        <div class="col-lg-8 col-md-8 col-12"></div>
+                                    }
+
+
+                                </div>
+                            </div>
+                            <div class="col-lg-4 col-md-4 col-12">
+                                <div class="row align-self-center">
+                                    @if (log.TdCountDown > 0)
+                                    {
+                                        <div class="col-lg-12 col-md-12 col-12">
+                                            <Tooltip Text=@($"First Kline at {@log.CloseTime.Value.ToString("dd/MM/yyyy HH:mm:ss")}")>CountDown (@log.TdCountDown)</Tooltip>
+                                            @if (@log.Side == "BUY" || @log.Side == "Buy")
+                                            {
+                                                <div>Resistance : @log.TdResistanceCountDown</div>
+                                            }
+
+                                            @if (@log.Side == "SELL" || @log.Side == "Sell")
+                                            {
+                                                <div>Support : @log.TdSupportCombo</div>
+                                            }
+                                        </div>
+                                    }
+                                    else
+                                    {
+                                        <div class="col-lg-4 col-md-4 col-12"></div>
+                                    }
+
+
+
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            }
+        </div>
+    }
+
+
+}
+
+@code {
+    private bool spinner = false;
+    private List<string> symbols = new List<string>();
+    private LogInfoDto log = new LogInfoDto();
+
+    private string _url = $"/api/GetLogKlinePotential?accType=Spot&accHolder=An";
+
+    protected override async Task OnInitializedAsync()
+    {
+        symbols = await Http.GetFromJsonAsync<List<string>>($"/api/GetListStringSymbols?accType=Spot&accHolder=An");
+
+        // Add your update logic here
+        log.Logs = await Http.GetFromJsonAsync<List<LogInfoItemDto>>(_url);
+
+        // Update the UI
+        StateHasChanged();
+    }
+
+    private async void SelectedSymbolChanged(ChangeEventArgs e)
+    {
+        spinner = true;
+
+        if (log != null)
+        {
+            if (!string.IsNullOrEmpty(e.Value.ToString()))
+            {
+                log.Symbol = e.Value.ToString();
+                log.Logs.Clear();
+                log.Logs = await Http.GetFromJsonAsync<List<LogInfoItemDto>>($"{_url}&symbolName={e.Value.ToString()}");
+            }
+            else
+            {
+                log.Symbol = string.Empty;
+                log.Logs.Clear();
+                log.Logs = await Http.GetFromJsonAsync<List<LogInfoItemDto>>($"{_url}");
+            }
+        }
+
+        spinner = false;
+
+        // Update the UI
+        StateHasChanged();
+    }
+}

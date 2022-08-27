@@ -1,0 +1,127 @@
+@page "/logkline"
+@using BlazorApp.Shared.CoreDto
+@inject HttpClient Http
+
+<PageTitle>Log all klines</PageTitle>
+
+<h1>Klines</h1>
+
+@if (log == null)
+{
+    <div class="spinner"></div>
+}
+else
+{
+    <select id="SearchSymbolId" name="SearchSymbol" @onchange="SelectedSymbolChanged" class="form-control1">
+        <option>@string.Empty</option>
+        @foreach (var symbol in symbols)
+        {
+            <option value="@symbol">@symbol</option>
+        }
+    </select>
+
+    if (!string.IsNullOrEmpty(@log.Symbol))
+    {
+        <p>Current observed symbol : @log.Symbol</p>
+    }
+
+    if (spinner)
+    {
+        <div class="spinner"></div>
+    }
+    else if (log.Logs != null) 
+    {
+        <div class="container m-0">
+            @foreach (var log in log.Logs)
+            {
+                <div name="row-content" class="row my-1 py-1 align-self-baseline border border-secondary">
+                    <div class="d-block d-inline col-lg-2 col-md-2 col-sm-4 col-4 align-self-center text-center"><a href="@($"https://www.binance.com/en/trade/{@log.Symbol}")" target="_blank">@log.Symbol</a></div>
+                    <div class="d-block d-inline col-lg-10 col-md-10 col-sm-8 col-8">
+                        <div class="row align-self-center">
+                            <div class="col-lg-6 col-md-6 col-12">
+                                <div class="row align-self-center">
+                                    <div class="col-lg-6 col-md-6 col-12">
+                                        <Tooltip Text=@($"{@log.OpenTime.Value.ToString("dd/MM/yyyy HH:mm:ss")}")>Open : @log.Open</Tooltip>
+                                    </div>
+                                    <div class="col-lg-6 col-md-6 col-12">
+                                        <Tooltip Text=@($"{@log.CloseTime.Value.ToString("dd/MM/yyyy HH:mm:ss")}")>Close : @log.Close</Tooltip>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="col-lg-6 col-md-6 col-12">
+                                <div class="row align-self-center">
+                                    <div class="col-lg-6 col-md-6 col-12">Low : @log.Low</div>
+                                    <div class="col-lg-6 col-md-6 col-12">High : @log.High</div>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="row align-self-center">
+                            <div class="col-lg-6 col-md-6 col-12">
+                                Trade count : @log.TradeCount
+                            </div>
+                            <div class="col-lg-6 col-md-6 col-12">
+                                <div class="row align-self-center">
+                                    <div class="col-lg-6 col-md-6 col-12">Base volume : @log.BaseVolume</div>
+                                    <div class="col-lg-6 col-md-6 col-12">Quote volume : @log.QuoteVolume</div>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="row align-self-center">
+                            <div class="col-lg-6 col-md-6 col-12">
+                                Taker buy base volume : @log.TakeBuyBaseVolume
+                            </div>
+                            <div class="col-lg-6 col-md-6 col-12">
+                                Taker buy quote volume : @log.TakeBuyQuoteVolume
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            }
+        </div>
+    }
+}
+
+@code {
+    private bool spinner = false;
+    private List<string> symbols = new List<string>();
+    private LogInfoDto log = new LogInfoDto();
+
+    private string _url = $"/api/GetLogKlines?accType=Spot&accHolder=An";
+
+    protected override async Task OnInitializedAsync()
+    {
+        symbols = await Http.GetFromJsonAsync<List<string>>($"/api/GetListStringSymbols?accType=Spot&accHolder=An");
+
+        // Add your update logic here
+        log.Logs = await Http.GetFromJsonAsync<List<LogInfoItemDto>>(_url);
+
+        // Update the UI
+        StateHasChanged();
+    }
+
+    private async void SelectedSymbolChanged(ChangeEventArgs e)
+    {
+        spinner = true;
+
+        if (log != null)
+        {
+            if (!string.IsNullOrEmpty(e.Value.ToString()))
+            {
+                log.Symbol = e.Value.ToString();
+                log.Logs.Clear();
+                log.Logs = await Http.GetFromJsonAsync<List<LogInfoItemDto>>($"{_url}&symbolName={e.Value.ToString()}");
+            }
+        else
+            {
+                log.Symbol = string.Empty;
+                log.Logs.Clear();
+                log.Logs = await Http.GetFromJsonAsync<List<LogInfoItemDto>>($"{_url}");
+            }
+        }
+
+        spinner = false;
+
+        // Update the UI
+        StateHasChanged();
+    }
+}
