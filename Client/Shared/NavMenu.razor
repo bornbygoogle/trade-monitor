@@ -1,6 +1,6 @@
 ﻿<div class="top-row ps-3 navbar navbar-dark">
     <div class="container-fluid">
-        <a class="navbar-brand" href="">Static Web Apps</a>
+        <a class="navbar-brand" href="">Trade Monitor</a>
         <button title="Navigation menu" class="navbar-toggler" @onclick="ToggleNavMenu">
             <span class="navbar-toggler-icon"></span>
         </button>
@@ -9,19 +9,49 @@
 
 <div class="@NavMenuCssClass" @onclick="ToggleNavMenu">
     <nav class="flex-column">
-        <div class="nav-item px-3">
+        <div class="nav-item px-4">
             <NavLink class="nav-link" href="" Match="NavLinkMatch.All">
-                <span class="oi oi-home" aria-hidden="true"></span> Home
+                <span class="oi oi-home" aria-hidden="true"></span> INFOS ACCOUNT
             </NavLink>
         </div>
-        <div class="nav-item px-3">
-            <NavLink class="nav-link" href="counter">
-                <span class="oi oi-plus" aria-hidden="true"></span> Counter
+        <div class="nav-item px-4">
+            <NavLink class="nav-link" href="listsymbols">
+                <span class="oi oi-list-rich" aria-hidden="true"></span> SYMBOLS
             </NavLink>
         </div>
-        <div class="nav-item px-3">
-            <NavLink class="nav-link" href="fetchdata">
-                <span class="oi oi-list-rich" aria-hidden="true"></span> Fetch data
+        <div class="nav-item px-4">
+            <NavLink class="nav-link" href="log">
+                <span class="oi oi-list-rich" aria-hidden="true"></span> LOG
+            </NavLink>
+        </div>
+        <div class="nav-item px-4">
+            <NavLink class="nav-link" href="logkline">
+                <span class="oi oi-list-rich" aria-hidden="true"></span> KLINES
+            </NavLink>
+        </div>
+        <div class="nav-item px-4">
+            <NavLink class="nav-link" href="logpotential">
+                <span class="oi oi-list-rich" aria-hidden="true"></span> POTENTIAL
+            </NavLink>
+        </div>
+        <div class="nav-item px-4">
+            <NavLink class="nav-link" href="logtdcountdown">
+                <span class="oi oi-list-rich" aria-hidden="true"></span> COUNT DOWN
+            </NavLink>
+        </div>
+        <div class="nav-item px-4">
+            <NavLink class="nav-link" href="logtdcombo">
+                <span class="oi oi-list-rich" aria-hidden="true"></span> COMBO
+            </NavLink>
+        </div>
+@*        <div class="nav-item px-4">
+            <NavLink class="nav-link" href="logboughtsold">
+                <span class="oi oi-list-rich" aria-hidden="true"></span> BUY/SELL (@(Properties.Resources.ACC_HOLDER))
+            </NavLink>
+        </div>*@
+        <div class="nav-item px-4">
+            <NavLink class="nav-link" href="logbaseboughtsold">
+                <span class="oi oi-list-rich" aria-hidden="true"></span> BUY/SELL (ALL)
             </NavLink>
         </div>
     </nav>

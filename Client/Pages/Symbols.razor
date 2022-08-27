@@ -1,0 +1,126 @@
+@page "/listsymbols"
+@using BlazorApp.Shared
+@using BlazorApp.Shared.CoreDto
+@inject HttpClient Http
+
+@*<PageTitle>@(Properties.Resources.ACC_TYPE) - @(Properties.Resources.ACC_HOLDER) - SYMBOLS STATUS</PageTitle>*@
+
+@if (symbols == null)
+{
+    <div class="spinner"></div>
+}
+else
+{
+    if (spinner)
+    {
+        <div class="spinner"></div>
+    }
+    else if (symbols != null)
+    {
+        <div class="container m-0">
+            @foreach (var symbol in symbols)
+            {
+                <div name="row-content" class="row my-1 py-1 align-self-baseline border border-secondary">
+                    <div class="d-block d-inline col-lg-2 col-md-2 col-sm-4 col-4 align-self-center text-center"><a href="@($"https://www.binance.com/en/trade/{@symbol.SymbolBase}_{symbol.SymbolQuote}")" target="_blank">@symbol.SymbolName<br />(@symbol.SymbolType)</a></div>
+                    <div class="d-block d-inline col-lg-10 col-md-10 col-sm-8 col-8">
+                        <div class="row align-self-center">
+                            <div class="col-lg-6 col-md-6 col-12">
+                                <div class="row align-self-center">
+                                    <div class="col-lg-6 col-md-6 col-12">
+                                        Base : @symbol.SymbolBase
+                                    </div>
+                                    <div class="col-lg-6 col-md-6 col-12">
+                                        StepSize : @symbol.SymbolStepSizeBase
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="col-lg-6 col-md-6 col-12">
+                                <div class="row align-self-center">
+                                    <div class="col-lg-6 col-md-6 col-12">Min : @symbol.SymbolMinQuantityBase</div>
+                                    <div class="col-lg-6 col-md-6 col-12">Max : @symbol.SymbolMaxQuantityBase</div>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="row align-self-center">
+                            <div class="col-lg-6 col-md-6 col-12">
+                                <div class="row align-self-center">
+                                    <div class="col-lg-6 col-md-6 col-12">
+                                        Quote : @symbol.SymbolQuote
+                                    </div>
+                                    <div class="col-lg-6 col-md-6 col-12">
+                                        StepSize : @symbol.SymbolStepSizeQuote
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="col-lg-6 col-md-6 col-12">
+                                <div class="row align-self-center">
+                                    <div class="col-lg-6 col-md-6 col-12">Min : @symbol.SymbolMinQuantityQuote</div>
+                                    <div class="col-lg-6 col-md-6 col-12">Max : @symbol.SymbolMaxQuantityQuote</div>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="row align-self-center">
+                            <div class="col-lg-6 col-md-6 col-12">
+                                <div class="row align-self-center">
+                                    <div class="col-lg-6 col-md-6 col-12">
+                                    </div>
+                                    <div class="col-lg-6 col-md-6 col-12">
+                                        Average Price Minutes : @symbol.SymbolAveragePriceMinutes
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="col-lg-6 col-md-6 col-12">
+                                <div class="row align-self-center">
+                                    <div class="col-lg-6 col-md-6 col-12">Multiplier Down : @symbol.SymbolMultiplierDown</div>
+                                    <div class="col-lg-6 col-md-6 col-12">Multiplier Up : @symbol.SymbolMultiplierUp</div>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="row align-self-center">
+
+                            @if (@symbol.LastKlineReceived.HasValue)
+                            {
+                                <div class="col-lg-6 col-md-6 col-12">
+                                    Last received kline: @symbol.LastKlineReceived.Value.ToString("dd/MM/yyyy HH:mm:ss")
+                                </div>
+                            }
+                            else
+                            {
+                                <div class="col-lg-6 col-md-6 col-12">Last received kline: </div>
+                            }
+
+                            @if (@symbol.LastTmpKlineReceived.HasValue)
+                            {
+                                <div class="col-lg-6 col-md-6 col-12">
+                                    Last tmp received kline: @symbol.LastTmpKlineReceived.Value.ToString("dd/MM/yyyy HH:mm:ss")
+                                </div>
+                            }
+                            else
+                            {
+                                <div class="col-lg-6 col-md-6 col-12">Last tmp received kline: </div>
+                            }
+
+                        </div>
+                    </div>
+                </div>
+            }
+        </div>
+    }
+}
+
+@code {
+    private bool spinner = false;
+    private List<SymbolItemDto> symbols = new List<SymbolItemDto> { };
+
+    protected override async Task OnInitializedAsync()
+    {
+        try
+        {
+            symbols = await Http.GetFromJsonAsync<List<SymbolItemDto>>("/api/GetListSymbolsWithBaseQuote?accType=Spot&accHolder=An") ?? new List<SymbolItemDto> { };
+        }
+        catch (Exception ex)
+        {
+            Console.WriteLine(ex.ToString());
+        }
+    }
+}
