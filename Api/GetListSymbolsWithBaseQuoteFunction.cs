@@ -24,21 +24,27 @@ namespace BlazorApp.Api
         {
             var accType = req.Query.Where(x => x.Key == "accType").FirstOrDefault().Value;
             var accHolder = req.Query.Where(x => x.Key == "accHolder").FirstOrDefault().Value;
+            var symbolName = req.Query.Where(x => x.Key == "symbolName").FirstOrDefault().Value;
 
-            var symbols = GetListSymbols(accType, accHolder);
+            var symbols = GetListSymbols(accType, accHolder, symbolName);
 
             return new OkObjectResult(symbols);
         }
 
-        public static List<SymbolItemDto> GetListSymbols(string accType, string accHolder)
+        public static List<SymbolItemDto> GetListSymbols(string accType, string accHolder, string symbolName)
         {
             List<SymbolItemDto> listSymbol = new List<SymbolItemDto>();
 
             try
             {
+                string sUrl = $"{ClsCommon.URL_SERVER}/Logs/GetListSymbolsWithBaseQuote?accType={accType}&accHolder={accHolder}";
+
+                if (!string.IsNullOrEmpty(symbolName))
+                    sUrl += $"&symbolName={symbolName}";
+
                 using (var httpClient = new HttpClient())
                 {
-                    listSymbol = httpClient.GetFromJsonAsync<List<SymbolItemDto>>($"{ClsCommon.URL_SERVER}/Logs/GetListSymbolsWithBaseQuote?accType={accType}&accHolder={accHolder}").Result;
+                    listSymbol = httpClient.GetFromJsonAsync<List<SymbolItemDto>>(sUrl).Result;
                 }
             }
             catch (Exception e) { }

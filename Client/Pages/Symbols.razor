@@ -17,6 +17,37 @@ else
     }
     else if (symbols != null)
     {
+        <div name="row-header" class="row my-1 py-1">
+            <div class="d-block d-inline col-lg-3 col-md-3 col-sm-4 col-4 text-uppercase text-end">
+                <div class="input-group mb-3">
+                    <div class="input-group-prepend">
+                        <label class="input-group-text">List symbols</label>
+                    </div>
+                    <select class="custom-select" id="SearchSymbolId" name="SearchSymbol" @onchange="SelectedSymbolChanged">
+                        <option selected>@(string.Empty)</option>
+                        @foreach (var symbol in symbolsInString)
+                        {
+                            <option value="@symbol">@symbol</option>
+                        }
+                    </select>
+                </div>
+            </div>
+            <div class="d-block d-inline col-lg-4 col-md-5 col-sm-4 col-4">
+                <div class="input-group mb-3">
+                    <div class="input-group-prepend">
+                        <label class="input-group-text">Or</label>
+                    </div>
+                    <input type="text" class="form-control textbox-parameters" value="@_currentSymbol" @onchange="this.OnValueChanged" placeholder="Enter symbol here if you know it">
+                </div>
+            </div>
+            <div class="d-block d-inline col-lg-5 col-md-5 col-sm-4 col-4">
+                @if (!string.IsNullOrEmpty(@_currentSymbol))
+                {
+                    <p>Current observed symbol : @_currentSymbol</p>
+                }
+            </div>
+        </div>
+
         <div class="container m-0">
             @foreach (var symbol in symbols)
             {
@@ -110,17 +141,76 @@ else
 
 @code {
     private bool spinner = false;
+
+    private string _currentSymbol = string.Empty;
+
     private List<SymbolItemDto> symbols = new List<SymbolItemDto> { };
+    private List<string> symbolsInString = new List<string>();
+
+    private string _url = $"/api/GetListSymbolsWithBaseQuote?accType=Spot&accHolder=An";
 
     protected override async Task OnInitializedAsync()
     {
         try
         {
-            symbols = await Http.GetFromJsonAsync<List<SymbolItemDto>>("/api/GetListSymbolsWithBaseQuote?accType=Spot&accHolder=An") ?? new List<SymbolItemDto> { };
+            symbolsInString = await Http.GetFromJsonAsync<List<string>>($"/api/GetListStringSymbols?accType=Spot&accHolder=An");
+            symbols = await Http.GetFromJsonAsync<List<SymbolItemDto>>(_url) ?? new List<SymbolItemDto> { };
         }
         catch (Exception ex)
         {
             Console.WriteLine(ex.ToString());
         }
+    }
+
+    private async void SelectedSymbolChanged(ChangeEventArgs e)
+    {
+        spinner = true;
+
+        if (symbols != null)
+        {
+            if (!string.IsNullOrEmpty(e.Value.ToString()))
+            {
+                _currentSymbol = e.Value.ToString();
+                symbols.Clear();
+                symbols = await Http.GetFromJsonAsync<List<SymbolItemDto>>($"{_url}&symbolName={e.Value.ToString()}");
+            }
+            else
+            {
+                _currentSymbol = string.Empty;
+                symbols.Clear();
+                symbols = await Http.GetFromJsonAsync<List<SymbolItemDto>>($"{_url}");
+            }
+        }
+
+        spinner = false;
+
+        // Update the UI
+        StateHasChanged();
+    }
+
+    private async void OnValueChanged(ChangeEventArgs e)
+    {
+        spinner = true;
+
+        if (symbols != null)
+        {
+            if (!string.IsNullOrEmpty(e.Value.ToString()))
+            {
+                _currentSymbol = e.Value.ToString();
+                symbols.Clear();
+                symbols = await Http.GetFromJsonAsync<List<SymbolItemDto>>($"{_url}&symbolName={e.Value.ToString()}");
+            }
+            else
+            {
+                _currentSymbol = string.Empty;
+                symbols.Clear();
+                symbols = await Http.GetFromJsonAsync<List<SymbolItemDto>>($"{_url}");
+            }
+        }
+
+        spinner = false;
+
+        // Update the UI
+        StateHasChanged();
     }
 }
