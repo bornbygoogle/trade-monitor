@@ -21,7 +21,7 @@ else
     }
     else if (log.Logs != null && @_account != null)
     {
-        <div class="container align-content-center align-self-baseline mt-5 pt-5">
+        <div class="container align-content-center align-self-baseline mt-1 pt-1">
             <div name="row-header" class="row my-1 py-1">
                 <div class="d-block d-inline col-lg-3 col-md-3 col-sm-6 col-6 text-uppercase text-end"><h5>Account holder</h5></div>
                 <div class="d-block d-inline col-lg-9 col-md-9 col-sm-6 col-6">@_account.AccountHolder</div>
@@ -77,19 +77,35 @@ else
                     </ul>
                 </div>
             </div>
-            <div class="d-block d-inline">
-                <select id="SearchSymbolId" name="SearchSymbol" @onchange="SelectedSymbolChanged" class="form-control1">
-                    <option value="" disabled selected hidden>List symbols</option>
-                    <option>@string.Empty</option>
-                    @foreach (var symbol in symbols)
+            <div name="row-header" class="row my-1 py-1">
+                <div class="d-block d-inline col-lg-3 col-md-3 col-sm-4 col-4 text-uppercase text-end">
+                    <div class="input-group mb-3">
+                        <div class="input-group-prepend">
+                            <label class="input-group-text">List symbols</label>
+                        </div>
+                        <select class="custom-select" id="SearchSymbolId" name="SearchSymbol" @onchange="SelectedSymbolChanged">
+                            <option selected>@(string.Empty)</option>
+                            @foreach (var symbol in symbols)
+                            {
+                                <option value="@symbol">@symbol</option>
+                            }
+                        </select>
+                    </div>
+                </div>
+                <div class="d-block d-inline col-lg-4 col-md-5 col-sm-4 col-4">
+                    <div class="input-group mb-3">
+                        <div class="input-group-prepend">
+                            <label class="input-group-text">Or</label>
+                        </div>
+                        <input type="text" class="form-control textbox-parameters" value="@_currentTextSymbol" @onchange="this.OnValueChanged" placeholder="Enter symbol here if you know it">
+                    </div>
+                </div>
+                <div class="d-block d-inline col-lg-5 col-md-5 col-sm-4 col-4">
+                    @if (!string.IsNullOrEmpty(@log.Symbol))
                     {
-                        <option value="@symbol">@symbol</option>
+                        <p>Current observed symbol : @log.Symbol</p>
                     }
-                </select>
-                @if (!string.IsNullOrEmpty(@log.Symbol))
-                {
-                    <p>Current observed symbol : @log.Symbol</p>
-                }
+                </div>
             </div>
             <div name="row-header" class="row my-1 py-1">
                 <div class="d-block d-inline col-lg-2 col-md-2 col-sm-4 col-4 text-uppercase"><h4>Symbol</h4></div>
@@ -171,6 +187,7 @@ else
 
 @code {
     private bool spinner = false;
+    private string _currentTextSymbol = string.Empty;
     private List<string> symbols = new List<string>();
     private LogInfoDto log = new LogInfoDto();
 
@@ -199,6 +216,32 @@ else
     }
 
     private async void SelectedSymbolChanged(ChangeEventArgs e)
+    {
+        spinner = true;
+
+        if (log != null)
+        {
+            if (!string.IsNullOrEmpty(e.Value.ToString()))
+            {
+                log.Symbol = e.Value.ToString();
+                log.Logs.Clear();
+                log.Logs = await Http.GetFromJsonAsync<List<LogInfoItemDto>>($"{_url}&symbolName={e.Value.ToString()}");
+            }
+            else
+            {
+                log.Symbol = string.Empty;
+                log.Logs.Clear();
+                log.Logs = await Http.GetFromJsonAsync<List<LogInfoItemDto>>($"{_url}");
+            }
+        }
+
+        spinner = false;
+
+        // Update the UI
+        StateHasChanged();
+    }
+
+    private async void OnValueChanged(ChangeEventArgs e)
     {
         spinner = true;
 
