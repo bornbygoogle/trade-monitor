@@ -12,26 +12,41 @@
 }
 else
 {
-    <div class="d-grid gap-2 d-md-block">
-        <select id="SearchSymbolId" name="SearchSymbol" @onchange="SelectedSymbolChanged" class="form-control1">
-            <option>@string.Empty</option>
-            @foreach (var symbol in symbols)
+    <div name="row-header" class="row my-1 py-1">
+        <div class="d-block d-inline col-lg-3 col-md-3 col-sm-4 col-4 text-uppercase text-end">
+            <div class="input-group mb-3">
+                <div class="input-group-prepend">
+                    <label class="input-group-text">List symbols</label>
+                </div>
+                <select class="custom-select" id="SearchSymbolId" name="SearchSymbol" @onchange="SelectedSymbolChanged">
+                    <option selected>@(string.Empty)</option>
+                    @foreach (var symbol in symbols)
+                    {
+                        <option value="@symbol">@symbol</option>
+                    }
+                </select>
+            </div>
+        </div>
+        <div class="d-block d-inline col-lg-3 col-md-3 col-sm-4 col-4">
+            <div class="input-group mb-3">
+                <div class="input-group-prepend">
+                    <label class="input-group-text">Or</label>
+                </div>
+                <input type="text" class="form-control textbox-parameters" value="@log.Symbol" @onchange="this.OnValueChanged" placeholder="Enter symbol here if you know it">
+            </div>
+        </div>
+        <div class="d-block d-inline col-lg-6 col-md-6 col-sm-4 col-4">
+            @if (!string.IsNullOrEmpty(@log.Symbol))
             {
-                <option value="@symbol">@symbol</option>
+                <p>Current observed symbol : @log.Symbol</p>
             }
-        </select>
-        <button class="btn btn-primary btn-sm" type="button" @onclick="GetAllLog">All</button>
-        <button class="btn btn-primary btn-sm" type="button" @onclick="GetLogsTechnic">Technic</button>
-        <button class="btn btn-primary btn-sm" type="button" @onclick="GetLogsService">Service</button>
-        <button class="btn btn-primary btn-sm" type="button" @onclick="GetLogsTrading">Trading</button>
-        <button class="btn btn-primary btn-sm" type="button" @onclick="GetLogsTradingInfos">Trading infos</button>
-
+            <button class="btn btn-primary btn-sm" type="button" @onclick="GetAllLog">All</button>
+            <button class="btn btn-primary btn-sm" type="button" @onclick="GetLogsTechnic">Technic</button>
+            <button class="btn btn-primary btn-sm" type="button" @onclick="GetLogsService">Service</button>
+            <button class="btn btn-primary btn-sm" type="button" @onclick="GetLogsTrading">Trading</button>
+            <button class="btn btn-primary btn-sm" type="button" @onclick="GetLogsTradingInfos">Trading infos</button>
+        </div>
     </div>
-
-    if (!string.IsNullOrEmpty(@log.Symbol))
-    {
-        <p>Current observed symbol : @log.Symbol</p>
-    }
 
     if (spinner)
     {
@@ -92,6 +107,32 @@ else
                 log.Logs = await Http.GetFromJsonAsync<List<LogInfoItemDto>>($"{_url}&symbolName={e.Value.ToString()}");
             }
         else
+            {
+                log.Symbol = string.Empty;
+                log.Logs.Clear();
+                log.Logs = await Http.GetFromJsonAsync<List<LogInfoItemDto>>($"{_url}");
+            }
+        }
+
+        spinner = false;
+
+        // Update the UI
+        StateHasChanged();
+    }
+
+    private async void OnValueChanged(ChangeEventArgs e)
+    {
+        spinner = true;
+
+        if (log != null)
+        {
+            if (!string.IsNullOrEmpty(e.Value.ToString()))
+            {
+                log.Symbol = e.Value.ToString();
+                log.Logs.Clear();
+                log.Logs = await Http.GetFromJsonAsync<List<LogInfoItemDto>>($"{_url}&symbolName={e.Value.ToString()}");
+            }
+            else
             {
                 log.Symbol = string.Empty;
                 log.Logs.Clear();

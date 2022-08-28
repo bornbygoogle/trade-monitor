@@ -23,47 +23,47 @@ else
     {
         <div class="container align-content-center align-self-baseline mt-1 pt-1">
             <div name="row-header" class="row my-1 py-1">
-                <div class="d-block d-inline col-lg-3 col-md-3 col-sm-6 col-6 text-uppercase text-end"><h5>Account holder</h5></div>
+                <div class="d-block d-inline col-lg-3 col-md-3 col-sm-6 col-6 text-uppercase text-end">Account holder</div>
                 <div class="d-block d-inline col-lg-9 col-md-9 col-sm-6 col-6">@_account.AccountHolder</div>
             </div>
             <div name="row-header" class="row my-1 py-1">
-                <div class="d-block d-inline col-lg-3 col-md-3 col-sm-6 col-6 text-uppercase text-end"><h5>Account type</h5></div>
+                <div class="d-block d-inline col-lg-3 col-md-3 col-sm-6 col-6 text-uppercase text-end">Account type</div>
                 <div class="d-block d-inline col-lg-9 col-md-9 col-sm-6 col-6">@_account.AccountType</div>
             </div>
             <div name="row-header" class="row my-1 py-1">
-                <div class="d-block d-inline col-lg-3 col-md-3 col-sm-6 col-6 text-uppercase text-end"><h5>Kline</h5></div>
+                <div class="d-block d-inline col-lg-3 col-md-3 col-sm-6 col-6 text-uppercase text-end">Kline</div>
                 <div class="d-block d-inline col-lg-9 col-md-9 col-sm-6 col-6">@_account.Interval</div>
             </div>
             <div name="row-header" class="row my-1 py-1">
-                <div class="d-block d-inline col-lg-3 col-md-3 col-sm-6 col-6 text-uppercase text-end"><h5>Number symbol trade</h5></div>
+                <div class="d-block d-inline col-lg-3 col-md-3 col-sm-6 col-6 text-uppercase text-end">Number symbol trade</div>
                 <div class="d-block d-inline col-lg-9 col-md-9 col-sm-6 col-6">@_account.NbrSymbols</div>
             </div>
             <div name="row-header" class="row my-1 py-1">
-                <div class="d-block d-inline col-lg-3 col-md-3 col-sm-6 col-6 text-uppercase text-end"><h5>Use TD CountDown</h5></div>
+                <div class="d-block d-inline col-lg-3 col-md-3 col-sm-6 col-6 text-uppercase text-end">Use TD CountDown</div>
                 <div class="d-block d-inline col-lg-9 col-md-9 col-sm-6 col-6">@(_account.UseTDCountDown == "1" ? "Oui" : "Non")</div>
             </div>
             <div name="row-header" class="row my-1 py-1">
-                <div class="d-block d-inline col-lg-3 col-md-3 col-sm-6 col-6 text-uppercase text-end"><h5>Use TD Combo</h5></div>
+                <div class="d-block d-inline col-lg-3 col-md-3 col-sm-6 col-6 text-uppercase text-end">Use TD Combo</div>
                 <div class="d-block d-inline col-lg-9 col-md-9 col-sm-6 col-6">@(_account.UseTDCombo == "1" ? "Oui" : "Non")</div>
             </div>
             <div name="row-header" class="row my-1 py-1">
-                <div class="d-block d-inline col-lg-3 col-md-3 col-sm-6 col-6 text-uppercase text-end"><h5>Conservatoire</h5></div>
+                <div class="d-block d-inline col-lg-3 col-md-3 col-sm-6 col-6 text-uppercase text-end">Conservatoire</div>
                 <div class="d-block d-inline col-lg-9 col-md-9 col-sm-6 col-6">@(_account.UseConservatoire == "1" ? "Oui" : "Non")</div>
             </div>
             <div name="row-header" class="row my-1 py-1">
-                <div class="d-block d-inline col-lg-3 col-md-3 col-sm-6 col-6 text-uppercase text-end"><h5>Buy / Sell ?</h5></div>
+                <div class="d-block d-inline col-lg-3 col-md-3 col-sm-6 col-6 text-uppercase text-end">Buy / Sell ?</div>
                 <div class="d-block d-inline col-lg-9 col-md-9 col-sm-6 col-6">@(_account.AllowBuySell == "3" ? "Both" : (_account.AllowBuySell == "0" ? "None" : (_account.AllowBuySell == "1" ? "Buy only" : "Sell only")))</div>
             </div>
             <div name="row-header" class="row my-1 py-1">
-                <div class="d-block d-inline col-lg-3 col-md-3 col-sm-6 col-6 text-uppercase text-end"><h5>Real trades</h5></div>
+                <div class="d-block d-inline col-lg-3 col-md-3 col-sm-6 col-6 text-uppercase text-end">Real trades</div>
                 <div class="d-block d-inline col-lg-9 col-md-9 col-sm-6 col-6">@(_account.RealAccountProfit.Sum(x => x.CompletedTrades)) completed (bought + sold) with @(_account.RealAccountProfit.Sum(x => x.CompletedTradesPositives)) positives trades / @(_account.RealAccountProfit.Sum(x => x.IncompletedTrades)) incompleted (Bought but not sold)</div>
             </div>
             <div name="row-header" class="row my-1 py-1">
-                <div class="d-block d-inline col-lg-3 col-md-3 col-sm-6 col-6 text-uppercase text-end"><h5>Possible trades</h5></div>
+                <div class="d-block d-inline col-lg-3 col-md-3 col-sm-6 col-6 text-uppercase text-end">Possible trades</div>
                 <div class="d-block d-inline col-lg-9 col-md-9 col-sm-6 col-6">@(_account.SimulatedAccountProfit.Sum(x => x.CompletedTrades)) completed (bought + sold) with @(_account.SimulatedAccountProfit.Sum(x => x.CompletedTradesPositives)) positives trades / @(_account.SimulatedAccountProfit.Sum(x => x.IncompletedTrades)) incompleted (Bought but not sold)</div>
             </div>
             <div name="row-header" class="row my-1 py-1">
-                <div class="d-block d-inline col-lg-3 col-md-3 col-sm-6 col-6 text-uppercase text-end"><h5>Details quotes (completed) :</h5></div>
+                <div class="d-block d-inline col-lg-3 col-md-3 col-sm-6 col-6 text-uppercase text-end">Details quotes (completed) :</div>
                 <div class="d-block d-inline col-lg-9 col-md-9 col-sm-6 col-6">
                     <ul>
                         @foreach (var itemQuote in _account.ListQuotes)
