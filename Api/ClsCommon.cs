@@ -11,7 +11,7 @@ namespace BlazorApp.Api
 {
     public class ClsCommon
     {
-        public static string URL_SERVER = "https://cacheserver-app.victoriousocean-9c8156ce.northeurope.azurecontainerapps.io";
+        public static string URL_SERVER = "http://52.188.127.41";
 
         public static List<LogInfoItemDto> GetLogs(string sMethod, string accType, string accHolder, string symbolName = null)
         {
@@ -19,7 +19,7 @@ namespace BlazorApp.Api
 
             try
             {
-                string sUrl = $"{ClsCommon.URL_SERVER}/Logs/{sMethod}?accType={accType}&accHolder={accHolder}";
+                string sUrl = $"{ClsCommon.URL_SERVER}/Server/{sMethod}?accType={accType}&accHolder={accHolder}";
 
                 if (!string.IsNullOrEmpty(symbolName))
                     sUrl += $"&symbolName={symbolName}";

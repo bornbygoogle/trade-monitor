@@ -30,7 +30,7 @@ namespace BlazorApp.Api
 
             try
             {
-                string sUrl = $"{ClsCommon.URL_SERVER}/Logs/GetBoughtSold?accType={accType}&accHolder={accHolder}";
+                string sUrl = $"{ClsCommon.URL_SERVER}/Server/GetBoughtSold?accType={accType}&accHolder={accHolder}";
 
                 if (!string.IsNullOrEmpty(symbolName))
                     sUrl += $"&symbolName={symbolName}";

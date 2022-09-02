@@ -29,7 +29,7 @@ namespace BlazorApp.Api
 
             try
             {
-                string sUrl = $"{ClsCommon.URL_SERVER}/Logs/GetInfos?accType={accType}&accHolder={accHolder}";
+                string sUrl = $"{ClsCommon.URL_SERVER}/Server/GetInfos?accType={accType}&accHolder={accHolder}";
 
                 using (var httpClient = new HttpClient())
                 {

@@ -32,7 +32,7 @@ namespace BlazorApp.Api
             {
                 using (var httpClient = new HttpClient())
                 {
-                    listSymbol = httpClient.GetFromJsonAsync<List<string>>($"{ClsCommon.URL_SERVER}/Logs/GetSymbols?accType={accType}&accHolder={accHolder}").Result;
+                    listSymbol = httpClient.GetFromJsonAsync<List<string>>($"{ClsCommon.URL_SERVER}/Server/GetSymbols?accType={accType}&accHolder={accHolder}").Result;
                 }
             }
             catch (Exception e) { }

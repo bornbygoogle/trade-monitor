@@ -30,7 +30,7 @@ namespace BlazorApp.Api
 
             try
             {
-                string sUrl = $"{ClsCommon.URL_SERVER}/Logs/GetBaseBoughtSold?accType={accType}";
+                string sUrl = $"{ClsCommon.URL_SERVER}/Server/GetBaseBoughtSold?accType={accType}";
 
                 using (var httpClient = new HttpClient())
                 {

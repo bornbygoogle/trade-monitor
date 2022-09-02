@@ -25,7 +25,7 @@ namespace BlazorApp.Api
 
             try
             {
-                string sUrl = $"{ClsCommon.URL_SERVER}/Logs/GetLogKlineTDCountDown?accType={accType}&accHolder={accHolder}";
+                string sUrl = $"{ClsCommon.URL_SERVER}/Server/GetLogKlineTDCountDown?accType={accType}&accHolder={accHolder}";
 
                 if (!string.IsNullOrEmpty(symbolName))
                     sUrl += $"&symbolName={symbolName}";

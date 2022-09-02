@@ -36,7 +36,7 @@ namespace BlazorApp.Api
 
             try
             {
-                string sUrl = $"{ClsCommon.URL_SERVER}/Logs/GetLogKline?accType={accType}&accHolder={accHolder}";
+                string sUrl = $"{ClsCommon.URL_SERVER}/Server/GetLogKline?accType={accType}&accHolder={accHolder}";
 
                 if (!string.IsNullOrEmpty(symbolName))
                     sUrl += $"&symbolName={symbolName}";
