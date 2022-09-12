@@ -51,7 +51,7 @@ else
         <div class="container m-0">
             @foreach (var symbol in symbols)
             {
-                <div name="row-content" class="row my-1 py-1 align-self-baseline border border-secondary">
+                <div name="row-content" class="row my-1 py-1 align-self-baseline border border-secondary ">
                     <div class="d-block d-inline col-lg-2 col-md-2 col-sm-4 col-4 align-self-center text-center"><a href="@($"https://www.binance.com/en/trade/{@symbol.SymbolBase}_{symbol.SymbolQuote}")" target="_blank">@symbol.SymbolName<br />(@symbol.SymbolType)</a></div>
                     <div class="d-block d-inline col-lg-10 col-md-10 col-sm-8 col-8">
                         <div class="row align-self-center">
@@ -111,9 +111,18 @@ else
 
                             @if (@symbol.LastKlineReceived.HasValue)
                             {
-                                <div class="col-lg-6 col-md-6 col-12">
-                                    Last received kline: @symbol.LastKlineReceived.Value.ToString("dd/MM/yyyy HH:mm:ss")
-                                </div>
+                                @if ((DateTime.Now - symbol.LastKlineReceived.Value) > TimeSpan.FromMinutes(15))
+                                {
+                                    <div class="col-lg-6 col-md-6 col-12">
+                                        <p class="text-danger">Last received kline: @symbol.LastKlineReceived.Value.ToString("dd/MM/yyyy HH:mm:ss")</p>
+                                    </div>
+                                }
+                                else
+                                {
+                                    <div class="col-lg-6 col-md-6 col-12">
+                                        Last received kline: @symbol.LastKlineReceived.Value.ToString("dd/MM/yyyy HH:mm:ss")
+                                    </div>
+                                }
                             }
                             else
                             {
@@ -130,7 +139,6 @@ else
                             {
                                 <div class="col-lg-6 col-md-6 col-12">Last tmp received kline: </div>
                             }
-
                         </div>
                     </div>
                 </div>
