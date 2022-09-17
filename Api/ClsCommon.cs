@@ -11,7 +11,7 @@ namespace BlazorApp.Api
 {
     public class ClsCommon
     {
-        public static string URL_SERVER = "http://52.188.127.41";
+        public static string URL_SERVER = "https://cacheservice-app.mangocoast-e15fdab0.northeurope.azurecontainerapps.io";
 
         public static List<LogInfoItemDto> GetLogs(string sMethod, string accType, string accHolder, string symbolName = null)
         {
