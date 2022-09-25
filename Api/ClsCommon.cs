@@ -11,9 +11,10 @@ namespace BlazorApp.Api
 {
     public class ClsCommon
     {
-        public static string URL_SERVER = "https://cacheservice-app.mangocoast-e15fdab0.northeurope.azurecontainerapps.io";
+        //public static string URL_SERVER = "https://cacheservice-app.mangocoast-e15fdab0.northeurope.azurecontainerapps.io";
+        public static string URL_SERVER = "https://localhost:7132";
 
-        public static List<LogInfoItemDto> GetLogs(string sMethod, string accType, string accHolder, string symbolName = null)
+        public static List<LogInfoItemDto> GetLogs(string sMethod, string accType, string accHolder, string symbol = null)
         {
             List<LogInfoItemDto> listSymbol = new List<LogInfoItemDto>();
 
@@ -21,8 +22,8 @@ namespace BlazorApp.Api
             {
                 string sUrl = $"{ClsCommon.URL_SERVER}/Server/{sMethod}?accType={accType}&accHolder={accHolder}";
 
-                if (!string.IsNullOrEmpty(symbolName))
-                    sUrl += $"&symbolName={symbolName}";
+                if (!string.IsNullOrEmpty(symbol))
+                    sUrl += $"&symbol={symbol}";
 
                 using (var httpClient = new HttpClient())
                 {

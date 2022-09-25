@@ -24,14 +24,14 @@ namespace BlazorApp.Api
         {
             var accType = req.Query.Where(x => x.Key == "accType").FirstOrDefault().Value;
             var accHolder = req.Query.Where(x => x.Key == "accHolder").FirstOrDefault().Value;
-            var symbolName = req.Query.Where(x => x.Key == "symbolName").FirstOrDefault().Value;
+            var symbol = req.Query.Where(x => x.Key == "symbol").FirstOrDefault().Value;
 
-            var symbols = GetListSymbols(accType, accHolder, symbolName);
+            var symbols = GetListSymbols(accType, accHolder, symbol);
 
             return new OkObjectResult(symbols);
         }
 
-        public static List<SymbolItemDto> GetListSymbols(string accType, string accHolder, string symbolName)
+        public static List<SymbolItemDto> GetListSymbols(string accType, string accHolder, string symbol)
         {
             List<SymbolItemDto> listSymbol = new List<SymbolItemDto>();
 
@@ -39,8 +39,8 @@ namespace BlazorApp.Api
             {
                 string sUrl = $"{ClsCommon.URL_SERVER}/Server/GetListSymbolsWithBaseQuote?accType={accType}&accHolder={accHolder}";
 
-                if (!string.IsNullOrEmpty(symbolName))
-                    sUrl += $"&symbolName={symbolName}";
+                if (!string.IsNullOrEmpty(symbol))
+                    sUrl += $"&symbol={symbol}";
 
                 using (var httpClient = new HttpClient())
                 {

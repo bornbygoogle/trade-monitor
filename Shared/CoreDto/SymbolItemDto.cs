@@ -6,8 +6,8 @@ namespace BlazorApp.Shared.CoreDto
     {
         public long Id { get; set; }
 
-        public string SymbolName { get; set; } = string.Empty;
-        public string SymbolType { get; set; } = string.Empty;
+        public string Symbol { get; set; } = string.Empty;
+        public string AccountType { get; set; } = string.Empty;
         public string SymbolBase { get; set; } = string.Empty;
         public string SymbolQuote { get; set; } = string.Empty;
 
@@ -24,5 +24,15 @@ namespace BlazorApp.Shared.CoreDto
 
         public DateTime? LastKlineReceived { get; set; } = null;
         public DateTime? LastTmpKlineReceived { get; set; } = null;
+
+        public decimal? PriceTick { get; set; }
+        public decimal? QuantityTick { get; set; }
+
+        public int BasePrecision { get; set; } = 0;
+        public int QuotePrecision { get; set; } = 0;
+
+        public bool IsMonitored { get; set; }
+
+        public DateTime? MonitoredAt { get; set; } = null;
     }
 }

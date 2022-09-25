@@ -19,7 +19,7 @@ namespace BlazorApp.Api
         {
             var accType = req.Query.Where(x => x.Key == "accType").FirstOrDefault().Value;
             var accHolder = req.Query.Where(x => x.Key == "accHolder").FirstOrDefault().Value;
-            var symbolName = req.Query.Where(x => x.Key == "symbolName").FirstOrDefault().Value;
+            var symbol = req.Query.Where(x => x.Key == "symbol").FirstOrDefault().Value;
 
             List<LogInfoItemDto> listKlines = new List<LogInfoItemDto>();
 
@@ -27,8 +27,8 @@ namespace BlazorApp.Api
             {
                 string sUrl = $"{ClsCommon.URL_SERVER}/Server/GetLogKlineTDCountDown?accType={accType}&accHolder={accHolder}";
 
-                if (!string.IsNullOrEmpty(symbolName))
-                    sUrl += $"&symbolName={symbolName}";
+                if (!string.IsNullOrEmpty(symbol))
+                    sUrl += $"&symbol={symbol}";
 
                 using (var httpClient = new HttpClient())
                 {

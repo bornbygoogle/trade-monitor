@@ -65,10 +65,10 @@ else
             {
                 <div name="row-content" class="row my-1 py-1 align-self-baseline">
                     <div class="d-block d-inline col-lg-2 col-md-2 d-none d-lg-block d-md-block">@log.LogTime.ToString("dd/MM/yyyy HH:mm:ss")</div>
-                    <div class="d-block d-inline col-lg-2 col-md-2 d-none d-lg-block d-md-block">@log.ServiceName</div>
+                    <div class="d-block d-inline col-lg-2 col-md-2 d-none d-lg-block d-md-block">@log.Service</div>
 
-                    <div class="d-block d-inline col-lg-2 col-md-2 col-sm-4 col-4"><Tooltip Text=@($"Service {@log.ServiceName} at {@log.LogTime.ToString("dd/MM/yyyy HH:mm:ss")}")>@log.Symbol</Tooltip></div>
-                    <div class="d-block d-inline col-lg-6 col-md-6 col-sm-8 col-8 text-start">@log.LogMessage</div>
+                    <div class="d-block d-inline col-lg-2 col-md-2 col-sm-4 col-4"><Tooltip Text=@($"Service {@log.Service} at {@log.LogTime.ToString("dd/MM/yyyy HH:mm:ss")}")>@log.Symbol</Tooltip></div>
+                    <div class="d-block d-inline col-lg-6 col-md-6 col-sm-8 col-8 text-start">@log.Message</div>
                 </div>
             }
         </div>
@@ -104,7 +104,7 @@ else
             {
                 log.Symbol = e.Value.ToString();
                 log.Logs.Clear();
-                log.Logs = await Http.GetFromJsonAsync<List<LogInfoItemDto>>($"{_url}&symbolName={e.Value.ToString()}");
+                log.Logs = await Http.GetFromJsonAsync<List<LogInfoItemDto>>($"{_url}&symbol={e.Value.ToString()}");
             }
         else
             {
@@ -130,7 +130,7 @@ else
             {
                 log.Symbol = e.Value.ToString();
                 log.Logs.Clear();
-                log.Logs = await Http.GetFromJsonAsync<List<LogInfoItemDto>>($"{_url}&symbolName={e.Value.ToString()}");
+                log.Logs = await Http.GetFromJsonAsync<List<LogInfoItemDto>>($"{_url}&symbol={e.Value.ToString()}");
             }
             else
             {
@@ -152,7 +152,7 @@ else
 
         log.Logs.Clear();
         // Add your update logic here
-        log.Logs = await Http.GetFromJsonAsync<List<LogInfoItemDto>>($"{_url}{(!string.IsNullOrEmpty(log.Symbol) ? $"&symbolName={log.Symbol}" : string.Empty)}");
+        log.Logs = await Http.GetFromJsonAsync<List<LogInfoItemDto>>($"{_url}{(!string.IsNullOrEmpty(log.Symbol) ? $"&symbol={log.Symbol}" : string.Empty)}");
 
         // Update the UI
         StateHasChanged();
@@ -164,7 +164,7 @@ else
 
         log.Logs.Clear();
         // Add your update logic here
-        log.Logs = await Http.GetFromJsonAsync<List<LogInfoItemDto>>($"{_url}{(!string.IsNullOrEmpty(log.Symbol) ? $"&symbolName={log.Symbol}" : string.Empty)}");
+        log.Logs = await Http.GetFromJsonAsync<List<LogInfoItemDto>>($"{_url}{(!string.IsNullOrEmpty(log.Symbol) ? $"&symbol={log.Symbol}" : string.Empty)}");
 
         // Update the UI
         StateHasChanged();
@@ -176,7 +176,7 @@ else
 
         log.Logs.Clear();
         // Add your update logic here
-        log.Logs = await Http.GetFromJsonAsync<List<LogInfoItemDto>>($"{_url}{(!string.IsNullOrEmpty(log.Symbol) ? $"&symbolName={log.Symbol}" : string.Empty)}");
+        log.Logs = await Http.GetFromJsonAsync<List<LogInfoItemDto>>($"{_url}{(!string.IsNullOrEmpty(log.Symbol) ? $"&symbol={log.Symbol}" : string.Empty)}");
 
         // Update the UI
         StateHasChanged();
@@ -188,7 +188,7 @@ else
 
         log.Logs.Clear();
         // Add your update logic here
-        log.Logs = await Http.GetFromJsonAsync<List<LogInfoItemDto>>($"{_url}{(!string.IsNullOrEmpty(log.Symbol) ? $"&symbolName={log.Symbol}" : string.Empty)}");
+        log.Logs = await Http.GetFromJsonAsync<List<LogInfoItemDto>>($"{_url}{(!string.IsNullOrEmpty(log.Symbol) ? $"&symbol={log.Symbol}" : string.Empty)}");
 
         // Update the UI
         StateHasChanged();
@@ -200,7 +200,7 @@ else
 
         log.Logs.Clear();
         // Add your update logic here
-        log.Logs = await Http.GetFromJsonAsync<List<LogInfoItemDto>>($"{_url}{(!string.IsNullOrEmpty(log.Symbol) ? $"&symbolName={log.Symbol}" : string.Empty)}");
+        log.Logs = await Http.GetFromJsonAsync<List<LogInfoItemDto>>($"{_url}{(!string.IsNullOrEmpty(log.Symbol) ? $"&symbol={log.Symbol}" : string.Empty)}");
 
         // Update the UI
         StateHasChanged();

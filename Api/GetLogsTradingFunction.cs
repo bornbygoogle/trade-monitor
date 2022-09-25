@@ -23,9 +23,9 @@ namespace BlazorApp.Api
         {
             var accType = req.Query.Where(x => x.Key == "accType").FirstOrDefault().Value;
             var accHolder = req.Query.Where(x => x.Key == "accHolder").FirstOrDefault().Value;
-            var symbolName = req.Query.Where(x => x.Key == "symbolName").FirstOrDefault().Value;
+            var symbol = req.Query.Where(x => x.Key == "symbol").FirstOrDefault().Value;
 
-            var symbols = ClsCommon.GetLogs("GetLogsTrading", accType, accHolder, symbolName);
+            var symbols = ClsCommon.GetLogs("GetLogsTrading", accType, accHolder, symbol);
 
             return new OkObjectResult(symbols);
         }

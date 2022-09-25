@@ -86,10 +86,10 @@ else
                         </div>
                         <div class="row align-self-center">
                             <div class="col-lg-6 col-md-6 col-12">
-                                Taker buy base volume : @log.TakeBuyBaseVolume
+                                Taker buy base volume : @log.TakerBaseVolume
                             </div>
                             <div class="col-lg-6 col-md-6 col-12">
-                                Taker buy quote volume : @log.TakeBuyQuoteVolume
+                                Taker buy quote volume : @log.TakerQuoteVolume
                             </div>
                         </div>
                     </div>
@@ -128,7 +128,7 @@ else
             {
                 log.Symbol = e.Value.ToString();
                 log.Logs.Clear();
-                log.Logs = await Http.GetFromJsonAsync<List<LogInfoItemDto>>($"{_url}&symbolName={e.Value.ToString()}");
+                log.Logs = await Http.GetFromJsonAsync<List<LogInfoItemDto>>($"{_url}&symbol={e.Value.ToString()}");
             }
         else
             {
@@ -154,7 +154,7 @@ else
             {
                 log.Symbol = e.Value.ToString();
                 log.Logs.Clear();
-                log.Logs = await Http.GetFromJsonAsync<List<LogInfoItemDto>>($"{_url}&symbolName={e.Value.ToString()}");
+                log.Logs = await Http.GetFromJsonAsync<List<LogInfoItemDto>>($"{_url}&symbol={e.Value.ToString()}");
             }
             else
             {

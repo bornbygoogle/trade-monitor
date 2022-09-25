@@ -225,7 +225,7 @@ else
             {
                 log.Symbol = e.Value.ToString();
                 log.Logs.Clear();
-                log.Logs = await Http.GetFromJsonAsync<List<LogInfoItemDto>>($"{_url}&symbolName={e.Value.ToString()}");
+                log.Logs = await Http.GetFromJsonAsync<List<LogInfoItemDto>>($"{_url}&symbol={e.Value.ToString()}");
             }
             else
             {
@@ -251,7 +251,7 @@ else
             {
                 log.Symbol = e.Value.ToString();
                 log.Logs.Clear();
-                log.Logs = await Http.GetFromJsonAsync<List<LogInfoItemDto>>($"{_url}&symbolName={e.Value.ToString()}");
+                log.Logs = await Http.GetFromJsonAsync<List<LogInfoItemDto>>($"{_url}&symbol={e.Value.ToString()}");
             }
             else
             {
