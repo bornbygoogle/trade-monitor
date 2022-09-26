@@ -52,7 +52,7 @@ else
             @foreach (var symbol in symbols)
             {
                 <div name="row-content" class="row my-1 py-1 align-self-baseline border border-secondary ">
-                    <div class="d-block d-inline col-lg-2 col-md-2 col-sm-4 col-4 align-self-center text-center"><a href="@($"https://www.binance.com/en/trade/{@symbol.SymbolBase}_{symbol.SymbolQuote}")" target="_blank">@symbol.Symbol (@symbol.AccountType)<br />@(symbol.MonitoredAt.HasValue ? $"Monitored : {symbol.MonitoredAt.Value.ToString("dd/MM/yyyy HH:mm:ss")}" : ""))</a></div>
+                    <div class="d-block d-inline col-lg-2 col-md-2 col-sm-4 col-4 align-self-center text-center"><a href="@($"https://www.binance.com/en/trade/{@symbol.SymbolBase}_{symbol.SymbolQuote}")" target="_blank">@symbol.Symbol (@symbol.AccountType)<br />@(symbol.MonitoredAt.HasValue ? $"monitored at : <br>{symbol.MonitoredAt.Value.ToString("dd/MM/yyyy HH:mm:ss")}" : ""))</a></div>
                     <div class="d-block d-inline col-lg-10 col-md-10 col-sm-8 col-8">
                         <div class="row align-self-center">
                             <div class="col-lg-6 col-md-6 col-12">
