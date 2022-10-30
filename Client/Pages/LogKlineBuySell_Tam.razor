@@ -56,11 +56,11 @@ else
             </div>
             <div name="row-header" class="row my-1 py-1">
                 <div class="d-block d-inline col-lg-3 col-md-3 col-sm-6 col-6 text-uppercase text-end">Real trades<br>(@(_account.RealPositivePercentage ?? 0)% succeeded trades)</div>
-                <div class="d-block d-inline col-lg-9 col-md-9 col-sm-6 col-6">@(_account.RealAccountProfit.Sum(x => x.CompletedTrades)) completed (bought + sold) with @(_account.RealAccountProfit.Sum(x => x.CompletedTradesPositives)) positives trades / @(_account.RealAccountProfit.Sum(x => x.IncompletedTrades)) incompleted (Bought but not sold)</div>
+                <div class="d-block d-inline col-lg-9 col-md-9 col-sm-6 col-6">@(_account.RealTotalTrades ?? 0) completed (bought + sold) with @(_account.RealTotalPositiveTrades ?? 0) positives trades / @(_account.RealAccountProfit.Sum(x => x.IncompletedTrades)) incompleted (Bought but not sold)</div>
             </div>
             <div name="row-header" class="row my-1 py-1">
                 <div class="d-block d-inline col-lg-3 col-md-3 col-sm-6 col-6 text-uppercase text-end">Possible trades<br>(@(_account.SimulatedPositivePercentage ?? 0)% succeeded trades)</div>
-                <div class="d-block d-inline col-lg-9 col-md-9 col-sm-6 col-6">@(_account.SimulatedAccountProfit.Sum(x => x.CompletedTrades)) completed (bought + sold) with @(_account.SimulatedAccountProfit.Sum(x => x.CompletedTradesPositives)) positives trades / @(_account.SimulatedAccountProfit.Sum(x => x.IncompletedTrades)) incompleted (Bought but not sold)</div>
+                <div class="d-block d-inline col-lg-9 col-md-9 col-sm-6 col-6">@(_account.SimulatedTotalTrades ?? 0) completed (bought + sold) with @(_account.SimulatedTotalPositiveTrades ?? 0) positives trades / @(_account.SimulatedAccountProfit.Sum(x => x.IncompletedTrades)) incompleted (Bought but not sold)</div>
             </div>
             <div name="row-header" class="row my-1 py-1">
                 <div class="d-block d-inline col-lg-3 col-md-3 col-sm-6 col-6 text-uppercase text-end">Details quotes (completed) :</div>
