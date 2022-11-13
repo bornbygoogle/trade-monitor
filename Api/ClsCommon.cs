@@ -8,7 +8,7 @@ namespace BlazorApp.Api
 {
     public class ClsCommon
     {
-        public static string URL_SERVER = "https://cache-service.minhan-tran.fr";
+        public static string URL_SERVER = "http://cache-service.minhan-tran.fr";
         //public static string URL_SERVER_2 = "https://logservice-app-20221012212833.redmushroom-aa658d30.northeurope.azurecontainerapps.io";
         //public static string URL_SERVER = "https://localhost:7132";
 
