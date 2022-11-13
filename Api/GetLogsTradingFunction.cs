@@ -26,7 +26,7 @@ namespace BlazorApp.Api
             var symbol = req.Query.Where(x => x.Key == "symbol").FirstOrDefault().Value;
 
             var symbols = ClsCommon.GetLogs("GetLogsTrading", accType, accHolder, symbol);
-
+ 
             return new OkObjectResult(symbols);
         }
     }
