@@ -1,0 +1,68 @@
+@using BlazorApp.Shared.CoreDto
+@using Newtonsoft.Json
+
+<div name="row-header" class="row my-1 py-1">
+    <div class="d-block d-inline col-lg-3 col-md-3 col-sm-6 col-6 text-uppercase text-end">Account holder</div>
+    <div class="d-block d-inline col-lg-9 col-md-9 col-sm-6 col-6">@Account.AccountHolder</div>
+</div>
+<div name="row-header" class="row my-1 py-1">
+    <div class="d-block d-inline col-lg-3 col-md-3 col-sm-6 col-6 text-uppercase text-end">Account type</div>
+    <div class="d-block d-inline col-lg-9 col-md-9 col-sm-6 col-6">@Account.AccountType</div>
+</div>
+<div name="row-header" class="row my-1 py-1">
+    <div class="d-block d-inline col-lg-3 col-md-3 col-sm-6 col-6 text-uppercase text-end">Kline</div>
+    <div class="d-block d-inline col-lg-9 col-md-9 col-sm-6 col-6">@Account.Interval</div>
+</div>
+<div name="row-header" class="row my-1 py-1">
+    <div class="d-block d-inline col-lg-3 col-md-3 col-sm-6 col-6 text-uppercase text-end">Number symbol trade</div>
+    <div class="d-block d-inline col-lg-9 col-md-9 col-sm-6 col-6">@Account.NbrSymbols</div>
+</div>
+<div name="row-header" class="row my-1 py-1">
+    <div class="d-block d-inline col-lg-3 col-md-3 col-sm-6 col-6 text-uppercase text-end">Use TD CountDown</div>
+    <div class="d-block d-inline col-lg-9 col-md-9 col-sm-6 col-6">@(Account.UseTDCountDown == "1" ? "Oui" : "Non")</div>
+</div>
+<div name="row-header" class="row my-1 py-1">
+    <div class="d-block d-inline col-lg-3 col-md-3 col-sm-6 col-6 text-uppercase text-end">Use TD Combo</div>
+    <div class="d-block d-inline col-lg-9 col-md-9 col-sm-6 col-6">@(Account.UseTDCombo == "1" ? "Oui" : "Non")</div>
+</div>
+<div name="row-header" class="row my-1 py-1">
+    <div class="d-block d-inline col-lg-3 col-md-3 col-sm-6 col-6 text-uppercase text-end">Conservatoire</div>
+    <div class="d-block d-inline col-lg-9 col-md-9 col-sm-6 col-6">@(Account.UseConservatoire == "1" ? "Oui" : "Non")</div>
+</div>
+<div name="row-header" class="row my-1 py-1">
+    <div class="d-block d-inline col-lg-3 col-md-3 col-sm-6 col-6 text-uppercase text-end">Buy / Sell ?</div>
+    <div class="d-block d-inline col-lg-9 col-md-9 col-sm-6 col-6">@(Account.AllowBuySell == "3" ? "Both" : (Account.AllowBuySell == "0" ? "None" : (Account.AllowBuySell == "1" ? "Buy only" : "Sell only")))</div>
+</div>
+<div name="row-header" class="row my-1 py-1">
+    <div class="d-block d-inline col-lg-3 col-md-3 col-sm-6 col-6 text-uppercase text-end">Real trades<br>(@(Account.RealPositivePercentage ?? 0)% succeeded trades)</div>
+    <div class="d-block d-inline col-lg-9 col-md-9 col-sm-6 col-6">@(Account.RealTotalTrades ?? 0) completed (bought + sold) with @(Account.RealTotalPositiveTrades ?? 0) positives trades / @(Account.RealAccountProfit.Sum(x => x.IncompletedTrades)) incompleted (Bought but not sold)</div>
+</div>
+<div name="row-header" class="row my-1 py-1">
+    <div class="d-block d-inline col-lg-3 col-md-3 col-sm-6 col-6 text-uppercase text-end">Possible trades<br>(@(Account.SimulatedPositivePercentage ?? 0)%  succeeded trades)</div>
+    <div class="d-block d-inline col-lg-9 col-md-9 col-sm-6 col-6">@(Account.SimulatedTotalTrades ?? 0) completed (bought + sold) with @(Account.SimulatedTotalPositiveTrades ?? 0) positives trades / @(Account.SimulatedAccountProfit.Sum(x => x.IncompletedTrades)) incompleted (Bought but not sold)</div>
+</div>
+<div name="row-header" class="row my-1 py-1">
+    <div class="d-block d-inline col-lg-3 col-md-3 col-sm-6 col-6 text-uppercase text-end">Details quotes (completed) :</div>
+    <div class="d-block d-inline col-lg-9 col-md-9 col-sm-6 col-6">
+        <ul>
+            @foreach (var itemQuote in Account.ListQuotes)
+            {
+                var quoteBought = DictBought.First(x => x.Key == itemQuote).Value;
+                var quoteSold = DictSold.First(x => x.Key == itemQuote).Value;
+                var quoteProfit = quoteSold - quoteBought;
+
+                <li>@itemQuote : profit @(Math.Round(quoteProfit, 4)) (sold @(Math.Round(quoteSold, 4)) - bought @(Math.Round(quoteBought, 4))) </li>
+            }
+        </ul>
+    </div>
+</div>
+
+@code {
+    [Parameter] public RenderFragment ChildContent { get; set; }
+
+    [Parameter] public AccountDto Account { get; set; }
+
+    [Parameter] public Dictionary<string, decimal> DictBought { get; set; }
+    [Parameter] public Dictionary<string, decimal> DictSold { get; set; }
+
+}

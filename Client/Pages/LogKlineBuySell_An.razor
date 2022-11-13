@@ -19,61 +19,7 @@ else
     else if (log.Logs != null && @_account != null)
     {
         <div class="container align-content-center align-self-baseline mt-1 pt-1">
-            <div name="row-header" class="row my-1 py-1">
-                <div class="d-block d-inline col-lg-3 col-md-3 col-sm-6 col-6 text-uppercase text-end">Account holder</div>
-                <div class="d-block d-inline col-lg-9 col-md-9 col-sm-6 col-6">@_account.AccountHolder</div>
-            </div>
-            <div name="row-header" class="row my-1 py-1">
-                <div class="d-block d-inline col-lg-3 col-md-3 col-sm-6 col-6 text-uppercase text-end">Account type</div>
-                <div class="d-block d-inline col-lg-9 col-md-9 col-sm-6 col-6">@_account.AccountType</div>
-            </div>
-            <div name="row-header" class="row my-1 py-1">
-                <div class="d-block d-inline col-lg-3 col-md-3 col-sm-6 col-6 text-uppercase text-end">Kline</div>
-                <div class="d-block d-inline col-lg-9 col-md-9 col-sm-6 col-6">@_account.Interval</div>
-            </div>
-            <div name="row-header" class="row my-1 py-1">
-                <div class="d-block d-inline col-lg-3 col-md-3 col-sm-6 col-6 text-uppercase text-end">Number symbol trade</div>
-                <div class="d-block d-inline col-lg-9 col-md-9 col-sm-6 col-6">@_account.NbrSymbols</div>
-            </div>
-            <div name="row-header" class="row my-1 py-1">
-                <div class="d-block d-inline col-lg-3 col-md-3 col-sm-6 col-6 text-uppercase text-end">Use TD CountDown</div>
-                <div class="d-block d-inline col-lg-9 col-md-9 col-sm-6 col-6">@(_account.UseTDCountDown == "1" ? "Oui" : "Non")</div>
-            </div>
-            <div name="row-header" class="row my-1 py-1">
-                <div class="d-block d-inline col-lg-3 col-md-3 col-sm-6 col-6 text-uppercase text-end">Use TD Combo</div>
-                <div class="d-block d-inline col-lg-9 col-md-9 col-sm-6 col-6">@(_account.UseTDCombo == "1" ? "Oui" : "Non")</div>
-            </div>
-            <div name="row-header" class="row my-1 py-1">
-                <div class="d-block d-inline col-lg-3 col-md-3 col-sm-6 col-6 text-uppercase text-end">Conservatoire</div>
-                <div class="d-block d-inline col-lg-9 col-md-9 col-sm-6 col-6">@(_account.UseConservatoire == "1" ? "Oui" : "Non")</div>
-            </div>
-            <div name="row-header" class="row my-1 py-1">
-                <div class="d-block d-inline col-lg-3 col-md-3 col-sm-6 col-6 text-uppercase text-end">Buy / Sell ?</div>
-                <div class="d-block d-inline col-lg-9 col-md-9 col-sm-6 col-6">@(_account.AllowBuySell == "3" ? "Both" : (_account.AllowBuySell == "0" ? "None" : (_account.AllowBuySell == "1" ? "Buy only" : "Sell only")))</div>
-            </div>
-            <div name="row-header" class="row my-1 py-1">
-                <div class="d-block d-inline col-lg-3 col-md-3 col-sm-6 col-6 text-uppercase text-end">Real trades<br>(@(_account.RealPositivePercentage ?? 0)% succeeded trades)</div>
-                <div class="d-block d-inline col-lg-9 col-md-9 col-sm-6 col-6">@(_account.RealTotalTrades ?? 0) completed (bought + sold) with @(_account.RealTotalPositiveTrades ?? 0) positives trades / @(_account.RealAccountProfit.Sum(x => x.IncompletedTrades)) incompleted (Bought but not sold)</div>
-            </div>
-            <div name="row-header" class="row my-1 py-1">
-                <div class="d-block d-inline col-lg-3 col-md-3 col-sm-6 col-6 text-uppercase text-end">Possible trades<br>(@(_account.SimulatedPositivePercentage ?? 0)%  succeeded trades)</div>
-                <div class="d-block d-inline col-lg-9 col-md-9 col-sm-6 col-6">@(_account.SimulatedTotalTrades ?? 0) completed (bought + sold) with @(_account.SimulatedTotalPositiveTrades ?? 0) positives trades / @(_account.SimulatedAccountProfit.Sum(x => x.IncompletedTrades)) incompleted (Bought but not sold)</div>
-            </div>
-            <div name="row-header" class="row my-1 py-1">
-                <div class="d-block d-inline col-lg-3 col-md-3 col-sm-6 col-6 text-uppercase text-end">Details quotes (completed) :</div>
-                <div class="d-block d-inline col-lg-9 col-md-9 col-sm-6 col-6">
-                    <ul>
-                        @foreach (var itemQuote in _account.ListQuotes)
-                        {
-                            var quoteBought = _dictBought.First(x => x.Key == itemQuote).Value;
-                            var quoteSold = _dictSold.First(x => x.Key == itemQuote).Value;
-                            var quoteProfit = quoteSold - quoteBought;
-
-                            <li>@itemQuote : profit @(Math.Round(quoteProfit, 4)) (sold @(Math.Round(quoteSold, 4)) - bought @(Math.Round(quoteBought, 4))) </li>
-                        }
-                    </ul>
-                </div>
-            </div>
+            <DisplayHeader Account="@_account" DictBought="@_dictBought" DictSold="@_dictSold"></DisplayHeader>
             <div name="row-header" class="row my-1 py-1">
                 <div class="d-block d-inline col-lg-3 col-md-3 col-sm-4 col-4 text-uppercase text-end">
                     <div class="input-group mb-3">
@@ -104,80 +50,7 @@ else
                     }
                 </div>
             </div>
-            <div name="row-header" class="row my-1 py-1">
-                <div class="d-block d-inline col-lg-2 col-md-2 col-sm-4 col-4 text-uppercase"><h4>Symbol</h4></div>
-                <div class="d-block d-inline col-lg-2 col-md-2 col-sm-4 col-4 text-uppercase"><h4>Bought</h4></div>
-                <div class="d-block d-inline col-lg-2 col-md-2 d-none d-lg-block d-md-block text-uppercase"><h4>Stop loss</h4></div>
-                <div class="d-block d-inline col-lg-2 col-md-2 col-sm-4 col-4 text-uppercase"><h4>Take profit</h4></div>
-                <div class="d-block d-inline col-lg-2 col-md-2 d-none d-lg-block d-md-block text-uppercase"><h4>Sold</h4></div>
-                <div class="d-block d-inline col-lg-2 col-md-2 d-none text-uppercase">QUANTITY</div>
-            </div>
-            @foreach (var log in log.Logs)
-            {
-                <div name="row-content" class="row my-2 py-1 align-self-baseline">
-                    <div class="d-block d-inline col-lg-2 col-md-2 col-sm-4 col-4"><a href="@($"https://www.binance.com/en/trade/{@log.Symbol}")" target="_blank">@log.Symbol</a> (@(log.Close * log.Quantity))</div>
-
-                    <div class="d-block d-inline col-lg-2 col-md-2 col-sm-4 col-4">
-                        <Tooltip Text=@(log.BoughtDate.HasValue ? $"Bought at {log.BoughtDate.Value.ToString("dd/MM/yyyy HH:mm:ss")}" : string.Empty)>@log.PriceBought<br /><i>@(log.PriceBought * log.Quantity)</i></Tooltip>
-                    </div>
-
-                    @if (log.PriceStopLoss != 0)
-                    {
-                        <div class="d-block d-inline col-lg-2 col-md-2 d-none d-lg-block d-md-block">
-                            @log.PriceStopLoss<br /><i>@(log.PriceStopLoss * log.Quantity)</i>
-                        </div>
-                    }
-                    else
-                    {
-                        <div class="d-block d-inline col-lg-2 col-md-2 d-none d-lg-block d-md-block"> </div>
-                    }
-
-                    @if (log.PriceProfit != 0)
-                    {
-                        <div class="d-block d-inline col-lg-2 col-md-2 col-sm-4 col-4">
-                            @log.PriceProfit<br /><i>@(log.PriceProfit * log.Quantity)</i>
-                        </div>
-                    }
-                    else
-                    {
-                        <div class="d-block d-inline col-lg-2 col-md-2 col-sm-4 col-4"> </div>
-                    }
-
-                    @* SOLD *@
-                    @if (log.PriceSold != 0)
-                    {
-                        decimal soldValue = log.PriceSold * log.Quantity;
-                        decimal boughtValue = log.PriceBought * log.Quantity;
-
-                        decimal benefit = soldValue - boughtValue;
-
-                        if (benefit > 0)
-                        {
-                            <div class="d-block d-inline col-lg-2 col-md-2 d-none d-lg-block d-md-block">
-                                <Tooltip Text=@(log.SoldDate.HasValue ? $"Sold at {@log.SoldDate.Value.ToString("dd/MM/yyyy HH:mm:ss")}" : string.Empty)>@log.PriceSold<br /><p class="p-0 m-0 text-success"><i>@benefit</i></p></Tooltip>
-                            </div>
-                        }
-                        else if (benefit < 0)
-                        {
-                            <div class="d-block d-inline col-lg-2 col-md-2 d-none d-lg-block d-md-block">
-                                <Tooltip Text=@(log.SoldDate.HasValue ? $"Sold at {@log.SoldDate.Value.ToString("dd/MM/yyyy HH:mm:ss")}" : string.Empty)>@log.PriceSold<br /><p class="p-0 m-0 text-danger"><i>@benefit</i></p></Tooltip>
-                            </div>
-                        }
-                        else
-                        {
-                            <div class="d-block d-inline col-lg-2 col-md-2 d-none d-lg-block d-md-block">
-                                <Tooltip Text=@(log.SoldDate.HasValue ? $"Sold at {@log.SoldDate.Value.ToString("dd/MM/yyyy HH:mm:ss")}" : string.Empty)>@log.PriceSold<br /><i>@benefit</i></Tooltip>
-                            </div>
-                        }
-                    }
-                    else
-                    {
-                        <div class="d-block d-inline col-lg-2 col-md-2 d-none d-lg-block d-md-block"> </div>
-                    }
-
-                    <div class="d-block d-inline col-lg-2 col-md-2 d-none">@log.Quantity</div>
-                </div>
-            }
+            <DisplayLogItem Logs="@log.Logs"></DisplayLogItem>
         </div>
     }
 }
