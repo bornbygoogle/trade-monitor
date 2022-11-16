@@ -26,21 +26,12 @@ namespace BlazorApp.Api
             var accHolder = req.Query.Where(x => x.Key == "accHolder").FirstOrDefault().Value;
             var symbol = req.Query.Where(x => x.Key == "symbol").FirstOrDefault().Value;
 
-            List<LogInfoItemDto> logBaseBoughtSold = new List<LogInfoItemDto>();
+            string sUrl = $"{ClsCommon.URL_SERVER}/Server/GetBoughtSold?accType={accType}&accHolder={accHolder}";
 
-            try
-            {
-                string sUrl = $"{ClsCommon.URL_SERVER}/Server/GetBoughtSold?accType={accType}&accHolder={accHolder}";
+            if (!string.IsNullOrEmpty(symbol))
+                sUrl += $"&symbol={symbol}";
 
-                if (!string.IsNullOrEmpty(symbol))
-                    sUrl += $"&symbol={symbol}";
-
-                using (var httpClient = new HttpClient())
-                {
-                    logBaseBoughtSold = httpClient.GetFromJsonAsync<List<LogInfoItemDto>>(sUrl).Result;
-                }
-            }
-            catch (Exception e) { }
+            List<LogInfoItemDto> logBaseBoughtSold = ClsCommon.ExecuteHttpGet<List<LogInfoItemDto>>(sUrl);
 
             return new OkObjectResult(logBaseBoughtSold);
         }

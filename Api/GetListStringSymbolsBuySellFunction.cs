@@ -26,16 +26,8 @@ namespace BlazorApp.Api
 
         public static List<string> GetListSymbolsBuySell(string accType, string accHolder)
         {
-            List<string> listSymbol = new List<string>();
-
-            try
-            {
-                using (var httpClient = new HttpClient())
-                {
-                    listSymbol = httpClient.GetFromJsonAsync<List<string>>($"{ClsCommon.URL_SERVER}/Server/GetSymbolsBuySell?accType={accType}").Result;
-                }
-            }
-            catch (Exception e) { }
+            string sUrl = $"{ClsCommon.URL_SERVER}/Server/GetSymbolsBuySell?accType={accType}";
+            List<string> listSymbol = ClsCommon.ExecuteHttpGet<List<string>>(sUrl);
 
             return listSymbol;
         }

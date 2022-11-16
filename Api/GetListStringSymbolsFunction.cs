@@ -19,25 +19,10 @@ namespace BlazorApp.Api
             var accType = req.Query.Where(x => x.Key == "accType").FirstOrDefault().Value;
             var accHolder = req.Query.Where(x => x.Key == "accHolder").FirstOrDefault().Value;
 
-            var symbols = GetListSymbols(accType, accHolder);
+            string sUrl = $"{ClsCommon.URL_SERVER}/Server/GetSymbols?accType={accType}&accHolder={accHolder}";
+            List<string> listSymbol = ClsCommon.ExecuteHttpGet<List<string>>(sUrl);
 
-            return new OkObjectResult(symbols);
-        }
-
-        public static List<string> GetListSymbols(string accType, string accHolder)
-        {
-            List<string> listSymbol = new List<string>();
-
-            try
-            {
-                using (var httpClient = new HttpClient())
-                {
-                    listSymbol = httpClient.GetFromJsonAsync<List<string>>($"{ClsCommon.URL_SERVER}/Server/GetSymbols?accType={accType}&accHolder={accHolder}").Result;
-                }
-            }
-            catch (Exception e) { }
-
-            return listSymbol;
+            return new OkObjectResult(listSymbol);
         }
     }
 }

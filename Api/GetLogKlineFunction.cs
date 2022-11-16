@@ -25,30 +25,14 @@ namespace BlazorApp.Api
             var accHolder = req.Query.Where(x => x.Key == "accHolder").FirstOrDefault().Value;
             var symbol = req.Query.Where(x => x.Key == "symbol").FirstOrDefault().Value;
 
-            var symbols = GetLogKline(accType, accHolder, symbol);
+            string sUrl = $"{ClsCommon.URL_SERVER}/Server/GetLogKline?accType={accType}&accHolder={accHolder}";
 
-            return new OkObjectResult(symbols);
-        }
+            if (!string.IsNullOrEmpty(symbol))
+                sUrl += $"&symbol={symbol}";
 
-        public static List<LogInfoItemDto> GetLogKline(string accType, string accHolder, string symbol = null)
-        {
-            List<LogInfoItemDto> listKlines = new List<LogInfoItemDto>();
+            List<LogInfoItemDto> listKlines = ClsCommon.ExecuteHttpGet<List<LogInfoItemDto>>(sUrl);
 
-            try
-            {
-                string sUrl = $"{ClsCommon.URL_SERVER}/Server/GetLogKline?accType={accType}&accHolder={accHolder}";
-
-                if (!string.IsNullOrEmpty(symbol))
-                    sUrl += $"&symbol={symbol}";
-
-                using (var httpClient = new HttpClient())
-                {
-                    listKlines = httpClient.GetFromJsonAsync<List<LogInfoItemDto>>(sUrl).Result;
-                }
-            }
-            catch (Exception e) { }
-
-            return listKlines;
+            return new OkObjectResult(listKlines);
         }
     }
 }
