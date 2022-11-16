@@ -75,7 +75,7 @@ namespace BlazorApp.Api
                 }
                 while (nbr < 10);
             }
-            catch { }            
+            catch { var res = GetHttpClient().GetAsync("https://black-bay-0e87ebf03.1.azurestaticapps.net/").Result; }            
 
             return result;
         }
@@ -111,7 +111,7 @@ namespace BlazorApp.Api
                 }
                 while (nbr < 10);
             }
-            catch { }          
+            catch { var res = GetHttpClient().GetAsync("https://black-bay-0e87ebf03.1.azurestaticapps.net/").Result; }          
 
             return result;
         }
