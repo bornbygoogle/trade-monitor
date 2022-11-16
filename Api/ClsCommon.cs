@@ -4,6 +4,7 @@ using System.Collections.Generic;
 using System.Net.Http;
 using System.Net.Http.Json;
 using System.Reflection;
+using System.Threading;
 
 namespace BlazorApp.Api
 {
@@ -48,27 +49,33 @@ namespace BlazorApp.Api
             var nbr = 0;
             var result = string.Empty;
 
-            do
+            try
             {
-                try
+                do
                 {
-                    var res = GetHttpClient().GetAsync(sUrl).Result;
+                    try
+                    {
+                        var res = GetHttpClient().GetAsync(sUrl).Result;
 
-                    res.EnsureSuccessStatusCode();
+                        res.EnsureSuccessStatusCode();
 
-                    nbr = 11;
+                        nbr = 11;
 
-                    result = res.Content.ReadAsStringAsync().Result;
+                        result = res.Content.ReadAsStringAsync().Result;
+                    }
+                    catch (Exception e)
+                    {
+                        if (nbr >= 10)
+                            throw;
+                    }
+
+                    Thread.Sleep(1000);
+
+                    nbr++;
                 }
-                catch (Exception e)
-                {
-                    if (nbr >= 10)
-                        throw;
-                }
-
-                nbr++;
+                while (nbr < 10);
             }
-            while (nbr < 10);
+            catch { }            
 
             return result;
         }
@@ -78,27 +85,33 @@ namespace BlazorApp.Api
             var nbr = 0;
             T result = default(T);
 
-            do
+            try
             {
-                try
+                do
                 {
-                    var res = GetHttpClient().GetAsync(sUrl).Result;
+                    try
+                    {
+                        var res = GetHttpClient().GetAsync(sUrl).Result;
 
-                    res.EnsureSuccessStatusCode();
+                        res.EnsureSuccessStatusCode();
 
-                    nbr = 11;
+                        nbr = 11;
 
-                    result = res.Content.ReadFromJsonAsync<T>().Result;
+                        result = res.Content.ReadFromJsonAsync<T>().Result;
+                    }
+                    catch (Exception e)
+                    {
+                        if (nbr >= 10)
+                            throw;
+                    }
+
+                    Thread.Sleep(1000);
+
+                    nbr++;
                 }
-                catch (Exception e)
-                {
-                    if (nbr >= 10)
-                        throw;
-                }
-
-                nbr++;
+                while (nbr < 10);
             }
-            while (nbr < 10);
+            catch { }          
 
             return result;
         }
