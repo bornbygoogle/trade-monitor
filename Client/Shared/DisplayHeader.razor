@@ -51,7 +51,7 @@
                 var quoteSold = DictSold.First(x => x.Key == itemQuote).Value;
                 var quoteProfit = quoteSold - quoteBought;
 
-                <li>@itemQuote : profit @(Math.Round(quoteProfit, 4)) (sold @(Math.Round(quoteSold, 4)) - bought @(Math.Round(quoteBought, 4))) </li>
+                <li>@itemQuote : profit @(Math.Round(quoteProfit, 8)) (sold @(Math.Round(quoteSold, 8)) - bought @(Math.Round(quoteBought, 8))) </li>
             }
         </ul>
     </div>
