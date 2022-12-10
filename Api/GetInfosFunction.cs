@@ -25,7 +25,7 @@ namespace BlazorApp.Api
             var accType = req.Query.Where(x => x.Key == "accType").FirstOrDefault().Value;
             var accHolder = req.Query.Where(x => x.Key == "accHolder").FirstOrDefault().Value;
 
-            string sUrl = $"{ClsCommon.URL_SERVER}/Server/GetInfos?accType={accType}&accHolder={accHolder}";
+            string sUrl = $"{ClsCommon.GetUrlServer()}/Server/GetInfos?accType={accType}&accHolder={accHolder}";
             string sAccountInfo = ClsCommon.ExecuteHttpGet(sUrl);
 
             return new OkObjectResult(sAccountInfo);

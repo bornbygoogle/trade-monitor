@@ -1,4 +1,3 @@
-using System;
 using System.Linq;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
@@ -8,11 +7,7 @@ using Microsoft.Extensions.Logging;
 
 using BlazorApp.Shared;
 using BlazorApp.Shared.CoreDto;
-using static System.Net.WebRequestMethods;
 using System.Collections.Generic;
-using System.Net.Http;
-using System.Net.Http.Json;
-using System.Security.AccessControl;
 using Newtonsoft.Json;
 
 namespace BlazorApp.Api
@@ -26,10 +21,14 @@ namespace BlazorApp.Api
             var accHolder = req.Query.Where(x => x.Key == "accHolder").FirstOrDefault().Value;
             var symbol = req.Query.Where(x => x.Key == "symbol").FirstOrDefault().Value;
 
-            string sUrl = $"{ClsCommon.URL_SERVER}/Server/GetBaseBoughtSold?accType={accType}";
+            string sUrl = $"{ClsCommon.GetUrlServer()}/Server/GetBaseBoughtSold?accType={accType}";
 
-            List<LogInfoItemDto> logBaseBoughtSold = ClsCommon.ExecuteHttpGet<List<LogInfoItemDto>>(sUrl);
+            List<LogInfoItemDto> logBaseBoughtSold = new List<LogInfoItemDto>();
 
+            byte[] tmpResult = ClsCommon.ExecuteHttpGetByteArray(sUrl);
+
+            if (tmpResult != null && tmpResult.Length > 0 && ClsUtil.ByteArrayToStringUnzipIfNedeed(tmpResult, System.Text.Encoding.UTF8, out string response, out string msgErr) && !string.IsNullOrEmpty(response) && string.IsNullOrEmpty(msgErr))
+                logBaseBoughtSold = JsonConvert.DeserializeObject<List<LogInfoItemDto>>(response);
 
             return new OkObjectResult(logBaseBoughtSold);
         }

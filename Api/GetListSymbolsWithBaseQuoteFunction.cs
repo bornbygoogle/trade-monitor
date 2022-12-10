@@ -13,6 +13,7 @@ using System.Collections.Generic;
 using System.Net.Http;
 using System.Net.Http.Json;
 using System.Security.AccessControl;
+using Newtonsoft.Json;
 
 namespace BlazorApp.Api
 {
@@ -27,12 +28,17 @@ namespace BlazorApp.Api
             var symbol = req.Query.Where(x => x.Key == "symbol").FirstOrDefault().Value;
 
 
-            string sUrl = $"{ClsCommon.URL_SERVER}/Server/GetListSymbolsWithBaseQuote?accType={accType}&accHolder={accHolder}";
+            string sUrl = $"{ClsCommon.GetUrlServer()}/Server/GetListSymbolsWithBaseQuote?accType={accType}&accHolder={accHolder}";
 
             if (!string.IsNullOrEmpty(symbol))
                 sUrl += $"&symbol={symbol}";
 
-            List<SymbolItemDto> listSymbol = ClsCommon.ExecuteHttpGet<List<SymbolItemDto>>(sUrl);
+            List<SymbolItemDto> listSymbol = new List<SymbolItemDto>();
+
+            byte[] tmpResult = ClsCommon.ExecuteHttpGetByteArray(sUrl);
+
+            if (tmpResult != null && tmpResult.Length > 0 && ClsUtil.ByteArrayToStringUnzipIfNedeed(tmpResult, System.Text.Encoding.UTF8, out string response, out string msgErr) && !string.IsNullOrEmpty(response) && string.IsNullOrEmpty(msgErr))
+                listSymbol = JsonConvert.DeserializeObject<List<SymbolItemDto>>(response);
 
             return new OkObjectResult(listSymbol);
         }

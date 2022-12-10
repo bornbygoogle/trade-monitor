@@ -9,6 +9,8 @@ using BlazorApp.Shared.CoreDto;
 using System.Collections.Generic;
 using System.Net.Http;
 using System.Net.Http.Json;
+using BlazorApp.Shared;
+using Newtonsoft.Json;
 
 namespace BlazorApp.Api
 {
@@ -22,12 +24,17 @@ namespace BlazorApp.Api
             var symbol = req.Query.Where(x => x.Key == "symbol").FirstOrDefault().Value;
 
 
-            string sUrl = $"{ClsCommon.URL_SERVER}/Server/GetLogKlinePotential?accType={accType}&accHolder={accHolder}";
+            string sUrl = $"{ClsCommon.GetUrlServer()}/Server/GetLogKlinePotential?accType={accType}&accHolder={accHolder}";
 
             if (!string.IsNullOrEmpty(symbol))
                 sUrl += $"&symbol={symbol}";
 
-            List<LogInfoItemDto> listKlines = ClsCommon.ExecuteHttpGet<List<LogInfoItemDto>>(sUrl);
+            List<LogInfoItemDto> listKlines = new List<LogInfoItemDto>();
+
+            byte[] tmpResult = ClsCommon.ExecuteHttpGetByteArray(sUrl);
+
+            if (tmpResult != null && tmpResult.Length > 0 && ClsUtil.ByteArrayToStringUnzipIfNedeed(tmpResult, System.Text.Encoding.UTF8, out string response, out string msgErr) && !string.IsNullOrEmpty(response) && string.IsNullOrEmpty(msgErr))
+                listKlines = JsonConvert.DeserializeObject<List<LogInfoItemDto>>(response);
 
             return new OkObjectResult(listKlines);
         }

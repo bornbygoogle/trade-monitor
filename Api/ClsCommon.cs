@@ -1,4 +1,8 @@
-﻿using BlazorApp.Shared.CoreDto;
+﻿using BlazorApp.Shared;
+using BlazorApp.Shared.CoreDto;
+using CryptoExchange.Net.Interfaces;
+using Microsoft.AspNetCore.Mvc;
+using Newtonsoft.Json;
 using System;
 using System.Collections.Generic;
 using System.Net.Http;
@@ -10,9 +14,10 @@ namespace BlazorApp.Api
 {
     public class ClsCommon
     {
+
         public static string URL_SERVER = "http://cache-service.minhan-tran.fr";
-        //public static string URL_SERVER_2 = "https://logservice-app-20221012212833.redmushroom-aa658d30.northeurope.azurecontainerapps.io";
-        //public static string URL_SERVER = "https://localhost:7132";
+        public static string URL_DEV = "https://localhost:7132";
+        public const bool USE_LOCAL_SERVER = false;
 
         private static HttpClient _httpClient;
 
@@ -20,17 +25,28 @@ namespace BlazorApp.Api
         {
             List<LogInfoItemDto> listSymbol = new List<LogInfoItemDto>();
 
-            string sUrl = $"{ClsCommon.URL_SERVER}/Server/{sMethod}?accType={accType}&accHolder={accHolder}";
+            string sUrl = $"{ClsCommon.GetUrlServer()}/Server/{sMethod}?accType={accType}&accHolder={accHolder}";
 
             if (!string.IsNullOrEmpty(symbol))
                 sUrl += $"&symbol={symbol}";
 
-            listSymbol = ExecuteHttpGet<List<LogInfoItemDto>>(sUrl);
+            byte[] tmpResult = ClsCommon.ExecuteHttpGetByteArray(sUrl);
+
+            if (tmpResult != null && tmpResult.Length > 0 && ClsUtil.ByteArrayToStringUnzipIfNedeed(tmpResult, System.Text.Encoding.UTF8, out string response, out string msgErr) && !string.IsNullOrEmpty(response) && string.IsNullOrEmpty(msgErr))
+                listSymbol = JsonConvert.DeserializeObject<List<LogInfoItemDto>>(response);
 
             return listSymbol;
         }
 
         #region Http
+
+        public static string GetUrlServer()
+        {
+            if (USE_LOCAL_SERVER)
+                return URL_DEV.EndsWith("/") ? URL_DEV.TrimEnd('/') : URL_DEV;
+            else
+                return URL_SERVER.EndsWith("/") ? URL_SERVER.TrimEnd('/') : URL_SERVER;
+        }
 
         private static HttpClient GetHttpClient()
         {
@@ -75,10 +91,10 @@ namespace BlazorApp.Api
                 }
                 while (nbr < 10);
             }
-            catch 
+            catch
             {
                 //var res = GetHttpClient().GetAsync("https://black-bay-0e87ebf03.1.azurestaticapps.net/").Result; 
-            }            
+            }
 
             return result;
         }
@@ -114,10 +130,49 @@ namespace BlazorApp.Api
                 }
                 while (nbr < 10);
             }
-            catch 
-            { 
-                /*var res = GetHttpClient().GetAsync("https://black-bay-0e87ebf03.1.azurestaticapps.net/").Result;*/ 
-            }          
+            catch
+            {
+                /*var res = GetHttpClient().GetAsync("https://black-bay-0e87ebf03.1.azurestaticapps.net/").Result;*/
+            }
+
+            return result;
+        }
+
+        public static byte[] ExecuteHttpGetByteArray(string sUrl)
+        {
+            var nbr = 0;
+            byte[] result = null;
+
+            try
+            {
+                do
+                {
+                    try
+                    {
+                        var res = GetHttpClient().GetAsync(sUrl).Result;
+
+                        res.EnsureSuccessStatusCode();
+
+                        nbr = 11;
+
+                        result = res.Content.ReadAsAsync<byte[]>().Result;
+                    }
+                    catch (Exception e)
+                    {
+                        if (nbr >= 10)
+                            throw;
+                    }
+
+                    Thread.Sleep(1000);
+
+                    nbr++;
+                }
+                while (nbr < 10);
+            }
+            catch
+            {
+                /*var res = GetHttpClient().GetAsync("https://black-bay-0e87ebf03.1.azurestaticapps.net/").Result;*/
+            }
 
             return result;
         }
