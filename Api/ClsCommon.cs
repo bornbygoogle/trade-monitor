@@ -161,9 +161,9 @@ namespace BlazorApp.Api
                     {
                         if (nbr >= 10)
                             throw;
-                    }
 
-                    Thread.Sleep(1000);
+                        Thread.Sleep(1000);
+                    }
 
                     nbr++;
                 }
