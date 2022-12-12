@@ -13,7 +13,7 @@
     foreach (var log in Logs)
     {
         <div name="row-content" class="row my-2 py-1 align-self-baseline">
-            <div class="d-block d-inline col-lg-2 col-md-2 col-sm-4 col-4"><a href="@($"https://www.binance.com/en/trade/{@log.Symbol}")" target="_blank">@log.Symbol</a> (@(log.Close * log.Quantity))</div>
+            <div class="d-block d-inline col-lg-2 col-md-2 col-sm-4 col-4"><a href="@($"https://www.binance.com/en/trade/{@log.Symbol}")" target="_blank">@log.Symbol</a> (@(log.Close))<br /><i>@(log.Close * log.Quantity)</i></div>
 
             <div class="d-block d-inline col-lg-2 col-md-2 col-sm-4 col-4">
                 <Tooltip Text=@(log.BoughtDate.HasValue ? $"Bought at {log.BoughtDate.Value.ToString("dd/MM/yyyy HH:mm:ss")}" : string.Empty)>@log.PriceBought<br /><i>@(log.PriceBought * log.Quantity)</i></Tooltip>
