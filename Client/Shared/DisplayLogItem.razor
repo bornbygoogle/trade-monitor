@@ -2,7 +2,7 @@
 
 <div name="row-header" class="row my-1 py-1">
     <div class="d-block d-inline col-lg-2 col-md-2 col-sm-4 col-4 text-uppercase"><h4>Symbol</h4></div>
-    <div class="d-block d-inline col-lg-2 col-md-2 d-none d-lg-block d-md-block text-uppercase">Quantity</div>
+    <div class="d-block d-inline col-lg-2 col-md-2 d-none d-lg-block d-md-block text-uppercase"><h4>Quantity</h4></div>
     <div class="d-block d-inline col-lg-2 col-md-2 col-sm-4 col-4 text-uppercase"><h4>Bought</h4></div>
     <div class="d-block d-inline col-lg-2 col-md-2 d-none d-lg-block d-md-block text-uppercase"><h4>Stop loss</h4></div>
     <div class="d-block d-inline col-lg-2 col-md-2 col-sm-4 col-4 text-uppercase"><h4>Take profit</h4></div>
@@ -36,7 +36,7 @@
                 }
             </div>
 
-            <div class="d-block d-inline col-lg-2 col-md-2">@itemLog.Quantity</div>
+            <div class="d-block d-inline col-lg-2 col-md-2 d-none d-lg-block d-md-block">@itemLog.Quantity</div>
 
             <div class="d-block d-inline col-lg-2 col-md-2 col-sm-4 col-4">
                 <Tooltip Text=@(itemLog.BoughtDate.HasValue ? $"Bought at {itemLog.BoughtDate.Value.ToString("dd/MM/yyyy HH:mm:ss")}" : string.Empty)>@Math.Round(itemLog.PriceBought, 8)<br /><i>@(@Math.Round(itemLog.PriceBought, 8) * itemLog.Quantity)</i></Tooltip>
