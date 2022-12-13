@@ -10,19 +10,39 @@
 </div>
 @if (Logs != null)
 {
-    foreach (var log in Logs)
+    @foreach (var itemLog in Logs)
     {
         <div name="row-content" class="row my-2 py-1 align-self-baseline">
-            <div class="d-block d-inline col-lg-2 col-md-2 col-sm-4 col-4"><a href="@($"https://www.binance.com/en/trade/{@log.Symbol}")" target="_blank">@log.Symbol</a> (@(log.Close))<br /><i>@(log.Close * log.Quantity)</i></div>
-
             <div class="d-block d-inline col-lg-2 col-md-2 col-sm-4 col-4">
-                <Tooltip Text=@(log.BoughtDate.HasValue ? $"Bought at {log.BoughtDate.Value.ToString("dd/MM/yyyy HH:mm:ss")}" : string.Empty)>@log.PriceBought<br /><i>@(log.PriceBought * log.Quantity)</i></Tooltip>
+                @if (!itemLog.SoldDate.HasValue)
+                {
+                    @if (itemLog.Close >= itemLog.PriceBought)
+                    {
+                        <a href="https://www.binance.com/en/trade/{@itemLog.Symbol}" style="background-color: lightgreen" target="_blank">@itemLog.Symbol</a>@($" ({itemLog.Close})")<br /><i>@(itemLog.Close * itemLog.Quantity)</i>
+                    }
+                    else if (itemLog.Close >= itemLog.PriceProfit)
+                    {
+                        <a href="https://www.binance.com/en/trade/{@itemLog.Symbol}" style="background-color: green" target="_blank">@itemLog.Symbol</a>@($" ({itemLog.Close})")<br /><i>@(itemLog.Close * itemLog.Quantity)</i>
+                    }
+                    else
+                    {
+                        <a href="https://www.binance.com/en/trade/{@(itemLog.Symbol)}" target="_blank">@itemLog.Symbol</a>@($" ({itemLog.Close})")<br /><i>(@(itemLog.Close * itemLog.Quantity))</i>
+                    }
+                }
+                else
+                {
+                    @itemLog.Symbol
+                }
             </div>
 
-            @if (log.PriceStopLoss != 0)
+            <div class="d-block d-inline col-lg-2 col-md-2 col-sm-4 col-4">
+                <Tooltip Text=@(itemLog.BoughtDate.HasValue ? $"Bought at {itemLog.BoughtDate.Value.ToString("dd/MM/yyyy HH:mm:ss")}" : string.Empty)>@itemLog.PriceBought<br /><i>@(itemLog.PriceBought * itemLog.Quantity)</i></Tooltip>
+            </div>
+
+            @if (itemLog.PriceStopLoss != 0)
             {
                 <div class="d-block d-inline col-lg-2 col-md-2 d-none d-lg-block d-md-block">
-                    @log.PriceStopLoss<br /><i>@(log.PriceStopLoss * log.Quantity)</i>
+                    @itemLog.PriceStopLoss<br /><i>@(itemLog.PriceStopLoss * itemLog.Quantity)</i>
                 </div>
             }
             else
@@ -30,10 +50,10 @@
                 <div class="d-block d-inline col-lg-2 col-md-2 d-none d-lg-block d-md-block"> </div>
             }
 
-            @if (log.PriceProfit != 0)
+            @if (itemLog.PriceProfit != 0)
             {
                 <div class="d-block d-inline col-lg-2 col-md-2 col-sm-4 col-4">
-                    @log.PriceProfit<br /><i>@(log.PriceProfit * log.Quantity)</i>
+                    @itemLog.PriceProfit<br /><i>@(itemLog.PriceProfit * itemLog.Quantity)</i>
                 </div>
             }
             else
@@ -42,29 +62,29 @@
             }
 
             @* SOLD *@
-            @if (log.PriceSold != 0)
+            @if (itemLog.PriceSold != 0)
             {
-                decimal soldValue = log.PriceSold * log.Quantity;
-                decimal boughtValue = log.PriceBought * log.Quantity;
+                decimal soldValue = itemLog.PriceSold * itemLog.Quantity;
+                decimal boughtValue = itemLog.PriceBought * itemLog.Quantity;
 
                 decimal benefit = soldValue - boughtValue;
 
                 if (benefit > 0)
                 {
                     <div class="d-block d-inline col-lg-2 col-md-2 d-none d-lg-block d-md-block">
-                        <Tooltip Text=@(log.SoldDate.HasValue ? $"Sold at {@log.SoldDate.Value.ToString("dd/MM/yyyy HH:mm:ss")}" : string.Empty)>@log.PriceSold<br /><p class="p-0 m-0 text-success"><i>@benefit</i></p></Tooltip>
+                        <Tooltip Text=@(itemLog.SoldDate.HasValue ? $"Sold at {@itemLog.SoldDate.Value.ToString("dd/MM/yyyy HH:mm:ss")}" : string.Empty)>@itemLog.PriceSold<br /><p class="p-0 m-0 text-success"><i>@benefit</i></p></Tooltip>
                     </div>
                 }
                 else if (benefit < 0)
                 {
                     <div class="d-block d-inline col-lg-2 col-md-2 d-none d-lg-block d-md-block">
-                        <Tooltip Text=@(log.SoldDate.HasValue ? $"Sold at {@log.SoldDate.Value.ToString("dd/MM/yyyy HH:mm:ss")}" : string.Empty)>@log.PriceSold<br /><p class="p-0 m-0 text-danger"><i>@benefit</i></p></Tooltip>
+                        <Tooltip Text=@(itemLog.SoldDate.HasValue ? $"Sold at {@itemLog.SoldDate.Value.ToString("dd/MM/yyyy HH:mm:ss")}" : string.Empty)>@itemLog.PriceSold<br /><p class="p-0 m-0 text-danger"><i>@benefit</i></p></Tooltip>
                     </div>
                 }
                 else
                 {
                     <div class="d-block d-inline col-lg-2 col-md-2 d-none d-lg-block d-md-block">
-                        <Tooltip Text=@(log.SoldDate.HasValue ? $"Sold at {@log.SoldDate.Value.ToString("dd/MM/yyyy HH:mm:ss")}" : string.Empty)>@log.PriceSold<br /><i>@benefit</i></Tooltip>
+                        <Tooltip Text=@(itemLog.SoldDate.HasValue ? $"Sold at {@itemLog.SoldDate.Value.ToString("dd/MM/yyyy HH:mm:ss")}" : string.Empty)>@itemLog.PriceSold<br /><i>@benefit</i></Tooltip>
                     </div>
                 }
             }
@@ -73,7 +93,7 @@
                 <div class="d-block d-inline col-lg-2 col-md-2 d-none d-lg-block d-md-block"> </div>
             }
 
-            <div class="d-block d-inline col-lg-2 col-md-2 d-none">@log.Quantity</div>
+            <div class="d-block d-inline col-lg-2 col-md-2 d-none">@itemLog.Quantity</div>
 
             @ChildContent
         </div>
