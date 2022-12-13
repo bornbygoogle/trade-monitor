@@ -12,26 +12,26 @@
 {
     @foreach (var itemLog in Logs)
     {
-        <div name="row-content" class="row my-2 py-1 align-self-baseline">
+        <div name="row-content" class="row my-2 py-1 align-self-baseline border border-secondary">
             <div class="d-block d-inline col-lg-2 col-md-2 col-sm-4 col-4">
                 @if (!itemLog.SoldDate.HasValue)
                 {
                     @if (itemLog.Close >= itemLog.PriceBought)
                     {
-                        <a href="https://www.binance.com/en/trade/{@itemLog.Symbol}" style="background-color: lightgreen" target="_blank"><b>@itemLog.Symbol</b></a>@($" ({itemLog.Close})")<br /><i>@(itemLog.Close * itemLog.Quantity)</i>
+                        <a href="https://www.binance.com/en/trade/{@itemLog.Symbol}" style="background-color: lightgreen" target="_blank">@itemLog.Symbol</a>@($" ({itemLog.Close})")<br /><i>@(itemLog.Close * itemLog.Quantity)</i>
                     }
                     else if (itemLog.Close >= itemLog.PriceProfit)
                     {
-                        <a href="https://www.binance.com/en/trade/{@itemLog.Symbol}" style="background-color: green" target="_blank"><b>@itemLog.Symbol</b></a>@($" ({itemLog.Close})")<br /><i>@(itemLog.Close * itemLog.Quantity)</i>
+                        <a href="https://www.binance.com/en/trade/{@itemLog.Symbol}" style="background-color: green" target="_blank">@itemLog.Symbol</a>@($" ({itemLog.Close})")<br /><i>@(itemLog.Close * itemLog.Quantity)</i>
                     }
                     else
                     {
-                        <a href="https://www.binance.com/en/trade/{@(itemLog.Symbol)}" target="_blank"><b>@itemLog.Symbol</b></a>@($" ({itemLog.Close})")<br /><i>(@(itemLog.Close * itemLog.Quantity))</i>
+                        <a href="https://www.binance.com/en/trade/{@(itemLog.Symbol)}" target="_blank">@itemLog.Symbol</a>@($" ({itemLog.Close})")<br /><i>(@(itemLog.Close * itemLog.Quantity))</i>
                     }
                 }
                 else
                 {
-                    <b>@itemLog.Symbol</b>
+                    @itemLog.Symbol
                 }
             </div>
 
