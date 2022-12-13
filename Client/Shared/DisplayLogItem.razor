@@ -18,20 +18,20 @@
                 {
                     @if (itemLog.Close >= itemLog.PriceBought)
                     {
-                        <a href="https://www.binance.com/en/trade/{@itemLog.Symbol}" style="background-color: lightgreen" target="_blank">@itemLog.Symbol</a>@($" ({itemLog.Close})")<br /><i>@(itemLog.Close * itemLog.Quantity)</i>
+                        <a href="https://www.binance.com/en/trade/{@itemLog.Symbol}" style="background-color: lightgreen" target="_blank"><b>@itemLog.Symbol</b></a>@($" ({itemLog.Close})")<br /><i>@(itemLog.Close * itemLog.Quantity)</i>
                     }
                     else if (itemLog.Close >= itemLog.PriceProfit)
                     {
-                        <a href="https://www.binance.com/en/trade/{@itemLog.Symbol}" style="background-color: green" target="_blank">@itemLog.Symbol</a>@($" ({itemLog.Close})")<br /><i>@(itemLog.Close * itemLog.Quantity)</i>
+                        <a href="https://www.binance.com/en/trade/{@itemLog.Symbol}" style="background-color: green" target="_blank"><b>@itemLog.Symbol</b></a>@($" ({itemLog.Close})")<br /><i>@(itemLog.Close * itemLog.Quantity)</i>
                     }
                     else
                     {
-                        <a href="https://www.binance.com/en/trade/{@(itemLog.Symbol)}" target="_blank">@itemLog.Symbol</a>@($" ({itemLog.Close})")<br /><i>(@(itemLog.Close * itemLog.Quantity))</i>
+                        <a href="https://www.binance.com/en/trade/{@(itemLog.Symbol)}" target="_blank"><b>@itemLog.Symbol</b></a>@($" ({itemLog.Close})")<br /><i>(@(itemLog.Close * itemLog.Quantity))</i>
                     }
                 }
                 else
                 {
-                    @itemLog.Symbol
+                    <b>@itemLog.Symbol</b>
                 }
             </div>
 
