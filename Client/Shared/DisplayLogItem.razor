@@ -2,11 +2,12 @@
 
 <div name="row-header" class="row my-1 py-1">
     <div class="d-block d-inline col-lg-2 col-md-2 col-sm-4 col-4 text-uppercase"><h4>Symbol</h4></div>
+    <div class="d-block d-inline col-lg-2 col-md-2 d-none d-lg-block d-md-block text-uppercase">Quantity</div>
     <div class="d-block d-inline col-lg-2 col-md-2 col-sm-4 col-4 text-uppercase"><h4>Bought</h4></div>
     <div class="d-block d-inline col-lg-2 col-md-2 d-none d-lg-block d-md-block text-uppercase"><h4>Stop loss</h4></div>
     <div class="d-block d-inline col-lg-2 col-md-2 col-sm-4 col-4 text-uppercase"><h4>Take profit</h4></div>
     <div class="d-block d-inline col-lg-2 col-md-2 d-none d-lg-block d-md-block text-uppercase"><h4>Sold</h4></div>
-    <div class="d-block d-inline col-lg-2 col-md-2 d-none text-uppercase">QUANTITY</div>
+    
 </div>
 @if (Logs != null)
 {
@@ -35,14 +36,16 @@
                 }
             </div>
 
+            <div class="d-block d-inline col-lg-2 col-md-2">@itemLog.Quantity</div>
+
             <div class="d-block d-inline col-lg-2 col-md-2 col-sm-4 col-4">
-                <Tooltip Text=@(itemLog.BoughtDate.HasValue ? $"Bought at {itemLog.BoughtDate.Value.ToString("dd/MM/yyyy HH:mm:ss")}" : string.Empty)>@itemLog.PriceBought<br /><i>@(itemLog.PriceBought * itemLog.Quantity)</i></Tooltip>
+                <Tooltip Text=@(itemLog.BoughtDate.HasValue ? $"Bought at {itemLog.BoughtDate.Value.ToString("dd/MM/yyyy HH:mm:ss")}" : string.Empty)>@Math.Round(itemLog.PriceBought, 8)<br /><i>@(@Math.Round(itemLog.PriceBought, 8) * itemLog.Quantity)</i></Tooltip>
             </div>
 
             @if (itemLog.PriceStopLoss != 0)
             {
                 <div class="d-block d-inline col-lg-2 col-md-2 d-none d-lg-block d-md-block">
-                    @itemLog.PriceStopLoss<br /><i>@(itemLog.PriceStopLoss * itemLog.Quantity)</i>
+                    @Math.Round(itemLog.PriceStopLoss, 8)<br /><i>@(itemLog.PriceStopLoss * itemLog.Quantity)</i>
                 </div>
             }
             else
@@ -53,7 +56,7 @@
             @if (itemLog.PriceProfit != 0)
             {
                 <div class="d-block d-inline col-lg-2 col-md-2 col-sm-4 col-4">
-                    @itemLog.PriceProfit<br /><i>@(itemLog.PriceProfit * itemLog.Quantity)</i>
+                    @Math.Round(itemLog.PriceProfit, 8)<br /><i>@(Math.Round(itemLog.PriceProfit, 8) * itemLog.Quantity)</i>
                 </div>
             }
             else
@@ -69,22 +72,24 @@
 
                 decimal benefit = soldValue - boughtValue;
 
+                benefit = Math.Round(benefit, 8);
+
                 if (benefit > 0)
                 {
                     <div class="d-block d-inline col-lg-2 col-md-2 d-none d-lg-block d-md-block">
-                        <Tooltip Text=@(itemLog.SoldDate.HasValue ? $"Sold at {@itemLog.SoldDate.Value.ToString("dd/MM/yyyy HH:mm:ss")}" : string.Empty)>@itemLog.PriceSold<br /><p class="p-0 m-0 text-success"><i>@benefit</i></p></Tooltip>
+                        <Tooltip Text=@(itemLog.SoldDate.HasValue ? $"Sold at {@itemLog.SoldDate.Value.ToString("dd/MM/yyyy HH:mm:ss")}" : string.Empty)>@Math.Round(itemLog.PriceSold, 8)<br /><p class="p-0 m-0 text-success"><i>@benefit</i></p></Tooltip>
                     </div>
                 }
                 else if (benefit < 0)
                 {
                     <div class="d-block d-inline col-lg-2 col-md-2 d-none d-lg-block d-md-block">
-                        <Tooltip Text=@(itemLog.SoldDate.HasValue ? $"Sold at {@itemLog.SoldDate.Value.ToString("dd/MM/yyyy HH:mm:ss")}" : string.Empty)>@itemLog.PriceSold<br /><p class="p-0 m-0 text-danger"><i>@benefit</i></p></Tooltip>
+                        <Tooltip Text=@(itemLog.SoldDate.HasValue ? $"Sold at {@itemLog.SoldDate.Value.ToString("dd/MM/yyyy HH:mm:ss")}" : string.Empty)>@Math.Round(itemLog.PriceSold, 8)<br /><p class="p-0 m-0 text-danger"><i>@benefit</i></p></Tooltip>
                     </div>
                 }
                 else
                 {
                     <div class="d-block d-inline col-lg-2 col-md-2 d-none d-lg-block d-md-block">
-                        <Tooltip Text=@(itemLog.SoldDate.HasValue ? $"Sold at {@itemLog.SoldDate.Value.ToString("dd/MM/yyyy HH:mm:ss")}" : string.Empty)>@itemLog.PriceSold<br /><i>@benefit</i></Tooltip>
+                        <Tooltip Text=@(itemLog.SoldDate.HasValue ? $"Sold at {@itemLog.SoldDate.Value.ToString("dd/MM/yyyy HH:mm:ss")}" : string.Empty)>@Math.Round(itemLog.PriceSold, 8)<br /><i>@benefit</i></Tooltip>
                     </div>
                 }
             }
@@ -92,8 +97,6 @@
             {
                 <div class="d-block d-inline col-lg-2 col-md-2 d-none d-lg-block d-md-block"> </div>
             }
-
-            <div class="d-block d-inline col-lg-2 col-md-2 d-none">@itemLog.Quantity</div>
 
             @ChildContent
         </div>
