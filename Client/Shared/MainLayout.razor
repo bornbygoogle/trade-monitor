@@ -1,17 +1,77 @@
-﻿@inherits LayoutComponentBase
+﻿@using BlazorApp.Shared.CoreDto;
+@inherits LayoutComponentBase
 
-<div class="page">
+@*<div class="page">
     <div class="sidebar">
         <NavMenu />
     </div>
 
     <main>
-@*        <div class="top-row px-4">
-            <a href="https://docs.microsoft.com/aspnet/" target="_blank">About</a>
-        </div>
-*@
         <article class="content px-4">
             @Body
         </article>
     </main>
-</div>
+</div>*@
+
+
+<RadzenDialog />
+<RadzenNotification />
+<RadzenTooltip />
+<RadzenContextMenu />
+
+@*<CascadingValue Value="@SymbolsInString" Name="Symbols">*@
+<RadzenLayout style="grid-template-areas: 'rz-sidebar rz-header' 'rz-sidebar rz-body';">
+    <RadzenHeader Style="background-color: #ffffff">
+        <div class="container-fluid" style="border: 0px none rgba(255, 255, 255, 0)">
+            <div class="row justify-content-start align-items-center" style="margin: 0px">
+                <div class="col-lg-1 col-md-1 col-sm-1 col-xs-1 d-flex align-items-center ps-0 pl-0">
+                    <RadzenSidebarToggle Click="@SidebarToggleClick" Style="color: #000000; background-color: rgba(78, 78, 78, 0)"></RadzenSidebarToggle>
+                </div>
+                <TopBarPriceIndicator></TopBarPriceIndicator>
+            </div>
+            <div class="row col-12" style="margin: 0px; margin-top: 5px; margin-bottom: 5px; padding-left: 2px; padding-right: 2px">
+                <div class="col-lg-3 col-md-3 col-sm-12 col-xs-12 flex-column" style="display: inline-flex; text-align: center; padding: 0px">
+                    <RadzenDropDown Data=@SymbolsInString
+                                    TValue="string"
+                                    AllowClear="true"
+                                    AllowFiltering="false"
+                                    Placeholder="List symbols"
+                                    AllowSelectAll="false"
+                                    Change=@(args => OnChange((string)args))>
+                    </RadzenDropDown>
+                </div>
+                <div class="col-lg-9 col-md-9 col-sm-12 col-xs-12 d-inline-flex" style="background-color: rgba(255, 255, 255, 0.5)">
+                    <RadzenText Text="Symbol " Style="margin-top: auto; margin-bottom: auto" />
+                    <RadzenTextBox Style="padding: 10px; margin-left: 10px; margin-top: auto; margin-bottom: auto" @bind-Value="@SelectedSymbol"></RadzenTextBox>
+                </div>
+            </div>
+            <div class="row col-12 justify-content-start align-items-center flex-row d-inline-flex" style="margin: 0px; margin-top: 5px; margin-bottom: 5px; padding-left: 2px; padding-right: 2px">
+                <PanelSymbol Symbol=@SelectedSymbol></PanelSymbol>
+            </div>
+        </div>
+    </RadzenHeader>
+    <RadzenBody Expanded="@sidebarExpanded" Style="margin: 0px; padding: 0px">
+        <div class="container-fluid" style="max-width: 1440px; padding: 0px">
+            <div class="row col-12" style="margin: 0px; padding: 0px;">
+                @Body
+            </div>
+        </div>
+    </RadzenBody>
+    <RadzenSidebar Expanded="@sidebarExpanded" style="z-index: 2; border: 0px none rgba(0, 0, 0, 0)">
+        <div class="py-3 py-lg-4" style="color: var(--rz-primary-light); padding: var(--rz-panel-menu-item-padding); border-bottom: var(--rz-panel-menu-item-border); display: flex; flex-direction: column; gap: 1rem; align-items: center;">
+            <RadzenImage Path="\images\lightbulb-64.png"></RadzenImage>
+            <RadzenText Text="Binance trade bot monitor" TextStyle="Radzen.Blazor.TextStyle.Subtitle1" class="mb-0" style="color: var(--rz-primary-light); text-transform: uppercase" />
+            <RadzenLink Target="https://accounts.binance.com/en/register?ref=81888709">
+                <RadzenText Text="Join me ?" TextStyle="Radzen.Blazor.TextStyle.Body1" class="mb-0" style="color: var(--rz-primary-light);" TextAlign="Radzen.TextAlign.Center" />
+            </RadzenLink>
+        </div>
+        <RadzenPanelMenu>
+            <RadzenPanelMenuItem Text="Home" Path="/" />
+        </RadzenPanelMenu>
+        <div class="py-3 py-md-4" style="padding: var(--rz-panel-menu-item-padding);">
+            <RadzenText Text="trade-monitor v1.0.0" TextStyle="Radzen.Blazor.TextStyle.Caption" style="color: var(--rz-text-disabled-color);" TagName="Radzen.Blazor.TagName.P" TextAlign="Radzen.TextAlign.Center" />
+            <RadzenText Text="Copyright Ⓒ 2023" TextStyle="Radzen.Blazor.TextStyle.Caption" class="mb-0" style="color: var(--rz-text-disabled-color);" TagName="Radzen.Blazor.TagName.P" TextAlign="Radzen.TextAlign.Center" />
+        </div>
+    </RadzenSidebar>
+</RadzenLayout>
+@*</CascadingValue>*@

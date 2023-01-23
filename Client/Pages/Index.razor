@@ -1,10 +1,39 @@
-﻿@page "/"
+﻿@using BlazorApp.Shared.CoreDto;
+@page "/"
 
-<PageTitle>Monitor</PageTitle>
+<PageTitle>Index</PageTitle>
+<div class="row" style="margin: 0px; padding: auto">
+    <div class="col-12" style="padding-left: 2px; padding-right: 2px">
+    </div>
+</div>
+<div class="row" style="margin: 0px; padding: auto">
+    <div class="col-12" style="padding-left: 2px; padding-right: 2px">
+        <div class="row col-12" style="margin: 0px; padding-left: 5px; padding-right: 5px; margin-top: 5px; margin-bottom: 5px; padding-top: 5px; padding-bottom: 5px">
+            <RadzenPanel AllowCollapse="true" Collapsed="true" Text="Potential Buy/Sell" Style="padding-right: 5px; padding-left: 5px">
+                <RadzenDataGrid TItem="LogInfoItemDto" Data=@_logsPotential AllowPaging="true" Responsive="true" AllowPickAllColumns="false" AllowRowSelectOnRowClick="false" PagerAlwaysVisible="true" PageSizeText="10" class="overflow-auto">
+                    <Columns>
+                        <RadzenDataGridColumn Width="130px" TItem="LogInfoItemDto" Property="Symbol" Title="Symbol"></RadzenDataGridColumn>
+                        <RadzenDataGridColumn TItem="LogInfoItemDto" Property="Side" Title="Buy / Sell"></RadzenDataGridColumn>
+                        <RadzenDataGridColumn TItem="LogInfoItemDto" Property="TdCombo" Title="Position in TD"></RadzenDataGridColumn>
+                        <RadzenDataGridColumn TItem="LogInfoItemDto" Property="TdResistanceCombo" Title="Resistance"></RadzenDataGridColumn>
+                        <RadzenDataGridColumn TItem="LogInfoItemDto" Property="TdSupportCombo" Title="Support"></RadzenDataGridColumn>
+                    </Columns>
+                </RadzenDataGrid>
+            </RadzenPanel>
+        </div>
+        <div class="row col-12" style="margin: 0px; padding-left: 5px; padding-right: 5px; margin-top: 5px; margin-bottom: 5px; padding-top: 5px; padding-bottom: 5px">
+            <RadzenPanel AllowCollapse="true" Collapsed="true" Text="Log" Style="padding-left: 5px; padding-right: 5px">
+                <RadzenDataGrid TItem="LogInfoItemDto" Data=@_logs AllowPaging="true" Responsive="true" AllowPickAllColumns="false" AllowRowSelectOnRowClick="false" PagerAlwaysVisible="true" PageSizeText="10" class="overflow-auto">
+                    <Columns>
+                        <RadzenDataGridColumn Width="180px" TItem="LogInfoItemDto" Property="LogTime" Title="Date"></RadzenDataGridColumn>
+                        <RadzenDataGridColumn Width="110px" TItem="LogInfoItemDto" Property="AccountHolder" Title="Holder"></RadzenDataGridColumn>
+                        <RadzenDataGridColumn Width="150px" TItem="LogInfoItemDto" Property="Service" Title="Service"></RadzenDataGridColumn>
+                        <RadzenDataGridColumn Width="130px" TItem="LogInfoItemDto" Property="Symbol" Title="Symbol"></RadzenDataGridColumn>
+                        <RadzenDataGridColumn TItem="LogInfoItemDto" Property="Message" Title="Message"></RadzenDataGridColumn>
+                    </Columns>
+                </RadzenDataGrid>
+            </RadzenPanel>
+        </div>
+    </div>
+</div>
 
-<h1>Monitor trades (Binance accounts)</h1>
-
-<p>Referral link : <a href="https://accounts.binance.com/en/register?ref=81888709" target="_blank">https://accounts.binance.com/en/register?ref=81888709</a></p>
-
-<p></p>
-<SurveyPrompt Title="Wanna trade with Binance ?" />

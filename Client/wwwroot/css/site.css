@@ -29,17 +29,8 @@ body {
     background-color: white;
 }
 
-.rz-layout {
-    overflow: auto;
-}
-
 .rz-body {
     --rz-body-padding: 0;
-}
-
-.rz-panel {
-    padding-left: 20px !important;
-    padding-right: 20px !important;
 }
 
 a {

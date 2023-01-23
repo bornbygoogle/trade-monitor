@@ -1,0 +1,216 @@
+﻿@using System.Globalization;
+@inherits LayoutComponentBase
+
+@*<div class="page">
+    <div class="sidebar">
+        <NavMenu />
+    </div>
+
+    <main>
+        <article class="content px-4">
+            @Body
+        </article>
+    </main>
+</div>*@
+
+
+<RadzenDialog />
+<RadzenNotification />
+<RadzenTooltip />
+<RadzenContextMenu />
+
+@if (_selectedSymbol != null)
+{
+    <RadzenPanel Style="margin: 5px; padding: 5px">
+        <HeaderTemplate>
+
+            <div class="row col-12 justify-content-start align-items-center flex-row d-inline-flex" style="margin: 0px; margin-top: 5px; margin-bottom: 5px">
+                <div class="row col-12 justify-content-start align-items-center flex-row d-inline-flex" style="margin: 0px; margin-top: 5px; margin-bottom: 5px; padding: 0px">
+                    <div class="col-lg-6 col-md-6 col-sm-12 col-xs-12 flex-column" style="display: inline-flex; text-align: center; padding: 0px">
+                        <h1 class="m-0 d-flex align-items-center">
+                            <RadzenIcon Icon="account_circle" IconStyle="IconStyle.Light" /><b>@_selectedSymbol.Symbol</b>
+                        </h1>
+                    </div>
+                    <div class="col-lg-6 col-md-6 col-sm-12 col-xs-12 d-inline-flex" style="background-color: rgba(255, 255, 255, 0.5); padding: 0px">
+                        <RadzenText Text="Monitored at : " Style="padding: 0px; background-color: rgba(255, 255, 255, 0.5); margin: auto; margin-right: 5px" />
+                        <RadzenText Style="background-color: rgba(255, 255, 255, 0.5); text-align: left; margin-top: auto; margin-bottom: auto" Text="@(_selectedSymbol.MonitoredAt.HasValue ? _selectedSymbol.MonitoredAt.Value.ToString("dd/MM/yyyy HH:mm:ss") : "Not monitored !")" class="ml-lg-0 ml-md-0 ml-sm-auto ml-xs-auto" TextAlign="Radzen.TextAlign.Right" />
+                    </div>
+                </div>
+                <div class="row col-12 justify-content-start align-items-center flex-row d-inline-flex" style="margin: 0px; margin-top: 5px; margin-bottom: 5px; padding: 0px">
+                    <div class="col-lg-6 col-md-6 col-sm-12 col-xs-12 d-inline-flex" style="background-color: rgba(255, 255, 255, 0.5); padding: 0px">
+                        <RadzenText Text="Last kline 15M : " Style="padding: 0px; background-color: rgba(255, 255, 255, 0.5); margin: auto; margin-right: 5px" />
+                        <RadzenText Style="background-color: rgba(255, 255, 255, 0.5); text-align: left; margin-top: auto; margin-bottom: auto" Text="@(_selectedSymbol.LastKlineReceived.HasValue ? _selectedSymbol.LastKlineReceived.Value.ToString("dd/MM/yyyy HH:mm:ss") : "Kline 15M missing !")" class="ml-lg-0 ml-md-0 ml-sm-auto ml-xs-auto" />
+                    </div>
+                    <div class="col-lg-6 col-md-6 col-sm-12 col-xs-12 d-inline-flex" style="background-color: rgba(255, 255, 255, 0.5); padding: 0px">
+                        <RadzenText Text="Last kline 3M : " Style="padding: 0px; background-color: rgba(255, 255, 255, 0.5); margin: auto; margin-right: 5px" />
+                        <RadzenText Style="background-color: rgba(255, 255, 255, 0.5); text-align: left; margin-top: auto; margin-bottom: auto" Text="@(_selectedSymbol.LastTmpKlineReceived.HasValue ? _selectedSymbol.LastTmpKlineReceived.Value.ToString("dd/MM/yyyy HH:mm:ss") : "Kline 3M missing !")" class="ml-lg-0 ml-md-0 ml-sm-auto ml-xs-auto" TextAlign="Radzen.TextAlign.Right" />
+                    </div>
+                </div>
+            </div>
+        </HeaderTemplate>
+        <ChildContent>
+            <div class="row col-12" style="margin: 0px; padding: 0px">
+                <div class="col-lg-6 col-md-6 col-sm-12 col-xs-12" style="margin-top: auto; margin-bottom: auto; padding-right: 5px; padding-left: 5px">
+                    <RadzenCard Style="margin-top: 5px; margin-bottom: 5px; padding-top: 5px; padding-right: 5px; padding-bottom: 5px; padding-left: 5px">
+                        <div class="row col-12" style="margin: 0px; padding: 0px">
+                            <div class="col-6" style="margin-top: auto; margin-bottom: auto;">
+                                <RadzenText Text="Base" TextAlign="Radzen.TextAlign.Right"></RadzenText>
+                            </div>
+                            <div class="col-6" style="margin-top: auto; margin-bottom: auto;">
+                                <RadzenText Text="@_selectedSymbol.SymbolBase"></RadzenText>
+                            </div>
+                        </div>
+                        <div class="row col-12" style="margin: 0px; padding: 0px">
+                            <div class="col-6" style="margin-top: auto; margin-bottom: auto;">
+                                <RadzenText Text="Step size" TextAlign="Radzen.TextAlign.Right"></RadzenText>
+                            </div>
+                            <div class="col-6" style="margin-top: auto; margin-bottom: auto;">
+                                <RadzenText Text="@(_selectedSymbol.SymbolStepSizeBase.HasValue ? _selectedSymbol.SymbolStepSizeBase.Value.ToString(CultureInfo.InvariantCulture) : "")"></RadzenText>
+                            </div>
+                        </div>
+                        <div class="row col-12" style="margin: 0px; padding: 0px">
+                            <div class="col-6" style="margin-top: auto; margin-bottom: auto;">
+                                <RadzenText Text="Min quantity" TextAlign="Radzen.TextAlign.Right"></RadzenText>
+                            </div>
+                            <div class="col-6" style="margin-top: auto; margin-bottom: auto;">
+                                <RadzenText Text="@(_selectedSymbol.SymbolMinQuantityBase.HasValue ? _selectedSymbol.SymbolMinQuantityBase.Value.ToString(CultureInfo.InvariantCulture) : "")"></RadzenText>
+                            </div>
+                        </div>
+                        <div class="row col-12" style="margin: 0px; padding: 0px">
+                            <div class="col-6" style="margin-top: auto; margin-bottom: auto;">
+                                <RadzenText Text="Max quantity" TextAlign="Radzen.TextAlign.Right"></RadzenText>
+                            </div>
+                            <div class="col-6" style="margin-top: auto; margin-bottom: auto;">
+                                <RadzenText Text="@(_selectedSymbol.SymbolMaxQuantityBase.HasValue ? _selectedSymbol.SymbolMaxQuantityBase.Value.ToString(CultureInfo.InvariantCulture): "")"></RadzenText>
+                            </div>
+                        </div>
+                    </RadzenCard>
+                </div>
+                <div class="col-lg-6 col-md-6 col-sm-12 col-xs-12" style="margin-top: auto; margin-bottom: auto; padding-right: 5px; padding-left: 5px">
+                    <RadzenCard Style="margin-top: 5px; margin-bottom: 5px; padding-left: 5px; padding-right: 5px; padding-top: 5px; padding-bottom: 5px">
+                        <div class="row col-12" style="margin: 0px; padding: 0px">
+                            <div class="col-6" style="margin-top: auto; margin-bottom: auto;">
+                                <RadzenText Text="Quote" TextAlign="Radzen.TextAlign.Right"></RadzenText>
+                            </div>
+                            <div class="col-6" style="margin-top: auto; margin-bottom: auto;">
+                                <RadzenText Text="@_selectedSymbol.SymbolQuote"></RadzenText>
+                            </div>
+                        </div>
+                        <div class="row col-12" style="margin: 0px; padding: 0px">
+                            <div class="col-6" style="margin-top: auto; margin-bottom: auto;">
+                                <RadzenText Text="Step size" TextAlign="Radzen.TextAlign.Right"></RadzenText>
+                            </div>
+                            <div class="col-6" style="margin-top: auto; margin-bottom: auto;">
+                                <RadzenText Text="@(_selectedSymbol.SymbolStepSizeQuote.HasValue ? _selectedSymbol.SymbolStepSizeQuote.Value.ToString(CultureInfo.InvariantCulture) : "")"></RadzenText>
+                            </div>
+                        </div>
+                        <div class="row col-12" style="margin: 0px; padding: 0px">
+                            <div class="col-6" style="margin-top: auto; margin-bottom: auto;">
+                                <RadzenText Text="Min quantity" TextAlign="Radzen.TextAlign.Right"></RadzenText>
+                            </div>
+                            <div class="col-6" style="margin-top: auto; margin-bottom: auto;">
+                                <RadzenText Text="@(_selectedSymbol.SymbolMinQuantityQuote.HasValue ? _selectedSymbol.SymbolMinQuantityQuote.Value.ToString(CultureInfo.InvariantCulture) : "")"></RadzenText>
+                            </div>
+                        </div>
+                        <div class="row col-12" style="margin: 0px; padding: 0px">
+                            <div class="col-6" style="margin-top: auto; margin-bottom: auto;">
+                                <RadzenText Text="Max quantity" TextAlign="Radzen.TextAlign.Right"></RadzenText>
+                            </div>
+                            <div class="col-6" style="margin-top: auto; margin-bottom: auto;">
+                                <RadzenText Text="@(_selectedSymbol.SymbolMaxQuantityQuote.HasValue ? _selectedSymbol.SymbolMaxQuantityQuote.Value.ToString(CultureInfo.InvariantCulture) : "")"></RadzenText>
+                            </div>
+                        </div>
+                    </RadzenCard>
+                </div>
+            </div>
+            @if (_latestKline != null)
+            {
+                <div class="row col-12" style="margin: 0px; padding: 0px">
+                    <div class="col-lg-6 col-md-6 col-sm-12 col-xs-12" style="margin-top: auto; margin-bottom: auto; padding-right: 5px; padding-left: 5px">
+                        <RadzenCard Style="margin-top: 5px; margin-bottom: 5px; padding-top: 5px; padding-right: 5px; padding-bottom: 5px; padding-left: 5px">
+                            <div class="row col-12" style="margin: 0px; padding: 0px">
+                                <div class="col-6" style="margin-top: auto; margin-bottom: auto;">
+                                    <RadzenText Text="Open" TextAlign="Radzen.TextAlign.Right"></RadzenText>
+                                </div>
+                                <div class="col-6" style="margin-top: auto; margin-bottom: auto;">
+                                    <RadzenText Text=@Math.Round(@_latestKline.Open, 7).ToString(CultureInfo.InvariantCulture)></RadzenText>
+                                </div>
+                            </div>
+                            <div class="row col-12" style="margin: 0px; padding: 0px">
+                                <div class="col-6" style="margin-top: auto; margin-bottom: auto;">
+                                    <RadzenText Text="Close" TextAlign="Radzen.TextAlign.Right"></RadzenText>
+                                </div>
+                                <div class="col-6" style="margin-top: auto; margin-bottom: auto;">
+                                    <RadzenText Text=@Math.Round(@_latestKline.Close, 7).ToString(CultureInfo.InvariantCulture)></RadzenText>
+                                </div>
+                            </div>
+                            <div class="row col-12" style="margin: 0px; padding: 0px">
+                                <div class="col-6" style="margin-top: auto; margin-bottom: auto;">
+                                    <RadzenText Text="Low" TextAlign="Radzen.TextAlign.Right"></RadzenText>
+                                </div>
+                                <div class="col-6" style="margin-top: auto; margin-bottom: auto;">
+                                    <RadzenText Text=@Math.Round(@_latestKline.Low, 7).ToString(CultureInfo.InvariantCulture)></RadzenText>
+                                </div>
+                            </div>
+                            <div class="row col-12" style="margin: 0px; padding: 0px">
+                                <div class="col-6" style="margin-top: auto; margin-bottom: auto;">
+                                    <RadzenText Text="High" TextAlign="Radzen.TextAlign.Right"></RadzenText>
+                                </div>
+                                <div class="col-6" style="margin-top: auto; margin-bottom: auto;">
+                                    <RadzenText Text=@Math.Round(@_latestKline.High, 7).ToString(CultureInfo.InvariantCulture)></RadzenText>
+                                </div>
+                            </div>
+                        </RadzenCard>
+                    </div>
+                    <div class="col-lg-6 col-md-6 col-sm-12 col-xs-12" style="margin-top: auto; margin-bottom: auto; padding-right: 5px; padding-left: 5px">
+                        <RadzenCard Style="margin-top: 5px; margin-bottom: 5px; padding-left: 5px; padding-right: 5px; padding-top: 5px; padding-bottom: 5px">
+                            <div class="row col-12" style="margin: 0px; padding: 0px">
+                                <div class="col-6" style="margin-top: auto; margin-bottom: auto;">
+                                    <RadzenText Text="Trade count" TextAlign="Radzen.TextAlign.Right"></RadzenText>
+                                </div>
+                                <div class="col-6" style="margin-top: auto; margin-bottom: auto;">
+                                    <RadzenText Text=@_latestKline.TradeCount.ToString()></RadzenText>
+                                </div>
+                            </div>
+                            <div class="row col-12" style="margin: 0px; padding: 0px">
+                                <div class="col-6" style="margin-top: auto; margin-bottom: auto;">
+                                    <RadzenText Text="Base volume" TextAlign="Radzen.TextAlign.Right"></RadzenText>
+                                </div>
+                                <div class="col-6" style="margin-top: auto; margin-bottom: auto;">
+                                    <RadzenText Text=@_latestKline.BaseVolume.ToString()></RadzenText>
+                                </div>
+                            </div>
+                            <div class="row col-12" style="margin: 0px; padding: 0px">
+                                <div class="col-6" style="margin-top: auto; margin-bottom: auto;">
+                                    <RadzenText Text="Quote volume" TextAlign="Radzen.TextAlign.Right"></RadzenText>
+                                </div>
+                                <div class="col-6" style="margin-top: auto; margin-bottom: auto;">
+                                    <RadzenText Text=@_latestKline.QuoteVolume.ToString()></RadzenText>
+                                </div>
+                            </div>
+                            <div class="row col-12" style="margin: 0px; padding: 0px">
+                                <div class="col-6" style="margin-top: auto; margin-bottom: auto;">
+                                    <RadzenText Text="Take buy base volume" TextAlign="Radzen.TextAlign.Right"></RadzenText>
+                                </div>
+                                <div class="col-6" style="margin-top: auto; margin-bottom: auto;">
+                                    <RadzenText Text=@_latestKline.TakerBaseVolume.ToString()></RadzenText>
+                                </div>
+                            </div>
+                            <div class="row col-12" style="margin: 0px; padding: 0px">
+                                <div class="col-6" style="margin-top: auto; margin-bottom: auto;">
+                                    <RadzenText Text="Take buy quote volume" TextAlign="Radzen.TextAlign.Right"></RadzenText>
+                                </div>
+                                <div class="col-6" style="margin-top: auto; margin-bottom: auto;">
+                                    <RadzenText Text=@_latestKline.TakerQuoteVolume.ToString()></RadzenText>
+                                </div>
+                            </div>
+                        </RadzenCard>
+                    </div>
+                </div>
+            }
+        </ChildContent>
+    </RadzenPanel>
+}
+
+
+
