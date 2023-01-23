@@ -41,9 +41,12 @@ namespace BlazorApp.Client.Shared
         {
             try
             {
-                refreshTimer = new System.Timers.Timer(5000);
-                refreshTimer.Elapsed += RefreshTimer;
-                refreshTimer.Enabled = true;
+                if (refreshTimer == null)
+                {
+                    refreshTimer = new System.Timers.Timer(5000);
+                    refreshTimer.Elapsed += RefreshTimer;
+                    refreshTimer.Enabled = true;
+                }
             }
             catch (Exception ex)
             {
