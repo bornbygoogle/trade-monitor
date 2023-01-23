@@ -45,11 +45,12 @@ namespace BlazorApp.Client.Pages
         {
             try
             {
-                refreshTimer = new System.Timers.Timer(10000);
-                refreshTimer.Elapsed += RefreshTimer;
-                refreshTimer.Enabled = true;
-
-
+                if (refreshTimer == null)
+                {
+                    refreshTimer = new System.Timers.Timer(10000);
+                    refreshTimer.Elapsed += RefreshTimer;
+                    refreshTimer.Enabled = true;
+                }
             }
             catch (Exception ex)
             {
