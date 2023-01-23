@@ -1,8 +1,11 @@
 ﻿using BlazorApp.Shared.CoreDto;
 using Microsoft.AspNetCore.Components;
 using Microsoft.JSInterop;
+using Newtonsoft.Json;
 using Radzen;
+using System.Globalization;
 using System.Net.Http.Json;
+using System.Security.Principal;
 using System.Timers;
 
 namespace BlazorApp.Client.Pages
@@ -35,11 +38,22 @@ namespace BlazorApp.Client.Pages
 
         private static System.Timers.Timer refreshTimer;
 
+        private string _stringAccount = null;
+        private AccountDto _account = null;
+
+        private List<DataItem> profitSimulated = new List<DataItem>();
+        private List<DataItem> profitReal = new List<DataItem>();
+
+        private Dictionary<string, double> _dictBoughtSimulated = new Dictionary<string, double>();
+        private Dictionary<string, double> _dictSoldSimulated = new Dictionary<string, double>();
+        private Dictionary<string, double> _dictBoughtReal = new Dictionary<string, double>();
+        private Dictionary<string, double> _dictSoldReal = new Dictionary<string, double>();
+
         private List<LogInfoItemDto> _logs = null;
         private List<LogInfoItemDto> _logsPotential = null;
 
         private bool panelPotentialCollapsed = true;
-        private bool panelLogCollapsed = true;
+        private bool panelLogCollapsed = false;
 
         protected override async Task OnInitializedAsync()
         {
@@ -47,7 +61,7 @@ namespace BlazorApp.Client.Pages
             {
                 if (refreshTimer == null)
                 {
-                    refreshTimer = new System.Timers.Timer(10000);
+                    refreshTimer = new System.Timers.Timer(50000);
                     refreshTimer.Elapsed += RefreshTimer;
                     refreshTimer.Enabled = true;
                 }
@@ -64,8 +78,7 @@ namespace BlazorApp.Client.Pages
 
             try
             {
-                _logs = await Http.GetFromJsonAsync<List<LogInfoItemDto>>($"/api/GetAllLogs?accType=Spot&accHolder=An");
-                _logsPotential = await Http.GetFromJsonAsync<List<LogInfoItemDto>>($"/api/GetLogKlinePotential?accType=Spot&accHolder=An");
+                GestionTimer();
 
                 hasNewResult = true;
             }
@@ -76,6 +89,138 @@ namespace BlazorApp.Client.Pages
 
             if (hasNewResult)
                 _ = InvokeAsync(StateHasChanged);
+        }
+
+        private async void GestionTimer()
+        {
+            _stringAccount = await Http.GetStringAsync($"/api/GetInfos?accType=Spot&accHolder=An");
+            CalculateProfitQuotes();
+
+            _logs = await Http.GetFromJsonAsync<List<LogInfoItemDto>>($"/api/GetAllLogs?accType=Spot&accHolder=An");
+            _logsPotential = await Http.GetFromJsonAsync<List<LogInfoItemDto>>($"/api/GetLogKlinePotential?accType=Spot&accHolder=An");
+        }
+
+        private void CalculateProfitQuotes()
+        {
+            if (!string.IsNullOrEmpty(_stringAccount))
+            {
+                _account = JsonConvert.DeserializeObject<AccountDto>(_stringAccount);
+
+                if (_account != null)
+                {
+                    profitSimulated.Clear();
+                    profitReal.Clear();
+
+                    foreach (var itemQuote in _account.ListQuotes)
+                    {
+                        double totalBoughtSimulated = 0;
+                        double totalSoldSimulated = 0;
+                        _dictBoughtSimulated.Clear();
+                        _dictSoldSimulated.Clear();
+
+                        foreach (var itemProfit in _account.SimulatedAccountProfit)
+                        {
+                            double listQuoteSold = (double)itemProfit.CompletedDetailsSold.Where(x => x.Key == itemQuote).Sum(x => x.Value);
+                            double listQuoteBought = (double)itemProfit.CompletedDetailsBought.Where(x => x.Key == itemQuote).Sum(x => x.Value);
+
+                            if (_dictBoughtSimulated.ContainsKey(itemQuote))
+                            {
+                                _dictBoughtSimulated.TryGetValue(itemQuote, out totalBoughtSimulated);
+                                totalBoughtSimulated += listQuoteBought;
+
+                                _dictBoughtSimulated.Remove(itemQuote);
+                                _dictBoughtSimulated.Add(itemQuote, totalBoughtSimulated);
+                            }
+                            else
+                                _dictBoughtSimulated.Add(itemQuote, listQuoteBought);
+
+                            if (_dictSoldSimulated.ContainsKey(itemQuote))
+                            {
+                                _dictSoldSimulated.TryGetValue(itemQuote, out totalSoldSimulated);
+                                totalSoldSimulated += listQuoteSold;
+
+                                _dictSoldSimulated.Remove(itemQuote);
+                                _dictSoldSimulated.Add(itemQuote, totalSoldSimulated);
+                            }
+                            else
+                                _dictSoldSimulated.Add(itemQuote, listQuoteSold);
+                        }
+
+                        DataItem quoteSimulated = new DataItem();
+                        quoteSimulated.Base = itemQuote;
+                        quoteSimulated.Profit = totalSoldSimulated - totalBoughtSimulated;
+
+                        if (profitSimulated.Any(x => x.Base == quoteSimulated.Base))
+                            profitSimulated.Remove(quoteSimulated);
+
+                        profitSimulated.Add(quoteSimulated);
+
+
+                        double totalBoughtReal = 0;
+                        double totalSoldReal = 0;
+                        _dictBoughtReal.Clear();
+                        _dictSoldReal.Clear();
+
+                        foreach (var itemProfit in _account.RealAccountProfit)
+                        {
+                            double listQuoteSold = (double)itemProfit.CompletedDetailsSold.Where(x => x.Key == itemQuote).Sum(x => x.Value);
+                            double listQuoteBought = (double)itemProfit.CompletedDetailsBought.Where(x => x.Key == itemQuote).Sum(x => x.Value);
+
+                            if (_dictBoughtReal.ContainsKey(itemQuote))
+                            {
+                                _dictBoughtReal.TryGetValue(itemQuote, out totalBoughtReal);
+                                totalBoughtReal += listQuoteBought;
+
+                                _dictBoughtReal.Remove(itemQuote);
+                                _dictBoughtReal.Add(itemQuote, totalBoughtReal);
+                            }
+                            else
+                                _dictBoughtReal.Add(itemQuote, listQuoteBought);
+
+                            if (_dictSoldReal.ContainsKey(itemQuote))
+                            {
+                                _dictSoldReal.TryGetValue(itemQuote, out totalSoldReal);
+                                totalSoldReal += listQuoteSold;
+
+                                _dictSoldReal.Remove(itemQuote);
+                                _dictSoldReal.Add(itemQuote, totalSoldReal);
+                            }
+                            else
+                                _dictSoldReal.Add(itemQuote, listQuoteSold);
+                        }
+
+                        DataItem quoteReal = new DataItem();
+                        quoteReal.Base = itemQuote;
+                        quoteReal.Profit = totalSoldReal - totalBoughtReal;
+
+                        if (profitReal.Any(x => x.Base == quoteReal.Base))
+                            profitReal.Remove(quoteReal);
+
+                        profitReal.Add(quoteReal);
+                    }
+                }
+            }
+        }
+
+        protected async System.Threading.Tasks.Task ButtonAllTimesClick(Microsoft.AspNetCore.Components.Web.MouseEventArgs args)
+        {
+            _stringAccount = await Http.GetStringAsync($"/api/GetInfos?accType=Spot&accHolder=An");
+            CalculateProfitQuotes();
+        }
+
+
+
+        bool showDataLabels = true;
+
+        class DataItem
+        {
+            public string Base { get; set; }
+            public double Profit { get; set; }
+        }
+
+        string FormatAsUSD(object value)
+        {
+            return ((double)value).ToString("0.#####", CultureInfo.CreateSpecificCulture("en-US"));
         }
     }
 }
