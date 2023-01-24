@@ -220,7 +220,8 @@ namespace BlazorApp.Client.Pages
 
         string FormatAsUSD(object value)
         {
-            return ((double)value).ToString("0.#####", CultureInfo.CreateSpecificCulture("en-US"));
+            //return ((double)value).ToString("###,###,###.#####", CultureInfo.CreateSpecificCulture("en-US"));
+            return ((double)value).ToString("#,###.#####", CultureInfo.CreateSpecificCulture("en-US"));
         }
     }
 }

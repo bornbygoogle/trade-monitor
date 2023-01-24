@@ -1,7 +1,7 @@
 ﻿@using BlazorApp.Shared.CoreDto;
 @page "/"
 
-<PageTitle>Index</PageTitle>
+<PageTitle>BINANCE TRADE BOT MONITORING</PageTitle>
 <div class="row" style="margin: 0px; padding: 0px">
     <div class="col-12" style="padding-left: 2px; padding-right: 2px; padding: 0px">
         <RadzenPanel Style="padding-top: 5px; padding-bottom: 5px">
@@ -10,9 +10,9 @@
                     <div class="col-lg-2 col-md-1 col-sm-0 col-xs-0 d-inline-flex" style="padding: 0px; width: 100%; max-width: 100%; text-align: center; vertical-align: middle">
                         <RadzenText Text="Profit" Style="width: 100%; vertical-align: middle; margin-top: auto; margin-bottom: auto" TextAlign="Radzen.TextAlign.Left" />
                     </div>
-                    <div class="col-lg-3 col-md-3 col-sm-4 col-xs-4 d-inline-flex" style="padding-left: auto; padding-right: auto"><RadzenButton Style="width: 100%; max-width: 100%; padding: 0px" Variant="Radzen.Variant.Outlined" Text="7 days" Size="Radzen.ButtonSize.Medium"></RadzenButton></div>
+                    @*<div class="col-lg-3 col-md-3 col-sm-4 col-xs-4 d-inline-flex" style="padding-left: auto; padding-right: auto"><RadzenButton Style="width: 100%; max-width: 100%; padding: 0px" Variant="Radzen.Variant.Outlined" Text="7 days" Size="Radzen.ButtonSize.Medium"></RadzenButton></div>
                     <div class="col-lg-3 col-md-3 col-sm-4 col-xs-4 d-inline-flex" style="padding-left: auto; padding-right: auto"><RadzenButton Variant="Radzen.Variant.Outlined" Style="width: 100%; max-width: 100%; padding: 0px" Text="30 days" Size="Radzen.ButtonSize.Medium"></RadzenButton></div>
-                    <div class="col-lg-3 col-md-3 col-sm-4 col-xs-4 d-inline-flex" style="padding-right: auto; padding-left: auto; width: 100%; max-width: 100%"><RadzenButton Style="padding: 0px; max-width: 100%; width: 100%" Variant="Radzen.Variant.Outlined" Size="Radzen.ButtonSize.Medium" Text="All times" Click="@ButtonAllTimesClick"></RadzenButton></div>
+                    <div class="col-lg-3 col-md-3 col-sm-4 col-xs-4 d-inline-flex" style="padding-right: auto; padding-left: auto; width: 100%; max-width: 100%"><RadzenButton Style="padding: 0px; max-width: 100%; width: 100%" Variant="Radzen.Variant.Outlined" Size="Radzen.ButtonSize.Medium" Text="All times" Click="@ButtonAllTimesClick"></RadzenButton></div>*@
                 </div>
             </div>
             <div class="row" style="padding: 0px; margin: 0px; padding-top: 5px; padding-bottom: 5px">
@@ -27,8 +27,9 @@
                         <RadzenColumnOptions Radius="5" />
                         <RadzenValueAxis Formatter="@FormatAsUSD">
                             <RadzenGridLines Visible="true" />
-                            <RadzenAxisTitle Text="Profits account AN" />
+                            <RadzenAxisTitle Text="Account AN" />
                         </RadzenValueAxis>
+                        <RadzenLegend Position="Radzen.Blazor.LegendPosition.Bottom"></RadzenLegend>
                     </RadzenChart>
                 </div>
             </div>
@@ -38,7 +39,7 @@
 <div class="row" style="margin: 0px; padding: auto">
     <div class="col-12" style="padding-left: 2px; padding-right: 2px">
         <div class="row col-12" style="margin: 0px; padding-left: 5px; padding-right: 5px; margin-top: 5px; margin-bottom: 5px; padding-top: 5px; padding-bottom: 5px">
-            <RadzenPanel AllowCollapse="true" Collapsed="true" Text="Potential Buy/Sell" Style="padding-right: 5px; padding-left: 5px">
+            <RadzenPanel AllowCollapse="true" Collapsed="@panelPotentialCollapsed" Text="Potential Buy/Sell" Style="padding-right: 5px; padding-left: 5px">
                 <RadzenDataGrid TItem="LogInfoItemDto" Data=@_logsPotential AllowPaging="true" Responsive="true" AllowPickAllColumns="false" AllowRowSelectOnRowClick="false" PagerAlwaysVisible="true" PageSizeText="10" class="overflow-auto">
                     <Columns>
                         <RadzenDataGridColumn Width="130px" TItem="LogInfoItemDto" Property="Symbol" Title="Symbol"></RadzenDataGridColumn>
@@ -51,7 +52,7 @@
             </RadzenPanel>
         </div>
         <div class="row col-12" style="margin: 0px; padding-left: 5px; padding-right: 5px; margin-top: 5px; margin-bottom: 5px; padding-top: 5px; padding-bottom: 5px">
-            <RadzenPanel AllowCollapse="true" Collapsed="true" Text="Log" Style="padding-left: 5px; padding-right: 5px">
+            <RadzenPanel AllowCollapse="true" Collapsed="@panelLogCollapsed" Text="Log" Style="padding-left: 5px; padding-right: 5px">
                 <RadzenDataGrid TItem="LogInfoItemDto" Data=@_logs AllowPaging="true" Responsive="true" AllowPickAllColumns="false" AllowRowSelectOnRowClick="false" PagerAlwaysVisible="true" PageSizeText="10" class="overflow-auto">
                     <Columns>
                         <RadzenDataGridColumn Width="180px" TItem="LogInfoItemDto" Property="LogTime" Title="Date"></RadzenDataGridColumn>
