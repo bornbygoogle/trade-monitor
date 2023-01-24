@@ -41,6 +41,14 @@ namespace BlazorApp.Client.Pages
         private string _stringAccount = null;
         private AccountDto _account = null;
 
+        private bool _statSevenDays = true;
+        private bool _statThirtyDays = false;
+        private bool _statAllTimes = false;
+
+        private bool _onlyLogTrading = true;
+        private bool _onlyLogTradingInfos = true;
+        private bool _allLogs = true;
+
         private List<DataItem> profitSimulated = new List<DataItem>();
         private List<DataItem> profitReal = new List<DataItem>();
 
@@ -118,7 +126,14 @@ namespace BlazorApp.Client.Pages
                         _dictBoughtSimulated.Clear();
                         _dictSoldSimulated.Clear();
 
-                        foreach (var itemProfit in _account.SimulatedAccountProfit)
+                        var statAccountSimulated = _account.SimulatedAccountProfitSevenDays;
+
+                        if (_statThirtyDays)
+                            statAccountSimulated = _account.SimulatedAccountProfitThirtyDays;
+                        else if (_statAllTimes)
+                            statAccountSimulated = _account.SimulatedAccountProfitAllTimes;
+
+                        foreach (var itemProfit in statAccountSimulated)
                         {
                             double listQuoteSold = (double)itemProfit.CompletedDetailsSold.Where(x => x.Key == itemQuote).Sum(x => x.Value);
                             double listQuoteBought = (double)itemProfit.CompletedDetailsBought.Where(x => x.Key == itemQuote).Sum(x => x.Value);
@@ -161,7 +176,14 @@ namespace BlazorApp.Client.Pages
                         _dictBoughtReal.Clear();
                         _dictSoldReal.Clear();
 
-                        foreach (var itemProfit in _account.RealAccountProfit)
+                        var statAccountReal = _account.RealAccountProfitSevenDays;
+
+                        if (_statThirtyDays)
+                            statAccountReal = _account.RealAccountProfitThirtyDays;
+                        else if (_statAllTimes)
+                            statAccountReal = _account.RealAccountProfitAllTimes;
+
+                        foreach (var itemProfit in statAccountReal)
                         {
                             double listQuoteSold = (double)itemProfit.CompletedDetailsSold.Where(x => x.Key == itemQuote).Sum(x => x.Value);
                             double listQuoteBought = (double)itemProfit.CompletedDetailsBought.Where(x => x.Key == itemQuote).Sum(x => x.Value);
@@ -202,13 +224,35 @@ namespace BlazorApp.Client.Pages
             }
         }
 
-        protected async System.Threading.Tasks.Task ButtonAllTimesClick(Microsoft.AspNetCore.Components.Web.MouseEventArgs args)
+        protected async System.Threading.Tasks.Task ButtonStatSevenDaysClick(Microsoft.AspNetCore.Components.Web.MouseEventArgs args)
         {
-            _stringAccount = await Http.GetStringAsync($"/api/GetInfos?accType=Spot&accHolder=An");
-            CalculateProfitQuotes();
+            _statSevenDays= true;
         }
 
+        protected async System.Threading.Tasks.Task ButtonStatThirtyDaysClick(Microsoft.AspNetCore.Components.Web.MouseEventArgs args)
+        {
+            _statThirtyDays = true;
+        }
 
+        protected async System.Threading.Tasks.Task ButtonStatAllTimesClick(Microsoft.AspNetCore.Components.Web.MouseEventArgs args)
+        {
+            _statAllTimes = true;
+        }
+
+        protected async System.Threading.Tasks.Task ButtonLogTradingClick(Microsoft.AspNetCore.Components.Web.MouseEventArgs args)
+        {
+            _onlyLogTrading = true;
+        }
+
+        protected async System.Threading.Tasks.Task ButtonLogTradingInfosClick(Microsoft.AspNetCore.Components.Web.MouseEventArgs args)
+        {
+            _onlyLogTradingInfos = true;
+        }
+
+        protected async System.Threading.Tasks.Task ButtonAlLogsClick(Microsoft.AspNetCore.Components.Web.MouseEventArgs args)
+        {
+            _allLogs = true;
+        }
 
         bool showDataLabels = true;
 

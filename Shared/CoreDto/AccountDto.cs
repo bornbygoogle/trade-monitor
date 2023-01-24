@@ -19,13 +19,17 @@ namespace BlazorApp.Shared.CoreDto
 
         public List<string> ListQuotes { get; set; } = new List<string>();
 
-        public List<FinancialSummaryDto> RealAccountProfit { get; set; } = new List<FinancialSummaryDto>();
+        public List<FinancialSummaryDto> RealAccountProfitSevenDays { get; set; } = null;
+        public List<FinancialSummaryDto> RealAccountProfitThirtyDays { get; set; } = null;
+        public List<FinancialSummaryDto> RealAccountProfitAllTimes { get; set; } = null;
 
         public decimal? RealTotalTrades { get; set; } = null;
         public decimal? RealTotalPositiveTrades { get; set; } = null;
         public decimal? RealPositivePercentage { get; set; } = null;
 
-        public List<FinancialSummaryDto> SimulatedAccountProfit { get; set; } = new List<FinancialSummaryDto>();
+        public List<FinancialSummaryDto> SimulatedAccountProfitSevenDays { get; set; } = null;
+        public List<FinancialSummaryDto> SimulatedAccountProfitThirtyDays { get; set; } = null;
+        public List<FinancialSummaryDto> SimulatedAccountProfitAllTimes { get; set; } = null;
 
         public decimal? SimulatedTotalTrades { get; set; } = null;
         public decimal? SimulatedTotalPositiveTrades { get; set; } = null;

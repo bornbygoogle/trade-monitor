@@ -5,7 +5,7 @@ namespace BlazorApp.Shared.CoreDto
 {
     public class FinancialSummaryDto
     {
-        public DateTime? Month { get; set; } = null;
+        public DateTime? Day { get; set; } = null;
 
         public int? CompletedTrades { get; set; } = null;
         public int? CompletedTradesPositives { get; set; } = null;
