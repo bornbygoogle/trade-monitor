@@ -46,11 +46,16 @@ namespace BlazorApp.Client.Pages
         private bool _statAllTimes = false;
 
         private bool _onlyLogTrading = true;
-        private bool _onlyLogTradingInfos = true;
-        private bool _allLogs = true;
+        private bool _onlyLogTradingInfos = false;
+        private bool _allLogs = false;
 
-        private List<DataItem> profitSimulated = new List<DataItem>();
-        private List<DataItem> profitReal = new List<DataItem>();
+        private List<DataItem> _nbrTrades = new List<DataItem>();
+        private decimal? _totalTrades = 0;
+        private decimal? _percentageSucceededTrades = 0;
+        private bool _realPercentage = true;
+
+        private List<DataItem> _profitSimulated = new List<DataItem>();
+        private List<DataItem> _profitReal = new List<DataItem>();
 
         private Dictionary<string, double> _dictBoughtSimulated = new Dictionary<string, double>();
         private Dictionary<string, double> _dictSoldSimulated = new Dictionary<string, double>();
@@ -69,7 +74,7 @@ namespace BlazorApp.Client.Pages
             {
                 if (refreshTimer == null)
                 {
-                    refreshTimer = new System.Timers.Timer(50000);
+                    refreshTimer = new System.Timers.Timer(TimeSpan.FromSeconds(10).TotalMilliseconds);
                     refreshTimer.Elapsed += RefreshTimer;
                     refreshTimer.Enabled = true;
                 }
@@ -104,8 +109,18 @@ namespace BlazorApp.Client.Pages
             _stringAccount = await Http.GetStringAsync($"/api/GetInfos?accType=Spot&accHolder=An");
             CalculateProfitQuotes();
 
-            _logs = await Http.GetFromJsonAsync<List<LogInfoItemDto>>($"/api/GetAllLogs?accType=Spot&accHolder=An");
+            string urlLog = $"/api/GetAllLogs?accType=Spot&accHolder=An";
+
+            if (_onlyLogTrading)
+                urlLog = $"/api/GetLogsTrading?accType=Spot&accHolder=An";
+            else if (_onlyLogTradingInfos)
+                urlLog = $"/api/GetLogsTradingInfos?accType=Spot&accHolder=An";
+            else
+                urlLog = $"/api/GetAllLogs?accType=Spot&accHolder=An";
+
+            _logs = await Http.GetFromJsonAsync<List<LogInfoItemDto>>(urlLog);
             _logsPotential = await Http.GetFromJsonAsync<List<LogInfoItemDto>>($"/api/GetLogKlinePotential?accType=Spot&accHolder=An");
+
         }
 
         private void CalculateProfitQuotes()
@@ -116,8 +131,8 @@ namespace BlazorApp.Client.Pages
 
                 if (_account != null)
                 {
-                    profitSimulated.Clear();
-                    profitReal.Clear();
+                    _profitSimulated.Clear();
+                    _profitReal.Clear();
 
                     foreach (var itemQuote in _account.ListQuotes)
                     {
@@ -165,11 +180,10 @@ namespace BlazorApp.Client.Pages
                         quoteSimulated.Base = itemQuote;
                         quoteSimulated.Profit = totalSoldSimulated - totalBoughtSimulated;
 
-                        if (profitSimulated.Any(x => x.Base == quoteSimulated.Base))
-                            profitSimulated.Remove(quoteSimulated);
+                        if (_profitSimulated.Any(x => x.Base == quoteSimulated.Base))
+                            _profitSimulated.Remove(quoteSimulated);
 
-                        profitSimulated.Add(quoteSimulated);
-
+                        _profitSimulated.Add(quoteSimulated);
 
                         double totalBoughtReal = 0;
                         double totalSoldReal = 0;
@@ -215,10 +229,47 @@ namespace BlazorApp.Client.Pages
                         quoteReal.Base = itemQuote;
                         quoteReal.Profit = totalSoldReal - totalBoughtReal;
 
-                        if (profitReal.Any(x => x.Base == quoteReal.Base))
-                            profitReal.Remove(quoteReal);
+                        if (_profitReal.Any(x => x.Base == quoteReal.Base))
+                            _profitReal.Remove(quoteReal);
 
-                        profitReal.Add(quoteReal);
+                        _profitReal.Add(quoteReal);
+                    }
+
+                    _nbrTrades.Clear();
+
+                    if (_realPercentage)
+                    {
+                        DataItem nbrTradesRealSucceeded = new DataItem();
+                        nbrTradesRealSucceeded.Base = "Succeeded trade";
+                        nbrTradesRealSucceeded.Profit = (double)(_account.RealTotalPositiveTrades ?? 0);
+
+                        _nbrTrades.Add(nbrTradesRealSucceeded);
+
+                        DataItem nbrTradesRealNotSucceeded = new DataItem();
+                        nbrTradesRealNotSucceeded.Base = "Failed trade";
+                        nbrTradesRealNotSucceeded.Profit = (double)((_account.RealTotalTrades - _account.RealTotalPositiveTrades) ?? 0);
+
+                        _totalTrades = _account.RealTotalTrades ?? 0;
+                        _percentageSucceededTrades = Math.Round(((_account.RealTotalPositiveTrades ?? 0) * 100) / (_account.RealTotalTrades ?? 1), 2);
+
+                        _nbrTrades.Add(nbrTradesRealNotSucceeded);
+                    }
+                    else
+                    {
+                        DataItem nbrTradesSimulatedSucceeded = new DataItem();
+                        nbrTradesSimulatedSucceeded.Base = "Succeeded trade";
+                        nbrTradesSimulatedSucceeded.Profit = (double)(_account.SimulatedTotalPositiveTrades ?? 0);
+
+                        _nbrTrades.Add(nbrTradesSimulatedSucceeded);
+
+                        DataItem nbrTradesSimulatedNotSucceeded = new DataItem();
+                        nbrTradesSimulatedNotSucceeded.Base = "Failed trade";
+                        nbrTradesSimulatedNotSucceeded.Profit = (double)((_account.SimulatedTotalTrades - _account.SimulatedTotalPositiveTrades) ?? 0);
+
+                        _totalTrades = _account.SimulatedTotalTrades ?? 0;
+                        _percentageSucceededTrades = Math.Round(((_account.SimulatedTotalPositiveTrades ?? 0) * 100) / (_account.SimulatedTotalTrades ?? 1), 2);
+
+                        _nbrTrades.Add(nbrTradesSimulatedNotSucceeded);
                     }
                 }
             }
@@ -227,31 +278,53 @@ namespace BlazorApp.Client.Pages
         protected async System.Threading.Tasks.Task ButtonStatSevenDaysClick(Microsoft.AspNetCore.Components.Web.MouseEventArgs args)
         {
             _statSevenDays= true;
+            _statThirtyDays = false;
+            _statAllTimes = false;
         }
 
         protected async System.Threading.Tasks.Task ButtonStatThirtyDaysClick(Microsoft.AspNetCore.Components.Web.MouseEventArgs args)
         {
+            _statSevenDays = false;
             _statThirtyDays = true;
+            _statAllTimes = false;
         }
 
         protected async System.Threading.Tasks.Task ButtonStatAllTimesClick(Microsoft.AspNetCore.Components.Web.MouseEventArgs args)
         {
+            _statSevenDays = false;
+            _statThirtyDays = false;
             _statAllTimes = true;
         }
 
         protected async System.Threading.Tasks.Task ButtonLogTradingClick(Microsoft.AspNetCore.Components.Web.MouseEventArgs args)
         {
             _onlyLogTrading = true;
+            _onlyLogTradingInfos = false;
+            _allLogs = false;
         }
 
         protected async System.Threading.Tasks.Task ButtonLogTradingInfosClick(Microsoft.AspNetCore.Components.Web.MouseEventArgs args)
         {
+            _onlyLogTrading = false;
             _onlyLogTradingInfos = true;
+            _allLogs = false;
         }
 
         protected async System.Threading.Tasks.Task ButtonAlLogsClick(Microsoft.AspNetCore.Components.Web.MouseEventArgs args)
         {
+            _onlyLogTrading = false;
+            _onlyLogTradingInfos = false;
             _allLogs = true;
+        }
+
+        protected async System.Threading.Tasks.Task ButtonGetRealTradesPercentageClick(Microsoft.AspNetCore.Components.Web.MouseEventArgs args)
+        {
+            _realPercentage = true;
+        }
+
+        protected async System.Threading.Tasks.Task ButtonGetPossibleTradesPercentageClick(Microsoft.AspNetCore.Components.Web.MouseEventArgs args)
+        {
+            _realPercentage = false;
         }
 
         bool showDataLabels = true;
@@ -267,5 +340,29 @@ namespace BlazorApp.Client.Pages
             //return ((double)value).ToString("###,###,###.#####", CultureInfo.CreateSpecificCulture("en-US"));
             return ((double)value).ToString("#,###.#####", CultureInfo.CreateSpecificCulture("en-US"));
         }
+
+        //DataItem[] revenue2020 = new DataItem[]
+        //{
+        //    new DataItem
+        //    {
+        //        Base = "Q1",
+        //        Profit = 254000
+        //    },
+        //    new DataItem
+        //    {
+        //        Base = "Q2",
+        //        Profit = 324000
+        //    },
+        //    new DataItem
+        //    {
+        //        Base = "Q3",
+        //        Profit = 354000
+        //    },
+        //    new DataItem
+        //    {
+        //        Base = "Q4",
+        //        Profit = 394000
+        //    },
+        //};
     }
 }
