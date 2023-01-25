@@ -38,6 +38,8 @@ namespace BlazorApp.Client.Pages
 
         private static System.Timers.Timer refreshTimer;
 
+        private string _currentAccount = "An";
+        private string _textCurrentAccount = "Account AN";
         private string _stringAccount = null;
         private AccountDto _account = null;
 
@@ -48,6 +50,11 @@ namespace BlazorApp.Client.Pages
         private bool _onlyLogTrading = true;
         private bool _onlyLogTradingInfos = false;
         private bool _allLogs = false;
+        private DateTime? _dtPageSize = null;
+
+        private bool _tdPotential = true;
+        private bool _tdCombo = false;
+        private bool _tdCountDown = false;
 
         private List<DataItem> _nbrTrades = new List<DataItem>();
         private decimal? _totalTrades = 0;
@@ -74,7 +81,7 @@ namespace BlazorApp.Client.Pages
             {
                 if (refreshTimer == null)
                 {
-                    refreshTimer = new System.Timers.Timer(TimeSpan.FromSeconds(10).TotalMilliseconds);
+                    refreshTimer = new System.Timers.Timer(TimeSpan.FromSeconds(1).TotalMilliseconds);
                     refreshTimer.Elapsed += RefreshTimer;
                     refreshTimer.Enabled = true;
                 }
@@ -106,7 +113,7 @@ namespace BlazorApp.Client.Pages
 
         private async void GestionTimer()
         {
-            _stringAccount = await Http.GetStringAsync($"/api/GetInfos?accType=Spot&accHolder=An");
+            _stringAccount = await Http.GetStringAsync($"/api/GetInfos?accType=Spot&accHolder={_currentAccount}");
             CalculateProfitQuotes();
 
             string urlLog = $"/api/GetAllLogs?accType=Spot&accHolder=An";
@@ -119,7 +126,13 @@ namespace BlazorApp.Client.Pages
                 urlLog = $"/api/GetAllLogs?accType=Spot&accHolder=An";
 
             _logs = await Http.GetFromJsonAsync<List<LogInfoItemDto>>(urlLog);
-            _logsPotential = await Http.GetFromJsonAsync<List<LogInfoItemDto>>($"/api/GetLogKlinePotential?accType=Spot&accHolder=An");
+
+            if (_tdPotential)
+                _logsPotential = await Http.GetFromJsonAsync<List<LogInfoItemDto>>($"/api/GetLogKlinePotential?accType=Spot&accHolder=An");
+            else if (_tdCombo)
+                _logsPotential = await Http.GetFromJsonAsync<List<LogInfoItemDto>>($"/api/GetLogKlineTDCombo?accType=Spot&accHolder=An");
+            else if (_tdCountDown)
+                _logsPotential = await Http.GetFromJsonAsync<List<LogInfoItemDto>>($"/api/GetLogKlineTDCountDown?accType=Spot&accHolder=An");
 
         }
 
@@ -325,6 +338,32 @@ namespace BlazorApp.Client.Pages
         protected async System.Threading.Tasks.Task ButtonGetPossibleTradesPercentageClick(Microsoft.AspNetCore.Components.Web.MouseEventArgs args)
         {
             _realPercentage = false;
+        }
+
+        protected async System.Threading.Tasks.Task ButtonTDPotentialClick(Microsoft.AspNetCore.Components.Web.MouseEventArgs args)
+        {
+            _tdPotential = true;
+            _tdCombo = false;
+            _tdCountDown = false;
+        }
+
+        protected async System.Threading.Tasks.Task ButtonTDComboClick(Microsoft.AspNetCore.Components.Web.MouseEventArgs args)
+        {
+            _tdPotential = false;
+            _tdCombo = true;
+            _tdCountDown = false;
+        }
+
+        protected async System.Threading.Tasks.Task ButtonTDCountDownClick(Microsoft.AspNetCore.Components.Web.MouseEventArgs args)
+        {
+            _tdPotential = false;
+            _tdCombo = false;
+            _tdCountDown = true;
+        }
+
+        protected async System.Threading.Tasks.Task DataGridLogsPageSizeChanged(System.Int32 args)
+        {
+            _dtPageSize = DateTime.Now;
         }
 
         bool showDataLabels = true;

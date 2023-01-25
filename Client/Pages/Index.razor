@@ -11,8 +11,8 @@
                     <div class="col-lg-5 col-md-4 col-sm-4 col-xs-4 d-inline-flex" style="padding: 0px; width: 100%; max-width: 100%; text-align: center; vertical-align: middle">
                         <RadzenText Text="Percentage succeeded trades" Style="width: 100%; vertical-align: middle; margin-top: auto; margin-bottom: auto" TextAlign="Radzen.TextAlign.Left" />
                     </div>
-                    <div class="col-lg-3 col-md-3 col-sm-4 col-xs-4 d-inline-flex" style="padding-left: auto; padding-right: auto"><RadzenButton Style="width: 100%; max-width: 100%; padding: 0px" Variant="Radzen.Variant.Outlined" Text="REAL TRADES" Size="Radzen.ButtonSize.Medium" Click="@ButtonGetRealTradesPercentageClick"></RadzenButton></div>
-                    <div class="col-lg-3 col-md-3 col-sm-4 col-xs-4 d-inline-flex" style="padding-left: auto; padding-right: auto"><RadzenButton Variant="Radzen.Variant.Outlined" Style="width: 100%; max-width: 100%; padding: 0px" Text="POSSIBLE TRADES" Size="Radzen.ButtonSize.Medium" Click="@ButtonGetPossibleTradesPercentageClick"></RadzenButton></div>
+                    <div class="col-lg-3 col-md-3 col-sm-4 col-xs-4 d-inline-flex" style="padding-left: auto; padding-right: auto"><RadzenButton Style="width: 100%; max-width: 100%; padding: 0px" Variant="@(_realPercentage ? Radzen.Variant.Filled : Radzen.Variant.Outlined)" Text="REAL TRADES" Size="Radzen.ButtonSize.Medium" Click="@ButtonGetRealTradesPercentageClick"></RadzenButton></div>
+                    <div class="col-lg-3 col-md-3 col-sm-4 col-xs-4 d-inline-flex" style="padding-left: auto; padding-right: auto"><RadzenButton Variant="@(!_realPercentage ? Radzen.Variant.Filled : Radzen.Variant.Outlined)" Style="width: 100%; max-width: 100%; padding: 0px" Text="POSSIBLE TRADES" Size="Radzen.ButtonSize.Medium" Click="@ButtonGetPossibleTradesPercentageClick"></RadzenButton></div>
                 </div>
             </div>
             <div class="row" style="padding: 0px; margin: 0px; padding-top: 5px; padding-bottom: 5px">
@@ -46,9 +46,9 @@
                     <div class="col-lg-2 col-md-1 col-sm-0 col-xs-0 d-inline-flex" style="padding: 0px; width: 100%; max-width: 100%; text-align: center; vertical-align: middle">
                         <RadzenText Text="Profit" Style="width: 100%; vertical-align: middle; margin-top: auto; margin-bottom: auto" TextAlign="Radzen.TextAlign.Left" />
                     </div>
-                    <div class="col-lg-3 col-md-3 col-sm-4 col-xs-4 d-inline-flex" style="padding-left: auto; padding-right: auto"><RadzenButton Style="width: 100%; max-width: 100%; padding: 0px" Variant="Radzen.Variant.Outlined" Text="7 days" Size="Radzen.ButtonSize.Medium" Click="@ButtonStatSevenDaysClick"></RadzenButton></div>
-                    <div class="col-lg-3 col-md-3 col-sm-4 col-xs-4 d-inline-flex" style="padding-left: auto; padding-right: auto"><RadzenButton Variant="Radzen.Variant.Outlined" Style="width: 100%; max-width: 100%; padding: 0px" Text="30 days" Size="Radzen.ButtonSize.Medium" Click="@ButtonStatThirtyDaysClick"></RadzenButton></div>
-                    <div class="col-lg-3 col-md-3 col-sm-4 col-xs-4 d-inline-flex" style="padding-right: auto; padding-left: auto; width: 100%; max-width: 100%"><RadzenButton Style="padding: 0px; max-width: 100%; width: 100%" Variant="Radzen.Variant.Outlined" Size="Radzen.ButtonSize.Medium" Text="All times" Click="@ButtonStatAllTimesClick"></RadzenButton></div>
+                    <div class="col-lg-3 col-md-3 col-sm-4 col-xs-4 d-inline-flex" style="padding-left: auto; padding-right: auto"><RadzenButton Style="width: 100%; max-width: 100%; padding: 0px" Variant="@(_statSevenDays ? Radzen.Variant.Filled : Radzen.Variant.Outlined)" Text="7 days" Size="Radzen.ButtonSize.Medium" Click="@ButtonStatSevenDaysClick"></RadzenButton></div>
+                    <div class="col-lg-3 col-md-3 col-sm-4 col-xs-4 d-inline-flex" style="padding-left: auto; padding-right: auto"><RadzenButton Variant="@(_statThirtyDays ? Radzen.Variant.Filled : Radzen.Variant.Outlined)" Style="width: 100%; max-width: 100%; padding: 0px" Text="30 days" Size="Radzen.ButtonSize.Medium" Click="@ButtonStatThirtyDaysClick"></RadzenButton></div>
+                    <div class="col-lg-3 col-md-3 col-sm-4 col-xs-4 d-inline-flex" style="padding-right: auto; padding-left: auto; width: 100%; max-width: 100%"><RadzenButton Style="padding: 0px; max-width: 100%; width: 100%" Variant="@(_statAllTimes ? Radzen.Variant.Filled : Radzen.Variant.Outlined)" Size="Radzen.ButtonSize.Medium" Text="All times" Click="@ButtonStatAllTimesClick"></RadzenButton></div>
                 </div>
             </div>
             <div class="row" style="padding: 0px; margin: 0px; padding-top: 5px; padding-bottom: 5px">
@@ -63,7 +63,7 @@
                         <RadzenColumnOptions Radius="5" />
                         <RadzenValueAxis Formatter="@FormatAsUSD">
                             <RadzenGridLines Visible="true" />
-                            <RadzenAxisTitle Text="Account AN" />
+                            <RadzenAxisTitle Text="@(_textCurrentAccount)" />
                         </RadzenValueAxis>
                         <RadzenLegend Position="Radzen.Blazor.LegendPosition.Bottom"></RadzenLegend>
                     </RadzenChart>
@@ -76,6 +76,19 @@
     <div class="col-12" style="padding-left: 2px; padding-right: 2px">
         <div class="row col-12" style="margin: 0px; padding-left: 5px; padding-right: 5px; margin-top: 5px; margin-bottom: 5px; padding-top: 5px; padding-bottom: 5px">
             <RadzenPanel AllowCollapse="true" Collapsed="@panelPotentialCollapsed" Text="Potential Buy/Sell" Style="padding-right: 5px; padding-left: 5px">
+                <HeaderTemplate>
+                    <div class="row" style="padding: 0px; margin: 0px; padding-top: 5px; padding-bottom: 5px; max-width: 100%; width: 100%">
+                        <div class="col-12 d-inline-flex" style="padding: 0px; margin: 0px; width: 100%; max-width: 100%">
+                            <div class="col-lg-2 col-md-1 col-sm-0 col-xs-0 d-inline-flex" style="padding: 0px; width: 100%; max-width: 100%; text-align: center; vertical-align: middle">
+                                <RadzenText Text="Logs" Style="width: 100%; vertical-align: middle; margin-top: auto; margin-bottom: auto" TextAlign="Radzen.TextAlign.Left" />
+                            </div>
+                            <div class="col-lg-3 col-md-3 col-sm-4 col-xs-4 d-inline-flex" style="padding-left: auto; padding-right: auto"><RadzenButton Style="width: 100%; max-width: 100%; padding: 0px" Variant="@(_tdPotential ? Radzen.Variant.Filled : Radzen.Variant.Outlined)" Text="POTENTIAL" Size="Radzen.ButtonSize.Medium" Click="@ButtonTDPotentialClick"></RadzenButton></div>
+                            <div class="col-lg-3 col-md-3 col-sm-4 col-xs-4 d-inline-flex" style="padding-left: auto; padding-right: auto"><RadzenButton Variant="@(_tdCombo ? Radzen.Variant.Filled : Radzen.Variant.Outlined)" Style="width: 100%; max-width: 100%; padding: 0px" Text="TD COMBO" Size="Radzen.ButtonSize.Medium" Click="@ButtonTDComboClick"></RadzenButton></div>
+                            <div class="col-lg-3 col-md-3 col-sm-4 col-xs-4 d-inline-flex" style="padding-right: auto; padding-left: auto; width: 100%; max-width: 100%"><RadzenButton Style="padding: 0px; max-width: 100%; width: 100%" Variant="@(_tdCountDown ? Radzen.Variant.Filled : Radzen.Variant.Outlined)" Size="Radzen.ButtonSize.Medium" Text="TD COUNT DOWN" Click="@ButtonTDCountDownClick"></RadzenButton></div>
+                        </div>
+                    </div>
+                </HeaderTemplate>
+                <ChildContent>
                 <RadzenDataGrid TItem="LogInfoItemDto" Data=@_logsPotential AllowPaging="true" Responsive="true" AllowPickAllColumns="false" AllowRowSelectOnRowClick="false" PagerAlwaysVisible="true" PageSizeText="10" class="overflow-auto">
                     <Columns>
                         <RadzenDataGridColumn Width="130px" TItem="LogInfoItemDto" Property="Symbol" Title="Symbol"></RadzenDataGridColumn>
@@ -85,6 +98,7 @@
                         <RadzenDataGridColumn TItem="LogInfoItemDto" Property="TdSupportCombo" Title="Support"></RadzenDataGridColumn>
                     </Columns>
                 </RadzenDataGrid>
+                </ChildContent>
             </RadzenPanel>
         </div>
         <div class="row col-12" style="margin: 0px; padding-left: 5px; padding-right: 5px; margin-top: 5px; margin-bottom: 5px; padding-top: 5px; padding-bottom: 5px">
@@ -95,14 +109,14 @@
                             <div class="col-lg-2 col-md-1 col-sm-0 col-xs-0 d-inline-flex" style="padding: 0px; width: 100%; max-width: 100%; text-align: center; vertical-align: middle">
                                 <RadzenText Text="Logs" Style="width: 100%; vertical-align: middle; margin-top: auto; margin-bottom: auto" TextAlign="Radzen.TextAlign.Left" />
                             </div>
-                            <div class="col-lg-3 col-md-3 col-sm-4 col-xs-4 d-inline-flex" style="padding-left: auto; padding-right: auto"><RadzenButton Style="width: 100%; max-width: 100%; padding: 0px" Variant="Radzen.Variant.Outlined" Text="Trading" Size="Radzen.ButtonSize.Medium" Click="@ButtonLogTradingClick"></RadzenButton></div>
-                            <div class="col-lg-3 col-md-3 col-sm-4 col-xs-4 d-inline-flex" style="padding-left: auto; padding-right: auto"><RadzenButton Variant="Radzen.Variant.Outlined" Style="width: 100%; max-width: 100%; padding: 0px" Text="Trading infos" Size="Radzen.ButtonSize.Medium" Click="@ButtonLogTradingInfosClick"></RadzenButton></div>
-                            <div class="col-lg-3 col-md-3 col-sm-4 col-xs-4 d-inline-flex" style="padding-right: auto; padding-left: auto; width: 100%; max-width: 100%"><RadzenButton Style="padding: 0px; max-width: 100%; width: 100%" Variant="Radzen.Variant.Outlined" Size="Radzen.ButtonSize.Medium" Text="All logs" Click="@ButtonAlLogsClick"></RadzenButton></div>
+                            <div class="col-lg-3 col-md-3 col-sm-4 col-xs-4 d-inline-flex" style="padding-left: auto; padding-right: auto"><RadzenButton Style="width: 100%; max-width: 100%; padding: 0px" Variant="@(_onlyLogTrading ? Radzen.Variant.Filled : Radzen.Variant.Outlined)" Text="Trading" Size="Radzen.ButtonSize.Medium" Click="@ButtonLogTradingClick"></RadzenButton></div>
+                            <div class="col-lg-3 col-md-3 col-sm-4 col-xs-4 d-inline-flex" style="padding-left: auto; padding-right: auto"><RadzenButton Variant="@(_onlyLogTradingInfos ? Radzen.Variant.Filled : Radzen.Variant.Outlined)" Style="width: 100%; max-width: 100%; padding: 0px" Text="Trading infos" Size="Radzen.ButtonSize.Medium" Click="@ButtonLogTradingInfosClick"></RadzenButton></div>
+                            <div class="col-lg-3 col-md-3 col-sm-4 col-xs-4 d-inline-flex" style="padding-right: auto; padding-left: auto; width: 100%; max-width: 100%"><RadzenButton Style="padding: 0px; max-width: 100%; width: 100%" Variant="@(_allLogs ? Radzen.Variant.Filled : Radzen.Variant.Outlined)" Size="Radzen.ButtonSize.Medium" Text="All logs" Click="@ButtonAlLogsClick"></RadzenButton></div>
                         </div>
                     </div>
                 </HeaderTemplate>
                 <ChildContent>
-                    <RadzenDataGrid TItem="LogInfoItemDto" Data=@_logs AllowPaging="true" Responsive="true" AllowPickAllColumns="false" AllowRowSelectOnRowClick="false" PagerAlwaysVisible="true" PageSizeText="20" class="overflow-auto">
+                    <RadzenDataGrid TItem="LogInfoItemDto" Data=@_logs AllowPaging="true" Responsive="true" AllowPickAllColumns="false" AllowRowSelectOnRowClick="false" PagerAlwaysVisible="true" PageSizeText="20" class="overflow-auto" PageSizeChanged="DataGridLogsPageSizeChanged">
                         <Columns>
                             <RadzenDataGridColumn Width="180px" TItem="LogInfoItemDto" Property="LogTime" Title="Date"></RadzenDataGridColumn>
                             <RadzenDataGridColumn Width="110px" TItem="LogInfoItemDto" Property="AccountHolder" Title="Holder"></RadzenDataGridColumn>
