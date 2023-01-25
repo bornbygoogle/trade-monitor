@@ -35,11 +35,11 @@
 </div>
 <div name="row-header" class="row my-1 py-1">
     <div class="d-block d-inline col-lg-3 col-md-3 col-sm-6 col-6 text-uppercase text-end">Real trades<br>(@(Account.RealPositivePercentage ?? 0)% succeeded trades)</div>
-    <div class="d-block d-inline col-lg-9 col-md-9 col-sm-6 col-6">@(Account.RealTotalTrades ?? 0) completed (bought + sold) with @(Account.RealTotalPositiveTrades ?? 0) positives trades / @(Account.RealAccountProfit.Sum(x => x.IncompletedTrades)) incompleted (Bought but not sold)</div>
+    <div class="d-block d-inline col-lg-9 col-md-9 col-sm-6 col-6">@(Account.RealTotalTrades ?? 0) completed (bought + sold) with @(Account.RealTotalPositiveTrades ?? 0) positives trades / @(Account.RealAccountProfitAllTimes.Sum(x => x.IncompletedTrades)) incompleted (Bought but not sold)</div>
 </div>
 <div name="row-header" class="row my-1 py-1">
     <div class="d-block d-inline col-lg-3 col-md-3 col-sm-6 col-6 text-uppercase text-end">Possible trades<br>(@(Account.SimulatedPositivePercentage ?? 0)%  succeeded trades)</div>
-    <div class="d-block d-inline col-lg-9 col-md-9 col-sm-6 col-6">@(Account.SimulatedTotalTrades ?? 0) completed (bought + sold) with @(Account.SimulatedTotalPositiveTrades ?? 0) positives trades / @(Account.SimulatedAccountProfit.Sum(x => x.IncompletedTrades)) incompleted (Bought but not sold)</div>
+    <div class="d-block d-inline col-lg-9 col-md-9 col-sm-6 col-6">@(Account.SimulatedTotalTrades ?? 0) completed (bought + sold) with @(Account.SimulatedTotalPositiveTrades ?? 0) positives trades / @(Account.SimulatedAccountProfitAllTimes.Sum(x => x.IncompletedTrades)) incompleted (Bought but not sold)</div>
 </div>
 <div name="row-header" class="row my-1 py-1">
     <div class="d-block d-inline col-lg-3 col-md-3 col-sm-6 col-6 text-uppercase text-end">Details quotes (completed) :</div>
