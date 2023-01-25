@@ -165,7 +165,7 @@ else
             {
                 foreach (var itemQuote in _account.ListQuotes)
                 {
-                    foreach (var itemProfit in _account.SimulatedAccountProfit)
+                    foreach (var itemProfit in _account.SimulatedAccountProfitAllTimes)
                     {
                         var listQuoteSold = itemProfit.CompletedDetailsSold.Where(x => x.Key == itemQuote).Sum(x => x.Value);
                         var listQuoteBought = itemProfit.CompletedDetailsBought.Where(x => x.Key == itemQuote).Sum(x => x.Value);
