@@ -5,6 +5,7 @@ using Newtonsoft.Json;
 using Radzen;
 using System.Globalization;
 using System.Net.Http.Json;
+using System.Security.Cryptography;
 using System.Security.Principal;
 using System.Timers;
 
@@ -37,9 +38,10 @@ namespace BlazorApp.Client.Pages
         //protected List<SymbolItemDto>? Symbols { get; set; }
 
         private static System.Timers.Timer refreshTimer;
+        private static int _currentNumber = 0;
 
-        private string _currentAccount = "An";
-        private string _textCurrentAccount = "Account AN";
+        private string _currentAccount = "Samuel";
+        private string _textCurrentAccount = string.Empty;
         private string _stringAccount = null;
         private AccountDto _account = null;
 
@@ -72,11 +74,17 @@ namespace BlazorApp.Client.Pages
         private List<LogInfoItemDto> _logs = null;
         private List<LogInfoItemDto> _logsPotential = null;
 
+        private List<LogInfoItemDto> _logsBoughtSold = null;
+
+        private bool panelBoughtSoldCollapsed = false;
+
         private bool panelPotentialCollapsed = true;
         private bool panelLogCollapsed = false;
 
         protected override async Task OnInitializedAsync()
         {
+            _textCurrentAccount = $"Account {_currentAccount.ToUpper()}";
+
             try
             {
                 if (refreshTimer == null)
@@ -100,6 +108,8 @@ namespace BlazorApp.Client.Pages
             {
                 GestionTimer();
 
+                Interlocked.Increment(ref _currentNumber);
+
                 hasNewResult = true;
             }
             catch
@@ -108,13 +118,23 @@ namespace BlazorApp.Client.Pages
             }
 
             if (hasNewResult)
+            {
+                if (_currentNumber == 31)
+                    Interlocked.Exchange(ref _currentNumber, 0);
+
                 _ = InvokeAsync(StateHasChanged);
+            }                
         }
 
         private async void GestionTimer()
         {
-            _stringAccount = await Http.GetStringAsync($"/api/GetInfos?accType=Spot&accHolder={_currentAccount}");
-            CalculateProfitQuotes();
+            if (_currentNumber == 10 || _currentNumber == 30)
+            {
+                _stringAccount = await Http.GetStringAsync($"/api/GetInfos?accType=Spot&accHolder={_currentAccount}");
+                CalculateProfitQuotes();
+
+                _logsBoughtSold = await Http.GetFromJsonAsync<List<LogInfoItemDto>>($"/api/GetBoughtSold?accType=Spot&accHolder={_currentAccount}");
+            }                
 
             string urlLog = $"/api/GetAllLogs?accType=Spot&accHolder=An";
 
@@ -133,7 +153,6 @@ namespace BlazorApp.Client.Pages
                 _logsPotential = await Http.GetFromJsonAsync<List<LogInfoItemDto>>($"/api/GetLogKlineTDCombo?accType=Spot&accHolder=An");
             else if (_tdCountDown)
                 _logsPotential = await Http.GetFromJsonAsync<List<LogInfoItemDto>>($"/api/GetLogKlineTDCountDown?accType=Spot&accHolder=An");
-
         }
 
         private void CalculateProfitQuotes()
@@ -290,7 +309,7 @@ namespace BlazorApp.Client.Pages
 
         protected async System.Threading.Tasks.Task ButtonStatSevenDaysClick(Microsoft.AspNetCore.Components.Web.MouseEventArgs args)
         {
-            _statSevenDays= true;
+            _statSevenDays = true;
             _statThirtyDays = false;
             _statAllTimes = false;
         }
