@@ -1,13 +1,10 @@
 ﻿using BlazorApp.Shared;
 using BlazorApp.Shared.CoreDto;
-using CryptoExchange.Net.Interfaces;
-using Microsoft.AspNetCore.Mvc;
 using Newtonsoft.Json;
 using System;
 using System.Collections.Generic;
 using System.Net.Http;
 using System.Net.Http.Json;
-using System.Reflection;
 using System.Threading;
 
 namespace BlazorApp.Api

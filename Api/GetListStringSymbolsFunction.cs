@@ -1,13 +1,10 @@
-using System;
-using System.Linq;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Azure.WebJobs;
 using Microsoft.Azure.WebJobs.Extensions.Http;
 using Microsoft.Extensions.Logging;
 using System.Collections.Generic;
-using System.Net.Http;
-using System.Net.Http.Json;
+using System.Linq;
 
 namespace BlazorApp.Api
 {

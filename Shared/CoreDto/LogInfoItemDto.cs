@@ -14,7 +14,7 @@ namespace BlazorApp.Shared.CoreDto
 
 
         public string Service { get; set; } = string.Empty;
-        public LogType LogType { get; set; }
+
         public string Symbol { get; set; } = string.Empty;
         public string Message { get; set; } = string.Empty;
 

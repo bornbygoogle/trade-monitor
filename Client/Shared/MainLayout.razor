@@ -19,7 +19,6 @@
 <RadzenTooltip />
 <RadzenContextMenu />
 
-@*<CascadingValue Value="@SymbolsInString" Name="Symbols">*@
 <RadzenLayout style="grid-template-areas: 'rz-sidebar rz-header' 'rz-sidebar rz-body';">
     <RadzenHeader Style="background-color: #ffffff">
         <div class="container-fluid" style="border: 0px none rgba(255, 255, 255, 0)">
@@ -67,7 +66,12 @@
         </div>
         <RadzenPanelMenu>
             <RadzenPanelMenuItem Text="Home" Path="/" />
-            <RadzenPanelMenuItem Text="Login" Path="/login" />
+            <RadzenPanelMenuItem Text="Account An" Path="/an" />
+            <RadzenPanelMenuItem Text="Account Samuel" Path="/samuel" />
+            <RadzenPanelMenuItem Text="Account Tam" Path="/tam" />
+            <RadzenPanelMenuItem Text="Account Yannick" Path="/yannick" />
+            @*<RadzenPanelMenuItem Text="Login" Path="/login" />
+            <RadzenPanelMenuItem Text="Logout" Path="/logout" />*@
         </RadzenPanelMenu>
         <div class="py-3 py-md-4" style="padding: var(--rz-panel-menu-item-padding);">
             <RadzenText Text="trade-monitor v1.0.0" TextStyle="Radzen.Blazor.TextStyle.Caption" style="color: var(--rz-text-disabled-color);" TagName="Radzen.Blazor.TagName.P" TextAlign="Radzen.TextAlign.Center" />
@@ -75,4 +79,3 @@
         </div>
     </RadzenSidebar>
 </RadzenLayout>
-@*</CascadingValue>*@

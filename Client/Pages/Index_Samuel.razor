@@ -1,0 +1,127 @@
+﻿@using BlazorApp.Shared.CoreDto;
+@using System.Globalization;
+@using BlazorApp.Shared;
+
+@page "/samuel"
+
+<PageTitle>BINANCE TRADE BOT MONITORING</PageTitle>
+
+<div class="row" style="margin: 0px; padding: 0px; margin-top: 10px; margin-bottom: 10px">
+    <div class="col-12" style="padding-left: 2px; padding-right: 2px; padding: 0px">
+        <RadzenCard Style="padding-top: 5px; padding-bottom: 5px">
+            <div class="row" style="padding: 0px; margin: 0px; padding-top: 5px; padding-bottom: 5px">
+                <div class="col-12 d-inline-flex" style="padding: 0px; margin: 0px">
+                    <div class="col-lg-5 col-md-4 col-sm-4 col-xs-4 d-inline-flex" style="padding: 0px; width: 100%; max-width: 100%; text-align: center; vertical-align: middle">
+                        <RadzenText Text="Percentage succeeded trades" Style="width: 100%; vertical-align: middle; margin-top: auto; margin-bottom: auto" TextAlign="Radzen.TextAlign.Left" />
+                    </div>
+                    <div class="col-lg-3 col-md-3 col-sm-4 col-xs-4 d-inline-flex" style="padding-left: auto; padding-right: auto"><RadzenButton Style="width: 100%; max-width: 100%; padding: 0px" Variant="@(_realPercentage ? Radzen.Variant.Filled : Radzen.Variant.Outlined)" Text="REAL TRADES" Size="Radzen.ButtonSize.Medium" Click="@ButtonGetRealTradesPercentageClick"></RadzenButton></div>
+                    <div class="col-lg-3 col-md-3 col-sm-4 col-xs-4 d-inline-flex" style="padding-left: auto; padding-right: auto"><RadzenButton Variant="@(!_realPercentage ? Radzen.Variant.Filled : Radzen.Variant.Outlined)" Style="width: 100%; max-width: 100%; padding: 0px" Text="POSSIBLE TRADES" Size="Radzen.ButtonSize.Medium" Click="@ButtonGetPossibleTradesPercentageClick"></RadzenButton></div>
+                </div>
+            </div>
+            <div class="row" style="padding: 0px; margin: 0px; padding-top: 5px; padding-bottom: 5px">
+                <div class="col-12" style="padding: 0px; margin: 0px">
+                    <RadzenChart>
+                        <RadzenDonutSeries Data="@_nbrTrades.ToArray()" CategoryProperty="Base" ValueProperty="Profit">
+                            <ChildContent>
+                                <RadzenSeriesDataLabels Visible="true" />
+                            </ChildContent>
+                            <TitleTemplate>
+                                <div class="rz-donut-content">
+                                    <div>@(_totalTrades) trades</div>
+                                    <div>@(_percentageSucceededTrades)%</div>
+                                </div>
+                            </TitleTemplate>
+                        </RadzenDonutSeries>
+                        <RadzenLegend Position="Radzen.Blazor.LegendPosition.Right"></RadzenLegend>
+                        <RadzenCategoryAxis Visible="false"></RadzenCategoryAxis>
+                    </RadzenChart>
+                </div>
+            </div>
+        </RadzenCard>
+    </div>
+</div>
+
+<div class="row" style="margin: 0px; padding: 0px">
+    <div class="col-12" style="padding-left: 2px; padding-right: 2px; padding: 0px">
+        <RadzenPanel Style="padding-top: 5px; padding-bottom: 5px">
+            <div class="row" style="padding: 0px; margin: 0px; padding-top: 5px; padding-bottom: 5px">
+                <div class="col-12 d-inline-flex" style="padding: 0px; margin: 0px">
+                    <div class="d-lg-inline-flex d-md-inline-flex col-lg-2 col-md-1 col-sm-0 col-xs-0 d-none" style="padding: 0px; width: 100%; max-width: 100%; text-align: center; vertical-align: middle">
+                        <RadzenText Text="Profit" Style="width: 100%; vertical-align: middle; margin-top: auto; margin-bottom: auto" TextAlign="Radzen.TextAlign.Left" />
+                    </div>
+                    <div class="col-lg-3 col-md-3 col-sm-12 col-xs-12 d-inline-flex" style="margin: auto; padding-left: 5px; padding-right: 5px"><RadzenButton Style="width: 100%; max-width: 100%; padding: 0px" Variant="@(_statSevenDays ? Radzen.Variant.Filled : Radzen.Variant.Outlined)" Text="7 days" Size="Radzen.ButtonSize.Medium" Click="@ButtonStatSevenDaysClick"></RadzenButton></div>
+                    <div class="col-lg-3 col-md-3 col-sm-12 col-xs-12 d-inline-flex" style="margin: auto; padding-left: 5px; padding-right: 5px"><RadzenButton Variant="@(_statThirtyDays ? Radzen.Variant.Filled : Radzen.Variant.Outlined)" Style="width: 100%; max-width: 100%; padding: 0px" Text="30 days" Size="Radzen.ButtonSize.Medium" Click="@ButtonStatThirtyDaysClick"></RadzenButton></div>
+                    <div class="col-lg-3 col-md-3 col-sm-12 col-xs-12 d-inline-flex" style="margin: auto; padding-left: 5px; padding-right: 5px"><RadzenButton Style="padding: 0px; max-width: 100%; width: 100%" Variant="@(_statAllTimes ? Radzen.Variant.Filled : Radzen.Variant.Outlined)" Size="Radzen.ButtonSize.Medium" Text="All times" Click="@ButtonStatAllTimesClick"></RadzenButton></div>
+                </div>
+            </div>
+            <div class="row" style="padding: 0px; margin: 0px; padding-top: 5px; padding-bottom: 5px">
+                <div class="d-lg-inline-flex d-md-inline-flex col-lg-12 col-md-12 col-sm-0 col-xs-0 d-none" style="padding: 0px; margin: 0px">
+                    <RadzenChart Style="width: 100%; max-width: 100%" Visible="true" ColorScheme="Radzen.Blazor.ColorScheme.Pastel">
+                        <RadzenColumnSeries Data="@_profitSimulated.ToArray()" CategoryProperty="Base" Title="Possible Trades" ValueProperty="Profit">
+                            <RadzenSeriesDataLabels Visible="@showDataLabels" />
+                        </RadzenColumnSeries>
+                        <RadzenColumnSeries Data="@_profitReal.ToArray()" CategoryProperty="Base" Title="Real Trades" ValueProperty="Profit">
+                            <RadzenSeriesDataLabels Visible="@showDataLabels" />
+                        </RadzenColumnSeries>
+                        <RadzenColumnOptions Radius="5" />
+                        <RadzenValueAxis Formatter="@ClsUtilCommon.FormatAsUSD">
+                            <RadzenGridLines Visible="true" />
+                            <RadzenAxisTitle Text="@(_textCurrentAccount)" />
+                        </RadzenValueAxis>
+                        <RadzenLegend Position="Radzen.Blazor.LegendPosition.Bottom"></RadzenLegend>
+                    </RadzenChart>
+                </div>
+                <div class="col-sm-12 col-xs-12 d-lg-none d-md-none" style="padding: 0px; margin: 0px">
+                    <RadzenPanel Collapsed="true" Style="vertical-align: middle; margin-top: auto; margin-bottom: auto; width: 100%; max-width: 100%" Text="Real profit" AllowCollapse="true">
+                        <ChildContent>
+                            @foreach (var itemRealProfit in _profitReal)
+                            {
+                                <div class="row">
+                                    <div class="col-2"></div>
+                                    <div class="col-10 d-inline-flex" style="padding: 0px; margin: 0px">
+                                        <RadzenText Text="@itemRealProfit.Base" Style="margin: 0px"></RadzenText>
+                                        <RadzenText Text="@itemRealProfit.Profit.ToString(CultureInfo.InvariantCulture)" Style="margin: 0px; padding-left: auto; padding-right: auto; margin-left: auto; margin-right: auto"></RadzenText>
+                                    </div>
+                                </div>
+                            }
+                        </ChildContent>
+                    </RadzenPanel>
+                    <RadzenPanel Collapsed="true" Style="vertical-align: middle; margin-top: auto; margin-bottom: auto; width: 100%; max-width: 100%" Text="Simulated profit" AllowCollapse="true">
+                        <ChildContent>
+                            @foreach (var itemSimulatedProfit in _profitSimulated)
+                            {
+                                <div class="row">
+                                    <div class="col-2"></div>
+                                    <div class="col-10 d-inline-flex" style="padding: 0px; margin: 0px">
+                                        <RadzenText Text="@itemSimulatedProfit.Base" Style="margin: 0px"></RadzenText>
+                                        <RadzenText Text="@itemSimulatedProfit.Profit.ToString(CultureInfo.InvariantCulture)" Style="margin: 0px; padding-left: auto; padding-right: auto; margin-left: auto; margin-right: auto"></RadzenText>
+                                    </div>
+                                </div>
+                            }
+                        </ChildContent>
+                    </RadzenPanel>
+                </div>
+            </div>
+        </RadzenPanel>
+    </div>
+</div>
+
+<div class="row col-12" style="margin: 0px; padding-left: 5px; padding-right: 5px; margin-top: 5px; margin-bottom: 5px; padding-top: 5px; padding-bottom: 5px">
+    <RadzenPanel AllowCollapse="true" Collapsed="@panelBoughtSoldCollapsed" Text="Trades" Style="padding-right: 5px; padding-left: 5px">
+
+        <RadzenDataGrid TItem="LogInfoItemDto" Data=@_logsBoughtSold AllowPaging="true" Responsive="true" AllowPickAllColumns="false" AllowRowSelectOnRowClick="false" PagerAlwaysVisible="true" PageSizeText="10" class="overflow-auto">
+            <Columns>
+                <RadzenDataGridColumn Width="200px" TItem="LogInfoItemDto" Property="BoughtDate" Title="Bought date"></RadzenDataGridColumn>
+                <RadzenDataGridColumn Width="150px" TItem="LogInfoItemDto" Property="Symbol" Title="Symbol"></RadzenDataGridColumn>
+                <RadzenDataGridColumn TItem="LogInfoItemDto" Property="Quantity" Title="Quantity"></RadzenDataGridColumn>
+                <RadzenDataGridColumn TItem="LogInfoItemDto" Property="Close" Title="Current price"></RadzenDataGridColumn>
+                <RadzenDataGridColumn TItem="LogInfoItemDto" Property="PriceBought" Title="Bought"></RadzenDataGridColumn>
+                <RadzenDataGridColumn TItem="LogInfoItemDto" Property="PriceStopLoss" Title="Stop loss"></RadzenDataGridColumn>
+                <RadzenDataGridColumn TItem="LogInfoItemDto" Property="PriceProfit" Title="Profit"></RadzenDataGridColumn>
+                <RadzenDataGridColumn TItem="LogInfoItemDto" Property="PriceSold" Title="Sold"></RadzenDataGridColumn>
+                <RadzenDataGridColumn Width="200px" TItem="LogInfoItemDto" Property="SoldDate" Title="Sold date"></RadzenDataGridColumn>
+            </Columns>
+        </RadzenDataGrid>
+
+    </RadzenPanel>
+</div>

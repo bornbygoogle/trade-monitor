@@ -1,7 +1,5 @@
-﻿using BlazorApp.Client.Pages;
-using BlazorApp.Shared.CoreDto;
+﻿using BlazorApp.Shared.CoreDto;
 using Microsoft.AspNetCore.Components;
-using Microsoft.AspNetCore.Components.Web;
 using Microsoft.JSInterop;
 using Radzen;
 using System.Net.Http.Json;
@@ -44,13 +42,13 @@ namespace BlazorApp.Client.Shared
         [ParameterAttribute]
         public string Symbol
         {
-            get 
-            { 
-                return _symbol; 
+            get
+            {
+                return _symbol;
             }
-            set 
-            { 
-                _symbol = value; 
+            set
+            {
+                _symbol = value;
             }
         }
 

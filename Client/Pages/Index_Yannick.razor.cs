@@ -9,7 +9,7 @@ using System.Timers;
 
 namespace BlazorApp.Client.Pages
 {
-    public partial class Index
+    public partial class Index_Yannick
     {
         [Inject]
         protected IJSRuntime JSRuntime { get; set; }
@@ -34,7 +34,7 @@ namespace BlazorApp.Client.Pages
 
         private static bool _onWork = false;
 
-        private string _selectedAccount = "An";
+        private string _selectedAccount = "Yannick";
 
         private static System.Timers.Timer refreshTimer;
         private static int _currentNumber = 0;
@@ -47,25 +47,22 @@ namespace BlazorApp.Client.Pages
         private bool _statThirtyDays = false;
         private bool _statAllTimes = false;
 
-        private bool _onlyLogTrading = true;
-        private bool _onlyLogTradingInfos = false;
-        private bool _allLogs = false;
-        private DateTime? _dtPageSize = null;
-
-        private bool _tdPotential = true;
-        private bool _tdCombo = false;
-        private bool _tdCountDown = false;
-
         private List<DataItem> _nbrTrades = new List<DataItem>();
         private decimal? _totalTrades = 0;
         private decimal? _percentageSucceededTrades = 0;
-        private bool _realPercentage = false;
+        private bool _realPercentage = true;
 
         private List<DataItem> _profitSimulated = new List<DataItem>();
         private List<DataItem> _profitReal = new List<DataItem>();
 
+
+
         private List<LogInfoItemDto> _logs = null;
         private List<LogInfoItemDto> _logsPotential = null;
+
+        private List<LogInfoItemDto> _logsBoughtSold = null;
+
+        private bool panelBoughtSoldCollapsed = false;
 
         private bool panelPotentialCollapsed = true;
         private bool panelLogCollapsed = false;
@@ -128,27 +125,11 @@ namespace BlazorApp.Client.Pages
         {
             if (_currentNumber == 10 || _currentNumber == 30)
             {
-                _stringAccount = await Http.GetStringAsync($"/api/GetSimulatedInfos?accType=Spot");
+                _stringAccount = await Http.GetStringAsync($"/api/GetInfos?accType=Spot&accHolder={_selectedAccount}");
                 CalculateProfitQuotes();
+
+                _logsBoughtSold = await Http.GetFromJsonAsync<List<LogInfoItemDto>>($"/api/GetBoughtSold?accType=Spot&accHolder={_selectedAccount}");
             }
-
-            string urlLog = $"/api/GetAllLogs?accType=Spot&accHolder=An";
-
-            if (_onlyLogTrading)
-                urlLog = $"/api/GetLogsTrading?accType=Spot&accHolder=An";
-            else if (_onlyLogTradingInfos)
-                urlLog = $"/api/GetLogsTradingInfos?accType=Spot&accHolder=An";
-            else
-                urlLog = $"/api/GetAllLogs?accType=Spot&accHolder=An";
-
-            _logs = await Http.GetFromJsonAsync<List<LogInfoItemDto>>(urlLog);
-
-            if (_tdPotential)
-                _logsPotential = await Http.GetFromJsonAsync<List<LogInfoItemDto>>($"/api/GetLogKlinePotential?accType=Spot&accHolder=An");
-            else if (_tdCombo)
-                _logsPotential = await Http.GetFromJsonAsync<List<LogInfoItemDto>>($"/api/GetLogKlineTDCombo?accType=Spot&accHolder=An");
-            else if (_tdCountDown)
-                _logsPotential = await Http.GetFromJsonAsync<List<LogInfoItemDto>>($"/api/GetLogKlineTDCountDown?accType=Spot&accHolder=An");
         }
 
         private void CalculateProfitQuotes()
@@ -214,57 +195,54 @@ namespace BlazorApp.Client.Pages
 
                         _profitSimulated.Add(quoteSimulated);
 
-                        if (_account.RealAccountProfitAllTimes != null)
+                        double totalBoughtReal = 0;
+                        double totalSoldReal = 0;
+                        Dictionary<string, double> dictBoughtReal = new Dictionary<string, double>();
+                        Dictionary<string, double> dictSoldReal = new Dictionary<string, double>();
+
+                        var statAccountReal = _account.RealAccountProfitSevenDays;
+
+                        if (_statThirtyDays)
+                            statAccountReal = _account.RealAccountProfitThirtyDays;
+                        else if (_statAllTimes)
+                            statAccountReal = _account.RealAccountProfitAllTimes;
+
+                        foreach (var itemProfit in statAccountReal)
                         {
-                            double totalBoughtReal = 0;
-                            double totalSoldReal = 0;
-                            Dictionary<string, double> dictBoughtReal = new Dictionary<string, double>();
-                            Dictionary<string, double> dictSoldReal = new Dictionary<string, double>();
+                            double listQuoteSold = (double)itemProfit.CompletedDetailsSold.Where(x => x.Key == itemQuote).Sum(x => x.Value);
+                            double listQuoteBought = (double)itemProfit.CompletedDetailsBought.Where(x => x.Key == itemQuote).Sum(x => x.Value);
 
-                            var statAccountReal = _account.RealAccountProfitSevenDays;
-
-                            if (_statThirtyDays)
-                                statAccountReal = _account.RealAccountProfitThirtyDays;
-                            else if (_statAllTimes)
-                                statAccountReal = _account.RealAccountProfitAllTimes;
-
-                            foreach (var itemProfit in statAccountReal)
+                            if (dictBoughtReal.ContainsKey(itemQuote))
                             {
-                                double listQuoteSold = (double)itemProfit.CompletedDetailsSold.Where(x => x.Key == itemQuote).Sum(x => x.Value);
-                                double listQuoteBought = (double)itemProfit.CompletedDetailsBought.Where(x => x.Key == itemQuote).Sum(x => x.Value);
+                                dictBoughtReal.TryGetValue(itemQuote, out totalBoughtReal);
+                                totalBoughtReal += listQuoteBought;
 
-                                if (dictBoughtReal.ContainsKey(itemQuote))
-                                {
-                                    dictBoughtReal.TryGetValue(itemQuote, out totalBoughtReal);
-                                    totalBoughtReal += listQuoteBought;
-
-                                    dictBoughtReal.Remove(itemQuote);
-                                    dictBoughtReal.Add(itemQuote, totalBoughtReal);
-                                }
-                                else
-                                    dictBoughtReal.Add(itemQuote, listQuoteBought);
-
-                                if (dictSoldReal.ContainsKey(itemQuote))
-                                {
-                                    dictSoldReal.TryGetValue(itemQuote, out totalSoldReal);
-                                    totalSoldReal += listQuoteSold;
-
-                                    dictSoldReal.Remove(itemQuote);
-                                    dictSoldReal.Add(itemQuote, totalSoldReal);
-                                }
-                                else
-                                    dictSoldReal.Add(itemQuote, listQuoteSold);
+                                dictBoughtReal.Remove(itemQuote);
+                                dictBoughtReal.Add(itemQuote, totalBoughtReal);
                             }
+                            else
+                                dictBoughtReal.Add(itemQuote, listQuoteBought);
 
-                            DataItem quoteReal = new DataItem();
-                            quoteReal.Base = itemQuote;
-                            quoteReal.Profit = totalSoldReal - totalBoughtReal;
+                            if (dictSoldReal.ContainsKey(itemQuote))
+                            {
+                                dictSoldReal.TryGetValue(itemQuote, out totalSoldReal);
+                                totalSoldReal += listQuoteSold;
 
-                            if (_profitReal.Any(x => x.Base == quoteReal.Base))
-                                _profitReal.Remove(quoteReal);
-
-                            _profitReal.Add(quoteReal);
+                                dictSoldReal.Remove(itemQuote);
+                                dictSoldReal.Add(itemQuote, totalSoldReal);
+                            }
+                            else
+                                dictSoldReal.Add(itemQuote, listQuoteSold);
                         }
+
+                        DataItem quoteReal = new DataItem();
+                        quoteReal.Base = itemQuote;
+                        quoteReal.Profit = totalSoldReal - totalBoughtReal;
+
+                        if (_profitReal.Any(x => x.Base == quoteReal.Base))
+                            _profitReal.Remove(quoteReal);
+
+                        _profitReal.Add(quoteReal);
                     }
 
                     _nbrTrades.Clear();
@@ -328,27 +306,6 @@ namespace BlazorApp.Client.Pages
             _statAllTimes = true;
         }
 
-        protected async System.Threading.Tasks.Task ButtonLogTradingClick(Microsoft.AspNetCore.Components.Web.MouseEventArgs args)
-        {
-            _onlyLogTrading = true;
-            _onlyLogTradingInfos = false;
-            _allLogs = false;
-        }
-
-        protected async System.Threading.Tasks.Task ButtonLogTradingInfosClick(Microsoft.AspNetCore.Components.Web.MouseEventArgs args)
-        {
-            _onlyLogTrading = false;
-            _onlyLogTradingInfos = true;
-            _allLogs = false;
-        }
-
-        protected async System.Threading.Tasks.Task ButtonAlLogsClick(Microsoft.AspNetCore.Components.Web.MouseEventArgs args)
-        {
-            _onlyLogTrading = false;
-            _onlyLogTradingInfos = false;
-            _allLogs = true;
-        }
-
         protected async System.Threading.Tasks.Task ButtonGetRealTradesPercentageClick(Microsoft.AspNetCore.Components.Web.MouseEventArgs args)
         {
             _realPercentage = true;
@@ -357,32 +314,6 @@ namespace BlazorApp.Client.Pages
         protected async System.Threading.Tasks.Task ButtonGetPossibleTradesPercentageClick(Microsoft.AspNetCore.Components.Web.MouseEventArgs args)
         {
             _realPercentage = false;
-        }
-
-        protected async System.Threading.Tasks.Task ButtonTDPotentialClick(Microsoft.AspNetCore.Components.Web.MouseEventArgs args)
-        {
-            _tdPotential = true;
-            _tdCombo = false;
-            _tdCountDown = false;
-        }
-
-        protected async System.Threading.Tasks.Task ButtonTDComboClick(Microsoft.AspNetCore.Components.Web.MouseEventArgs args)
-        {
-            _tdPotential = false;
-            _tdCombo = true;
-            _tdCountDown = false;
-        }
-
-        protected async System.Threading.Tasks.Task ButtonTDCountDownClick(Microsoft.AspNetCore.Components.Web.MouseEventArgs args)
-        {
-            _tdPotential = false;
-            _tdCombo = false;
-            _tdCountDown = true;
-        }
-
-        protected async System.Threading.Tasks.Task DataGridLogsPageSizeChanged(System.Int32 args)
-        {
-            _dtPageSize = DateTime.Now;
         }
     }
 }

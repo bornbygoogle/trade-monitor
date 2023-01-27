@@ -1,10 +1,8 @@
-﻿using BlazorApp.Shared.CoreDto;
-using Microsoft.AspNetCore.Components;
+﻿using Microsoft.AspNetCore.Components;
 using Microsoft.JSInterop;
 using Radzen;
 using System.Net.Http.Json;
 using System.Timers;
-using static System.Net.WebRequestMethods;
 
 namespace BlazorApp.Client.Shared
 {
@@ -32,8 +30,8 @@ namespace BlazorApp.Client.Shared
         protected HttpClient Http { get; set; }
 
         private string _priceBTC = "BTC : 16000";
-        private string _priceBNB = "BTC : 300";
-        private string _priceETH = "BTC : 1600";
+        private string _priceBNB = "BNB : 300";
+        private string _priceETH = "ETH : 1600";
 
         private static System.Timers.Timer refreshTimer;
 
@@ -43,7 +41,7 @@ namespace BlazorApp.Client.Shared
             {
                 if (refreshTimer == null)
                 {
-                    refreshTimer = new System.Timers.Timer(5000);
+                    refreshTimer = new System.Timers.Timer(TimeSpan.FromSeconds(5).TotalMilliseconds);
                     refreshTimer.Elapsed += RefreshTimer;
                     refreshTimer.Enabled = true;
                 }
@@ -67,7 +65,7 @@ namespace BlazorApp.Client.Shared
                 newPriceBTC = await Http.GetFromJsonAsync<decimal>($"/api/GetLatestClose?accType=Spot&symbol=BTCUSDT");
                 if (newPriceBTC > 0)
                     _priceBTC = $"BTC : {Math.Round(newPriceBTC, 2)}";
-                
+
                 newPriceBNB = await Http.GetFromJsonAsync<decimal>($"/api/GetLatestClose?accType=Spot&symbol=BNBUSDT");
                 if (newPriceBNB > 0)
                     _priceBNB = $"BNB : {Math.Round(newPriceBNB, 2)}";

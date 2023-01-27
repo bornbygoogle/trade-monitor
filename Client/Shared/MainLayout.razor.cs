@@ -1,11 +1,7 @@
-﻿using BlazorApp.Shared.CoreDto;
-using Microsoft.AspNetCore.Components;
+﻿using Microsoft.AspNetCore.Components;
 using Microsoft.JSInterop;
 using Radzen;
-using System;
-using System.IO.Pipelines;
 using System.Net.Http.Json;
-using static System.Net.WebRequestMethods;
 
 namespace BlazorApp.Client.Shared
 {
@@ -37,8 +33,6 @@ namespace BlazorApp.Client.Shared
         public bool panelCurrentSymbolExpanded = true;
         public bool panelCurrentSymbolCollapsed = false;
 
-        //private List<SymbolItemDto> Symbols = null;
-        //private SymbolItemDto SelectedSymbol = null;
         private string SelectedSymbol = null;
         private List<string> SymbolsInString = null;
 
@@ -47,7 +41,6 @@ namespace BlazorApp.Client.Shared
             try
             {
                 SymbolsInString = await Http.GetFromJsonAsync<List<string>>($"/api/GetListStringSymbols?accType=Spot&accHolder=An");
-                //Symbols = await Http.GetFromJsonAsync<List<SymbolItemDto>>($"/api/GetListSymbolsWithBaseQuote?accType=Spot&accHolder=An") ?? new List<SymbolItemDto> { };
             }
             catch (Exception ex)
             {

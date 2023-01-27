@@ -7,15 +7,14 @@ using System.Linq;
 
 namespace BlazorApp.Api
 {
-    public static class GetInfosFunction
+    public static class GetSimulatedInfosFunction
     {
-        [FunctionName("GetInfos")]
-        public static IActionResult GetInfos([HttpTrigger(AuthorizationLevel.Anonymous, "get", Route = null)] HttpRequest req, ILogger log)
+        [FunctionName("GetSimulatedInfos")]
+        public static IActionResult GetGetSimulatedInfos([HttpTrigger(AuthorizationLevel.Anonymous, "get", Route = null)] HttpRequest req, ILogger log)
         {
             var accType = req.Query.Where(x => x.Key == "accType").FirstOrDefault().Value;
-            var accHolder = req.Query.Where(x => x.Key == "accHolder").FirstOrDefault().Value;
 
-            string sUrl = $"{ClsCommon.GetUrlServer()}/Server/GetInfos?accType={accType}&accHolder={accHolder}";
+            string sUrl = $"{ClsCommon.GetUrlServer()}/Server/GetSimulatedInfos?accType={accType}&accHolder=An";
             string sAccountInfo = ClsCommon.ExecuteHttpGet(sUrl);
 
             return new OkObjectResult(sAccountInfo);
