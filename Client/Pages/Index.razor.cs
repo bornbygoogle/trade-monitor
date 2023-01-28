@@ -46,10 +46,7 @@ namespace BlazorApp.Client.Pages
         private bool _statThirtyDays = false;
         private bool _statAllTimes = false;
 
-        private bool _onlyLogTrading = true;
-        private bool _onlyLogTradingInfos = false;
-        private bool _allLogs = false;
-        private DateTime? _dtPageSize = null;
+
 
         private bool _tdPotential = true;
         private bool _tdCombo = false;
@@ -63,11 +60,9 @@ namespace BlazorApp.Client.Pages
         private List<DataItem> _profitSimulated = new List<DataItem>();
         private List<DataItem> _profitReal = new List<DataItem>();
 
-        private List<LogInfoItemDto> _logs = null;
         private List<LogInfoItemDto> _logsPotential = null;
 
         private bool panelPotentialCollapsed = true;
-        private bool panelLogCollapsed = false;
 
         bool showDataLabels = true;
 
@@ -143,16 +138,6 @@ namespace BlazorApp.Client.Pages
         {
             _stringAccount = await Http.GetStringAsync($"/api/GetInfos?accType=Spot&accHolder=An");
             CalculateProfitQuotes();
-
-            string urlLog;
-            if (_onlyLogTrading)
-                urlLog = $"/api/GetLogsTrading?accType=Spot&accHolder=An";
-            else if (_onlyLogTradingInfos)
-                urlLog = $"/api/GetLogsTradingInfos?accType=Spot&accHolder=An";
-            else
-                urlLog = $"/api/GetAllLogs?accType=Spot&accHolder=An";
-
-            _logs = await Http.GetFromJsonAsync<List<LogInfoItemDto>>(urlLog, _cancelToken.Token);
 
             if (_tdPotential)
                 _logsPotential = await Http.GetFromJsonAsync<List<LogInfoItemDto>>($"/api/GetLogKlinePotential?accType=Spot&accHolder=An", _cancelToken.Token);
@@ -339,27 +324,6 @@ namespace BlazorApp.Client.Pages
             _statAllTimes = true;
         }
 
-        protected void ButtonLogTradingClick(Microsoft.AspNetCore.Components.Web.MouseEventArgs args)
-        {
-            _onlyLogTrading = true;
-            _onlyLogTradingInfos = false;
-            _allLogs = false;
-        }
-
-        protected void ButtonLogTradingInfosClick(Microsoft.AspNetCore.Components.Web.MouseEventArgs args)
-        {
-            _onlyLogTrading = false;
-            _onlyLogTradingInfos = true;
-            _allLogs = false;
-        }
-
-        protected void ButtonAlLogsClick(Microsoft.AspNetCore.Components.Web.MouseEventArgs args)
-        {
-            _onlyLogTrading = false;
-            _onlyLogTradingInfos = false;
-            _allLogs = true;
-        }
-
         protected void ButtonTDPotentialClick(Microsoft.AspNetCore.Components.Web.MouseEventArgs args)
         {
             _tdPotential = true;
@@ -380,12 +344,6 @@ namespace BlazorApp.Client.Pages
             _tdCombo = false;
             _tdCountDown = true;
         }
-
-        protected void DataGridLogsPageSizeChanged(System.Int32 args)
-        {
-            _dtPageSize = DateTime.Now;
-        }
-
 
     }
 }

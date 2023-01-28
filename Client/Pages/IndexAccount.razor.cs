@@ -55,15 +55,6 @@ namespace BlazorApp.Client.Pages
         private bool _statThirtyDays = false;
         private bool _statAllTimes = false;
 
-        private bool _onlyLogTrading = true;
-        private bool _onlyLogTradingInfos = false;
-        private bool _allLogs = false;
-        private DateTime? _dtPageSize = null;
-
-        private bool _tdPotential = true;
-        private bool _tdCombo = false;
-        private bool _tdCountDown = false;
-
         private List<DataItem> _nbrTrades = new List<DataItem>();
         private decimal? _totalTrades = 0;
         private decimal? _percentageSucceededTrades = 0;
@@ -77,8 +68,6 @@ namespace BlazorApp.Client.Pages
 
         private bool panelBoughtSoldCollapsed = false;
 
-        private bool panelPotentialCollapsed = true;
-        private bool panelLogCollapsed = false;
 
         bool showDataLabels = true;
 
