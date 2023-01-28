@@ -1,4 +1,5 @@
-﻿using Microsoft.AspNetCore.Components;
+﻿using BlazorApp.Shared;
+using Microsoft.AspNetCore.Components;
 using Microsoft.JSInterop;
 using Radzen;
 using System.Net.Http.Json;
@@ -6,7 +7,7 @@ using System.Timers;
 
 namespace BlazorApp.Client.Shared
 {
-    public partial class TopBarPriceIndicator
+    public partial class TopBarPriceIndicator : IDisposable
     {
         [Inject]
         protected IJSRuntime JSRuntime { get; set; }
@@ -35,16 +36,39 @@ namespace BlazorApp.Client.Shared
 
         private static System.Timers.Timer refreshTimer;
 
+        private CancellationTokenSource _cancelToken = null;
+
+        public void Dispose()
+        {
+            if (refreshTimer != null)
+            {
+                refreshTimer.Stop();
+                refreshTimer.Elapsed -= RefreshTimer;
+                refreshTimer.Dispose();
+
+                refreshTimer = null;
+            }
+
+            if (_cancelToken == null)
+            {
+                _cancelToken?.Cancel();
+                _cancelToken?.Dispose();
+                _cancelToken = null;
+            }
+        }
+
         protected override async Task OnInitializedAsync()
         {
             try
             {
                 if (refreshTimer == null)
                 {
-                    refreshTimer = new System.Timers.Timer(TimeSpan.FromSeconds(5).TotalMilliseconds);
+                    refreshTimer = new System.Timers.Timer(TimeSpan.FromSeconds(ClsUtilCommon.TIMER_DURATION).TotalMilliseconds);
                     refreshTimer.Elapsed += RefreshTimer;
                     refreshTimer.Enabled = true;
                 }
+
+                _cancelToken = new CancellationTokenSource();
             }
             catch (Exception ex)
             {
@@ -54,6 +78,9 @@ namespace BlazorApp.Client.Shared
 
         public async void RefreshTimer(Object source, ElapsedEventArgs e)
         {
+            if (_cancelToken.Token.IsCancellationRequested)
+                return;
+
             bool hasNewResult = false;
 
             decimal newPriceBTC;
@@ -62,15 +89,17 @@ namespace BlazorApp.Client.Shared
 
             try
             {
-                newPriceBTC = await Http.GetFromJsonAsync<decimal>($"/api/GetLatestClose?accType=Spot&symbol=BTCUSDT");
+                refreshTimer.Stop();
+
+                newPriceBTC = await Http.GetFromJsonAsync<decimal>($"/api/GetLatestClose?accType=Spot&symbol=BTCUSDT", _cancelToken.Token);
                 if (newPriceBTC > 0)
                     _priceBTC = $"BTC : {Math.Round(newPriceBTC, 2)}";
 
-                newPriceBNB = await Http.GetFromJsonAsync<decimal>($"/api/GetLatestClose?accType=Spot&symbol=BNBUSDT");
+                newPriceBNB = await Http.GetFromJsonAsync<decimal>($"/api/GetLatestClose?accType=Spot&symbol=BNBUSDT", _cancelToken.Token);
                 if (newPriceBNB > 0)
                     _priceBNB = $"BNB : {Math.Round(newPriceBNB, 2)}";
 
-                newPriceETH = await Http.GetFromJsonAsync<decimal>($"/api/GetLatestClose?accType=Spot&symbol=ETHUSDT");
+                newPriceETH = await Http.GetFromJsonAsync<decimal>($"/api/GetLatestClose?accType=Spot&symbol=ETHUSDT", _cancelToken.Token);
                 if (newPriceETH > 0)
                     _priceETH = $"ETH : {Math.Round(newPriceETH, 2)}";
 
@@ -80,9 +109,13 @@ namespace BlazorApp.Client.Shared
             {
                 hasNewResult = false;
             }
+            finally
+            {
+                if (hasNewResult)
+                    InvokeAsync(StateHasChanged);
 
-            if (hasNewResult)
-                _ = InvokeAsync(StateHasChanged);
+                refreshTimer.Start();
+            }
         }
 
     }

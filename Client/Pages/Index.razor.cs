@@ -9,7 +9,7 @@ using System.Timers;
 
 namespace BlazorApp.Client.Pages
 {
-    public partial class Index
+    public partial class Index : IDisposable
     {
         [Inject]
         protected IJSRuntime JSRuntime { get; set; }
@@ -32,12 +32,11 @@ namespace BlazorApp.Client.Pages
         [Inject]
         protected HttpClient Http { get; set; }
 
-        private static bool _onWork = false;
-
         private string _selectedAccount = "An";
 
+        private CancellationTokenSource _cancelToken = null;
+
         private static System.Timers.Timer refreshTimer;
-        private static int _currentNumber = 0;
 
         private string _textCurrentAccount = string.Empty;
         private string _stringAccount = null;
@@ -72,6 +71,25 @@ namespace BlazorApp.Client.Pages
 
         bool showDataLabels = true;
 
+        public void Dispose()
+        {
+            if (refreshTimer != null)
+            {
+                refreshTimer.Stop();
+                refreshTimer.Elapsed -= RefreshTimer;
+                refreshTimer.Dispose();
+
+                refreshTimer = null;
+            }
+
+            if (_cancelToken == null)
+            {
+                _cancelToken?.Cancel();
+                _cancelToken?.Dispose();
+                _cancelToken = null;
+            }            
+        }
+
         protected override async Task OnInitializedAsync()
         {
             _textCurrentAccount = $"Account {_selectedAccount}";
@@ -80,10 +98,12 @@ namespace BlazorApp.Client.Pages
             {
                 if (refreshTimer == null)
                 {
-                    refreshTimer = new System.Timers.Timer(TimeSpan.FromSeconds(1).TotalMilliseconds);
+                    refreshTimer = new System.Timers.Timer(TimeSpan.FromSeconds(ClsUtilCommon.TIMER_DURATION).TotalMilliseconds);
                     refreshTimer.Elapsed += RefreshTimer;
                     refreshTimer.Enabled = true;
                 }
+
+                _cancelToken = new CancellationTokenSource();
             }
             catch (Exception ex)
             {
@@ -93,47 +113,38 @@ namespace BlazorApp.Client.Pages
 
         public async void RefreshTimer(Object source, ElapsedEventArgs e)
         {
+            if (_cancelToken.Token.IsCancellationRequested)
+                return;
+
             bool hasNewResult = false;
 
             try
             {
-                if (!_onWork)
-                {
-                    _onWork = true;
+                refreshTimer.Stop();
 
-                    GestionTimer();
+                GestionTimer();
 
-                    Interlocked.Increment(ref _currentNumber);
-
-                    hasNewResult = true;
-
-                    _onWork = false;
-                }
+                hasNewResult = true;
             }
             catch
             {
                 hasNewResult = false;
             }
-
-            if (hasNewResult)
+            finally
             {
-                if (_currentNumber == 31)
-                    Interlocked.Exchange(ref _currentNumber, 0);
+                if (hasNewResult)
+                    InvokeAsync(StateHasChanged);
 
-                _ = InvokeAsync(StateHasChanged);
+                refreshTimer.Start();
             }
         }
 
         private async void GestionTimer()
         {
-            if (_currentNumber == 10 || _currentNumber == 30)
-            {
-                _stringAccount = await Http.GetStringAsync($"/api/GetSimulatedInfos?accType=Spot");
-                CalculateProfitQuotes();
-            }
+            _stringAccount = await Http.GetStringAsync($"/api/GetInfos?accType=Spot&accHolder=An");
+            CalculateProfitQuotes();
 
-            string urlLog = $"/api/GetAllLogs?accType=Spot&accHolder=An";
-
+            string urlLog;
             if (_onlyLogTrading)
                 urlLog = $"/api/GetLogsTrading?accType=Spot&accHolder=An";
             else if (_onlyLogTradingInfos)
@@ -141,14 +152,14 @@ namespace BlazorApp.Client.Pages
             else
                 urlLog = $"/api/GetAllLogs?accType=Spot&accHolder=An";
 
-            _logs = await Http.GetFromJsonAsync<List<LogInfoItemDto>>(urlLog);
+            _logs = await Http.GetFromJsonAsync<List<LogInfoItemDto>>(urlLog, _cancelToken.Token);
 
             if (_tdPotential)
-                _logsPotential = await Http.GetFromJsonAsync<List<LogInfoItemDto>>($"/api/GetLogKlinePotential?accType=Spot&accHolder=An");
+                _logsPotential = await Http.GetFromJsonAsync<List<LogInfoItemDto>>($"/api/GetLogKlinePotential?accType=Spot&accHolder=An", _cancelToken.Token);
             else if (_tdCombo)
-                _logsPotential = await Http.GetFromJsonAsync<List<LogInfoItemDto>>($"/api/GetLogKlineTDCombo?accType=Spot&accHolder=An");
+                _logsPotential = await Http.GetFromJsonAsync<List<LogInfoItemDto>>($"/api/GetLogKlineTDCombo?accType=Spot&accHolder=An", _cancelToken.Token);
             else if (_tdCountDown)
-                _logsPotential = await Http.GetFromJsonAsync<List<LogInfoItemDto>>($"/api/GetLogKlineTDCountDown?accType=Spot&accHolder=An");
+                _logsPotential = await Http.GetFromJsonAsync<List<LogInfoItemDto>>($"/api/GetLogKlineTDCountDown?accType=Spot&accHolder=An", _cancelToken.Token);
         }
 
         private void CalculateProfitQuotes()
@@ -307,82 +318,74 @@ namespace BlazorApp.Client.Pages
             }
         }
 
-        protected async System.Threading.Tasks.Task ButtonStatSevenDaysClick(Microsoft.AspNetCore.Components.Web.MouseEventArgs args)
+        protected void ButtonStatSevenDaysClick(Microsoft.AspNetCore.Components.Web.MouseEventArgs args)
         {
             _statSevenDays = true;
             _statThirtyDays = false;
             _statAllTimes = false;
         }
 
-        protected async System.Threading.Tasks.Task ButtonStatThirtyDaysClick(Microsoft.AspNetCore.Components.Web.MouseEventArgs args)
+        protected void ButtonStatThirtyDaysClick(Microsoft.AspNetCore.Components.Web.MouseEventArgs args)
         {
             _statSevenDays = false;
             _statThirtyDays = true;
             _statAllTimes = false;
         }
 
-        protected async System.Threading.Tasks.Task ButtonStatAllTimesClick(Microsoft.AspNetCore.Components.Web.MouseEventArgs args)
+        protected void ButtonStatAllTimesClick(Microsoft.AspNetCore.Components.Web.MouseEventArgs args)
         {
             _statSevenDays = false;
             _statThirtyDays = false;
             _statAllTimes = true;
         }
 
-        protected async System.Threading.Tasks.Task ButtonLogTradingClick(Microsoft.AspNetCore.Components.Web.MouseEventArgs args)
+        protected void ButtonLogTradingClick(Microsoft.AspNetCore.Components.Web.MouseEventArgs args)
         {
             _onlyLogTrading = true;
             _onlyLogTradingInfos = false;
             _allLogs = false;
         }
 
-        protected async System.Threading.Tasks.Task ButtonLogTradingInfosClick(Microsoft.AspNetCore.Components.Web.MouseEventArgs args)
+        protected void ButtonLogTradingInfosClick(Microsoft.AspNetCore.Components.Web.MouseEventArgs args)
         {
             _onlyLogTrading = false;
             _onlyLogTradingInfos = true;
             _allLogs = false;
         }
 
-        protected async System.Threading.Tasks.Task ButtonAlLogsClick(Microsoft.AspNetCore.Components.Web.MouseEventArgs args)
+        protected void ButtonAlLogsClick(Microsoft.AspNetCore.Components.Web.MouseEventArgs args)
         {
             _onlyLogTrading = false;
             _onlyLogTradingInfos = false;
             _allLogs = true;
         }
 
-        protected async System.Threading.Tasks.Task ButtonGetRealTradesPercentageClick(Microsoft.AspNetCore.Components.Web.MouseEventArgs args)
-        {
-            _realPercentage = true;
-        }
-
-        protected async System.Threading.Tasks.Task ButtonGetPossibleTradesPercentageClick(Microsoft.AspNetCore.Components.Web.MouseEventArgs args)
-        {
-            _realPercentage = false;
-        }
-
-        protected async System.Threading.Tasks.Task ButtonTDPotentialClick(Microsoft.AspNetCore.Components.Web.MouseEventArgs args)
+        protected void ButtonTDPotentialClick(Microsoft.AspNetCore.Components.Web.MouseEventArgs args)
         {
             _tdPotential = true;
             _tdCombo = false;
             _tdCountDown = false;
         }
 
-        protected async System.Threading.Tasks.Task ButtonTDComboClick(Microsoft.AspNetCore.Components.Web.MouseEventArgs args)
+        protected void ButtonTDComboClick(Microsoft.AspNetCore.Components.Web.MouseEventArgs args)
         {
             _tdPotential = false;
             _tdCombo = true;
             _tdCountDown = false;
         }
 
-        protected async System.Threading.Tasks.Task ButtonTDCountDownClick(Microsoft.AspNetCore.Components.Web.MouseEventArgs args)
+        protected void ButtonTDCountDownClick(Microsoft.AspNetCore.Components.Web.MouseEventArgs args)
         {
             _tdPotential = false;
             _tdCombo = false;
             _tdCountDown = true;
         }
 
-        protected async System.Threading.Tasks.Task DataGridLogsPageSizeChanged(System.Int32 args)
+        protected void DataGridLogsPageSizeChanged(System.Int32 args)
         {
             _dtPageSize = DateTime.Now;
         }
+
+
     }
 }

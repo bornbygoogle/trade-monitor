@@ -2,7 +2,7 @@
 @using System.Globalization;
 @using BlazorApp.Shared;
 
-@page "/samuel"
+@page "/{selectedAccount}"
 
 <PageTitle>BINANCE TRADE BOT MONITORING</PageTitle>
 
@@ -20,21 +20,24 @@
             </div>
             <div class="row" style="padding: 0px; margin: 0px; padding-top: 5px; padding-bottom: 5px">
                 <div class="col-12" style="padding: 0px; margin: 0px">
-                    <RadzenChart>
-                        <RadzenDonutSeries Data="@_nbrTrades.ToArray()" CategoryProperty="Base" ValueProperty="Profit">
-                            <ChildContent>
-                                <RadzenSeriesDataLabels Visible="true" />
-                            </ChildContent>
-                            <TitleTemplate>
-                                <div class="rz-donut-content">
-                                    <div>@(_totalTrades) trades</div>
-                                    <div>@(_percentageSucceededTrades)%</div>
-                                </div>
-                            </TitleTemplate>
-                        </RadzenDonutSeries>
-                        <RadzenLegend Position="Radzen.Blazor.LegendPosition.Right"></RadzenLegend>
-                        <RadzenCategoryAxis Visible="false"></RadzenCategoryAxis>
-                    </RadzenChart>
+                    @if (_nbrTrades != null)
+                    {
+                        <RadzenChart>
+                            <RadzenDonutSeries Data="@_nbrTrades.ToArray()" CategoryProperty="Base" ValueProperty="Profit">
+                                <ChildContent>
+                                    <RadzenSeriesDataLabels Visible="true" />
+                                </ChildContent>
+                                <TitleTemplate>
+                                    <div class="rz-donut-content">
+                                        <div>@(_totalTrades) trades</div>
+                                        <div>@(_percentageSucceededTrades)%</div>
+                                    </div>
+                                </TitleTemplate>
+                            </RadzenDonutSeries>
+                            <RadzenLegend Position="Radzen.Blazor.LegendPosition.Right"></RadzenLegend>
+                            <RadzenCategoryAxis Visible="false"></RadzenCategoryAxis>
+                        </RadzenChart>
+                    }
                 </div>
             </div>
         </RadzenCard>
@@ -109,7 +112,7 @@
 <div class="row col-12" style="margin: 0px; padding-left: 5px; padding-right: 5px; margin-top: 5px; margin-bottom: 5px; padding-top: 5px; padding-bottom: 5px">
     <RadzenPanel AllowCollapse="true" Collapsed="@panelBoughtSoldCollapsed" Text="Trades" Style="padding-right: 5px; padding-left: 5px">
 
-        <RadzenDataGrid TItem="LogInfoItemDto" Data=@_logsBoughtSold AllowPaging="true" Responsive="true" AllowPickAllColumns="false" AllowRowSelectOnRowClick="false" PagerAlwaysVisible="true" PageSizeText="10" class="overflow-auto">
+        <RadzenDataGrid TItem="LogInfoItemDto" Data=@_logsBoughtSold AllowPaging="true" Responsive="true" AllowPickAllColumns="false" AllowRowSelectOnRowClick="false" PagerAlwaysVisible="true" PageSizeText="10" class="overflow-auto" Page="@DataGridLogsBoughtSoldPage">
             <Columns>
                 <RadzenDataGridColumn Width="200px" TItem="LogInfoItemDto" Property="BoughtDate" Title="Bought date"></RadzenDataGridColumn>
                 <RadzenDataGridColumn Width="150px" TItem="LogInfoItemDto" Property="Symbol" Title="Symbol"></RadzenDataGridColumn>
