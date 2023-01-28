@@ -17,7 +17,13 @@ namespace BlazorApp.Api
 
             string sUrl = $"{ClsCommon.GetUrlServer()}/Server/GetLatestClose?accType={accType}&symbol={symbol}";
 
-            decimal result = ClsCommon.ExecuteHttpGet<decimal>(sUrl);
+            decimal result = -1;
+
+            try
+            {
+                result = ClsCommon.ExecuteHttpGet<decimal>(sUrl);
+            }
+            catch { result = -1; }
 
             return new OkObjectResult(result);
         }
