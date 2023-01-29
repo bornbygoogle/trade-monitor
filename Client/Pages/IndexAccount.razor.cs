@@ -92,8 +92,6 @@ namespace BlazorApp.Client.Pages
 
         protected override async Task OnInitializedAsync()
         {
-            _textCurrentAccount = $"Account {selectedAccount.ToUpper()}";
-
             try
             {
                 if (refreshTimer == null)
@@ -121,6 +119,8 @@ namespace BlazorApp.Client.Pages
             try
             {
                 refreshTimer.Stop();
+
+                _textCurrentAccount = $"Account {selectedAccount.ToUpper()}";
 
                 GestionTimer();
 
