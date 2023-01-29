@@ -45,11 +45,11 @@ namespace BlazorApp.Client.Pages
         private string _stringAccount = null;
         private AccountDto _account = null;
 
-        //private decimal? _accountSimulatedTotalTrades = null;
-        //private decimal? _accountSimulatedTotalPositiveTrades = null;
+        private decimal? _accountSimulatedTotalTrades = null;
+        private decimal? _accountSimulatedTotalPositiveTrades = null;
 
-        //private decimal? _accountRealTotalTrades = null;
-        //private decimal? _accountRealTotalPositiveTrades = null;
+        private decimal? _accountRealTotalTrades = null;
+        private decimal? _accountRealTotalPositiveTrades = null;
 
         private bool _statSevenDays = true;
         private bool _statThirtyDays = false;
@@ -141,17 +141,48 @@ namespace BlazorApp.Client.Pages
 
         private async void GestionTimer()
         {
-            _stringAccount = await Http.GetStringAsync($"/api/GetInfos?accType=Spot&accHolder={CultureInfo.CurrentCulture.TextInfo.ToTitleCase(selectedAccount)}", _cancelToken.Token);
+            //_stringAccount = await Http.GetStringAsync($"/api/GetInfos?accType=Spot&accHolder={CultureInfo.CurrentCulture.TextInfo.ToTitleCase(selectedAccount)}", _cancelToken.Token);
 
-            //_accountSimulatedTotalTrades = await Http.GetFromJsonAsync<decimal>($"/api/GetAccountInfosSimulatedTotalTrades?accType=Spot&accHolder={CultureInfo.CurrentCulture.TextInfo.ToTitleCase(selectedAccount)}");
-            //_accountSimulatedTotalPositiveTrades = await Http.GetFromJsonAsync<decimal>($"/api/GetAccountInfosSimulatedTotalPositiveTrades?accType=Spot&accHolder={CultureInfo.CurrentCulture.TextInfo.ToTitleCase(selectedAccount)}");
+            _accountSimulatedTotalTrades = await Http.GetFromJsonAsync<decimal>($"/api/GetAccountInfosSimulatedTotalTrades?accType=Spot&accHolder={CultureInfo.CurrentCulture.TextInfo.ToTitleCase(selectedAccount)}", _cancelToken.Token);
+            _accountSimulatedTotalPositiveTrades = await Http.GetFromJsonAsync<decimal>($"/api/GetAccountInfosSimulatedTotalPositiveTrades?accType=Spot&accHolder={CultureInfo.CurrentCulture.TextInfo.ToTitleCase(selectedAccount)}", _cancelToken.Token);
 
-            //_accountRealTotalTrades = await Http.GetFromJsonAsync<decimal>($"/api/GetAccountInfosRealTotalTrades?accType=Spot&accHolder={CultureInfo.CurrentCulture.TextInfo.ToTitleCase(selectedAccount)}");
-            //_accountRealTotalPositiveTrades = await Http.GetFromJsonAsync<decimal>($"/api/GetAccountInfosRealTotalPositiveTrades?accType=Spot&accHolder={CultureInfo.CurrentCulture.TextInfo.ToTitleCase(selectedAccount)}");
+            _accountRealTotalTrades = await Http.GetFromJsonAsync<decimal>($"/api/GetAccountInfosRealTotalTrades?accType=Spot&accHolder={CultureInfo.CurrentCulture.TextInfo.ToTitleCase(selectedAccount)}", _cancelToken.Token);
+            _accountRealTotalPositiveTrades = await Http.GetFromJsonAsync<decimal>($"/api/GetAccountInfosRealTotalPositiveTrades?accType=Spot&accHolder={CultureInfo.CurrentCulture.TextInfo.ToTitleCase(selectedAccount)}", _cancelToken.Token);
 
-            //GestionPercentageTrade();
+            GestionPercentageTrade();
 
-            CalculateProfitQuotes();
+            List<DataItem> newListItemSimulated = null;
+            List<DataItem> newListItemReal = null;
+
+            if (_statSevenDays)
+            {
+                newListItemSimulated = await Http.GetFromJsonAsync<List<DataItem>>($"/api/GetAccountInfosSimulatedProfit?accType=Spot&accHolder=An&nbrDays=7", _cancelToken.Token);
+                newListItemReal = await Http.GetFromJsonAsync<List<DataItem>>($"/api/GetAccountInfosRealProfit?accType=Spot&accHolder=An&nbrDays=7", _cancelToken.Token);
+            }                
+            else if (_statThirtyDays)
+            {
+                newListItemSimulated = await Http.GetFromJsonAsync<List<DataItem>>($"/api/GetAccountInfosSimulatedProfit?accType=Spot&accHolder=An&nbrDays=30", _cancelToken.Token);
+                newListItemReal = await Http.GetFromJsonAsync<List<DataItem>>($"/api/GetAccountInfosRealProfit?accType=Spot&accHolder=An&nbrDays=30", _cancelToken.Token);
+            }                
+            else
+            {
+                newListItemSimulated = await Http.GetFromJsonAsync<List<DataItem>>($"/api/GetAccountInfosSimulatedProfit?accType=Spot&accHolder=An", _cancelToken.Token);
+                newListItemReal = await Http.GetFromJsonAsync<List<DataItem>>($"/api/GetAccountInfosRealProfit?accType=Spot&accHolder=An", _cancelToken.Token);
+            }
+
+            if (newListItemSimulated != null && _profitSimulated != null)
+            {
+                _profitSimulated.Clear();
+                _profitSimulated.AddRange(newListItemSimulated);
+            }
+
+            if (newListItemReal != null && _profitReal != null)
+            {
+                _profitReal.Clear();
+                _profitReal.AddRange(newListItemReal);
+            }
+
+            //CalculateProfitQuotes();
 
             GestionLogsBoughtSold();
         }
@@ -274,8 +305,6 @@ namespace BlazorApp.Client.Pages
 
                         _profitReal.Add(quoteReal);
                     }
-
-                    GestionPercentageTrade();
                 }
             }
         }
@@ -286,20 +315,20 @@ namespace BlazorApp.Client.Pages
 
             if (_realPercentage)
             {
-                if (_account.RealTotalPositiveTrades.HasValue && _account.RealTotalTrades.HasValue)
+                if (_accountRealTotalPositiveTrades.HasValue && _accountRealTotalTrades.HasValue)
                 {
                     DataItem nbrTradesRealSucceeded = new DataItem();
                     nbrTradesRealSucceeded.Base = "Succeeded trade";
-                    nbrTradesRealSucceeded.Profit = (double)(_account.RealTotalPositiveTrades ?? 0);
+                    nbrTradesRealSucceeded.Profit = (double)(_accountRealTotalPositiveTrades ?? 0);
 
                     _nbrTrades.Add(nbrTradesRealSucceeded);
 
                     DataItem nbrTradesRealNotSucceeded = new DataItem();
                     nbrTradesRealNotSucceeded.Base = "Failed trade";
-                    nbrTradesRealNotSucceeded.Profit = (double)((_account.RealTotalTrades - _account.RealTotalPositiveTrades) ?? 0);
+                    nbrTradesRealNotSucceeded.Profit = (double)((_accountRealTotalTrades - _accountRealTotalPositiveTrades) ?? 0);
 
-                    _totalTrades = _account.RealTotalTrades ?? 0;
-                    _percentageSucceededTrades = Math.Round(((_account.RealTotalPositiveTrades ?? 0) * 100) / (_account.RealTotalTrades ?? 1), 2);
+                    _totalTrades = _accountRealTotalTrades ?? 0;
+                    _percentageSucceededTrades = Math.Round(((_accountRealTotalPositiveTrades ?? 0) * 100) / (_accountRealTotalTrades ?? 1), 2);
 
                     _nbrTrades.Add(nbrTradesRealNotSucceeded);
                 }
@@ -307,20 +336,20 @@ namespace BlazorApp.Client.Pages
             }
             else
             {
-                if (_account.SimulatedTotalPositiveTrades.HasValue && _account.SimulatedTotalTrades.HasValue)
+                if (_accountSimulatedTotalPositiveTrades.HasValue && _accountSimulatedTotalTrades.HasValue)
                 {
                     DataItem nbrTradesSimulatedSucceeded = new DataItem();
                     nbrTradesSimulatedSucceeded.Base = "Succeeded trade";
-                    nbrTradesSimulatedSucceeded.Profit = (double)(_account.SimulatedTotalPositiveTrades ?? 0);
+                    nbrTradesSimulatedSucceeded.Profit = (double)(_accountSimulatedTotalPositiveTrades ?? 0);
 
                     _nbrTrades.Add(nbrTradesSimulatedSucceeded);
 
                     DataItem nbrTradesSimulatedNotSucceeded = new DataItem();
                     nbrTradesSimulatedNotSucceeded.Base = "Failed trade";
-                    nbrTradesSimulatedNotSucceeded.Profit = (double)((_account.SimulatedTotalTrades - _account.SimulatedTotalPositiveTrades) ?? 0);
+                    nbrTradesSimulatedNotSucceeded.Profit = (double)((_accountSimulatedTotalTrades - _accountSimulatedTotalPositiveTrades) ?? 0);
 
-                    _totalTrades = _account.SimulatedTotalTrades ?? 0;
-                    _percentageSucceededTrades = Math.Round(((_account.SimulatedTotalPositiveTrades ?? 0) * 100) / (_account.SimulatedTotalTrades ?? 1), 2);
+                    _totalTrades = _accountSimulatedTotalTrades ?? 0;
+                    _percentageSucceededTrades = Math.Round(((_accountSimulatedTotalPositiveTrades ?? 0) * 100) / (_accountSimulatedTotalTrades ?? 1), 2);
 
                     _nbrTrades.Add(nbrTradesSimulatedNotSucceeded);
                 }

@@ -20,21 +20,24 @@
             </div>
             <div class="row" style="padding: 0px; margin: 0px; padding-top: 5px; padding-bottom: 5px">
                 <div class="col-12" style="padding: 0px; margin: 0px">
-                    <RadzenChart>
-                        <RadzenDonutSeries Data="@_nbrTrades.ToArray()" CategoryProperty="Base" ValueProperty="Profit">
-                            <ChildContent>
-                                <RadzenSeriesDataLabels Visible="true" />
-                            </ChildContent>
-                            <TitleTemplate>
-                                <div class="rz-donut-content">
-                                    <div>@(_totalTrades) trades</div>
-                                    <div>@(_percentageSucceededTrades)%</div>
-                                </div>
-                            </TitleTemplate>
-                        </RadzenDonutSeries>
-                        <RadzenLegend Position="Radzen.Blazor.LegendPosition.Right"></RadzenLegend>
-                        <RadzenCategoryAxis Visible="false"></RadzenCategoryAxis>
-                    </RadzenChart>
+                    @if (_nbrTrades != null)
+                    {
+                        <RadzenChart>
+                            <RadzenDonutSeries Data="@_nbrTrades.ToArray()" CategoryProperty="Base" ValueProperty="Profit">
+                                <ChildContent>
+                                    <RadzenSeriesDataLabels Visible="true" />
+                                </ChildContent>
+                                <TitleTemplate>
+                                    <div class="rz-donut-content">
+                                        <div>@(_totalTrades) trades</div>
+                                        <div>@(_percentageSucceededTrades)%</div>
+                                    </div>
+                                </TitleTemplate>
+                            </RadzenDonutSeries>
+                            <RadzenLegend Position="Radzen.Blazor.LegendPosition.Right"></RadzenLegend>
+                            <RadzenCategoryAxis Visible="false"></RadzenCategoryAxis>
+                        </RadzenChart>
+                    }
                 </div>
             </div>
         </RadzenCard>
@@ -55,35 +58,38 @@
                 </div>
             </div>
             <div class="row" style="padding: 0px; margin: 0px; padding-top: 5px; padding-bottom: 5px">
-                <div class="d-lg-inline-flex d-md-inline-flex col-lg-12 col-md-12 col-sm-0 col-xs-0 d-none" style="padding: 0px; margin: 0px">
-                    <RadzenChart Style="width: 100%; max-width: 100%" Visible="true" ColorScheme="Radzen.Blazor.ColorScheme.Pastel">
-                        <RadzenColumnSeries Data="@_profitSimulated.ToArray()" CategoryProperty="Base" Title="Possible Trades" ValueProperty="Profit">
-                            <RadzenSeriesDataLabels Visible="@showDataLabels" />
-                        </RadzenColumnSeries>
-                        <RadzenColumnOptions Radius="5" />
-                        <RadzenValueAxis Formatter="@ClsUtilCommon.FormatAsUSD">
-                            <RadzenGridLines Visible="true" />
-                            <RadzenAxisTitle Text="" />
-                        </RadzenValueAxis>
-                        <RadzenLegend Position="Radzen.Blazor.LegendPosition.Bottom"></RadzenLegend>
-                    </RadzenChart>
-                </div>
-                <div class="col-sm-12 col-xs-12 d-lg-none d-md-none" style="padding: 0px; margin: 0px">
-                    <RadzenPanel Collapsed="true" Style="vertical-align: middle; margin-top: auto; margin-bottom: auto; width: 100%; max-width: 100%" Text="Simulated profit" AllowCollapse="true">
-                        <ChildContent>
-                            @foreach (var itemSimulatedProfit in _profitSimulated)
-                            {
-                                <div class="row">
-                                    <div class="col-2"></div>
-                                    <div class="col-10 d-inline-flex" style="padding: 0px; margin: 0px">
-                                        <RadzenText Text="@itemSimulatedProfit.Base" Style="margin: 0px"></RadzenText>
-                                        <RadzenText Text="@itemSimulatedProfit.Profit.ToString(CultureInfo.InvariantCulture)" Style="margin: 0px; padding-left: auto; padding-right: auto; margin-left: auto; margin-right: auto"></RadzenText>
+                @if (_profitSimulated != null)
+                {
+                    <div class="d-lg-inline-flex d-md-inline-flex col-lg-12 col-md-12 col-sm-0 col-xs-0 d-none" style="padding: 0px; margin: 0px">
+                        <RadzenChart Style="width: 100%; max-width: 100%" Visible="true" ColorScheme="Radzen.Blazor.ColorScheme.Pastel">
+                            <RadzenColumnSeries Data="@_profitSimulated.ToArray()" CategoryProperty="Base" Title="Possible Trades" ValueProperty="Profit">
+                                <RadzenSeriesDataLabels Visible="@showDataLabels" />
+                            </RadzenColumnSeries>
+                            <RadzenColumnOptions Radius="5" />
+                            <RadzenValueAxis Formatter="@ClsUtilCommon.FormatAsUSD">
+                                <RadzenGridLines Visible="true" />
+                                <RadzenAxisTitle Text="" />
+                            </RadzenValueAxis>
+                            <RadzenLegend Position="Radzen.Blazor.LegendPosition.Bottom"></RadzenLegend>
+                        </RadzenChart>
+                    </div>
+                    <div class="col-sm-12 col-xs-12 d-lg-none d-md-none" style="padding: 0px; margin: 0px">
+                        <RadzenPanel Collapsed="true" Style="vertical-align: middle; margin-top: auto; margin-bottom: auto; width: 100%; max-width: 100%" Text="Simulated profit" AllowCollapse="true">
+                            <ChildContent>
+                                @foreach (var itemSimulatedProfit in _profitSimulated)
+                                {
+                                    <div class="row">
+                                        <div class="col-2"></div>
+                                        <div class="col-10 d-inline-flex" style="padding: 0px; margin: 0px">
+                                            <RadzenText Text="@itemSimulatedProfit.Base" Style="margin: 0px"></RadzenText>
+                                            <RadzenText Text="@itemSimulatedProfit.Profit.ToString(CultureInfo.InvariantCulture)" Style="margin: 0px; padding-left: auto; padding-right: auto; margin-left: auto; margin-right: auto"></RadzenText>
+                                        </div>
                                     </div>
-                                </div>
-                            }
-                        </ChildContent>
-                    </RadzenPanel>
-                </div>
+                                }
+                            </ChildContent>
+                        </RadzenPanel>
+                    </div>
+                }
             </div>
         </RadzenPanel>
     </div>
