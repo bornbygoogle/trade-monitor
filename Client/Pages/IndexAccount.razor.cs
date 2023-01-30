@@ -64,9 +64,16 @@ namespace BlazorApp.Client.Pages
         private List<DataItem> _profitReal = new List<DataItem>();
 
         private List<LogInfoItemDto> _logsBoughtSold = null;
+
+        private List<LogInfoItemDto> _logsBoughtSoldHistory = null;
+        private List<LogInfoItemDto> _logsBoughtSoldPositive = null;
+        private List<LogInfoItemDto> _logsBoughtSoldNegative = null;
+
         private DateTime? _logsClicked = null;
 
-        private bool panelBoughtSoldCollapsed = false;
+        private bool panelBoughtSoldPositiveCollapsed = false;
+        private bool panelBoughtSoldNegativeCollapsed = true;
+        private bool panelBoughtSoldHistoryCollapsed = true;
 
 
         bool showDataLabels = true;
@@ -361,7 +368,15 @@ namespace BlazorApp.Client.Pages
             if (!_logsClicked.HasValue || (_logsClicked.HasValue && (DateTime.Now - _logsClicked.Value).Ticks > TimeSpan.FromSeconds(10).Ticks))
             {
                 _logsClicked = null;
+                
                 _logsBoughtSold = await Http.GetFromJsonAsync<List<LogInfoItemDto>>($"/api/GetBoughtSold?accType=Spot&accHolder={CultureInfo.CurrentCulture.TextInfo.ToTitleCase(selectedAccount)}", _cancelToken.Token);
+
+                if (_logsBoughtSold != null)
+                {
+                    _logsBoughtSoldHistory = _logsBoughtSold.Where(x => x.SoldDate.HasValue && x.PriceSold > 0).ToList().OrderByDescending(x => x.BsId).ToList();
+                    _logsBoughtSoldPositive = _logsBoughtSold.Where(x => !x.SoldDate.HasValue && x.Close > x.PriceBought).ToList().OrderByDescending(x => x.BsId).ToList();
+                    _logsBoughtSoldNegative = _logsBoughtSold.Where(x => !x.SoldDate.HasValue && x.Close <= x.PriceBought).ToList().OrderByDescending(x => x.BsId).ToList();
+                }
             }
         }
 

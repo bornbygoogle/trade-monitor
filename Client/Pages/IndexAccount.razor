@@ -110,9 +110,49 @@
 </div>
 
 <div class="row col-12" style="margin: 0px; padding-left: 5px; padding-right: 5px; margin-top: 5px; margin-bottom: 5px; padding-top: 5px; padding-bottom: 5px">
-    <RadzenPanel AllowCollapse="true" Collapsed="@panelBoughtSoldCollapsed" Text="Trades" Style="padding-right: 5px; padding-left: 5px">
+    <RadzenPanel AllowCollapse="true" Collapsed="@panelBoughtSoldPositiveCollapsed" Text="Positive trades" Style="padding-right: 5px; padding-left: 5px">
 
-        <RadzenDataGrid TItem="LogInfoItemDto" Data=@_logsBoughtSold AllowPaging="true" Responsive="true" AllowPickAllColumns="false" AllowRowSelectOnRowClick="false" PagerAlwaysVisible="true" PageSizeText="10" class="overflow-auto" Page="@DataGridLogsBoughtSoldPage">
+        <RadzenDataGrid TItem="LogInfoItemDto" Data=@_logsBoughtSoldPositive AllowPaging="true" Responsive="true" AllowPickAllColumns="false" AllowRowSelectOnRowClick="false" PagerAlwaysVisible="true" PageSizeText="10" class="overflow-auto" Page="@DataGridLogsBoughtSoldPage">
+            <Columns>
+                <RadzenDataGridColumn Width="200px" TItem="LogInfoItemDto" Property="BoughtDate" Title="Bought date"></RadzenDataGridColumn>
+                <RadzenDataGridColumn Width="150px" TItem="LogInfoItemDto" Property="Symbol" Title="Symbol"></RadzenDataGridColumn>
+                <RadzenDataGridColumn TItem="LogInfoItemDto" Property="Quantity" Title="Quantity"></RadzenDataGridColumn>
+                <RadzenDataGridColumn TItem="LogInfoItemDto" Property="Close" Title="Current price"></RadzenDataGridColumn>
+                <RadzenDataGridColumn TItem="LogInfoItemDto" Property="PriceBought" Title="Bought"></RadzenDataGridColumn>
+                <RadzenDataGridColumn TItem="LogInfoItemDto" Property="PriceStopLoss" Title="Stop loss"></RadzenDataGridColumn>
+                <RadzenDataGridColumn TItem="LogInfoItemDto" Property="PriceProfit" Title="Profit"></RadzenDataGridColumn>
+                <RadzenDataGridColumn TItem="LogInfoItemDto" Property="PriceSold" Title="Sold"></RadzenDataGridColumn>
+                <RadzenDataGridColumn Width="200px" TItem="LogInfoItemDto" Property="SoldDate" Title="Sold date"></RadzenDataGridColumn>
+            </Columns>
+        </RadzenDataGrid>
+
+    </RadzenPanel>
+</div>
+
+<div class="row col-12" style="margin: 0px; padding-left: 5px; padding-right: 5px; margin-top: 5px; margin-bottom: 5px; padding-top: 5px; padding-bottom: 5px">
+    <RadzenPanel AllowCollapse="true" Collapsed="@panelBoughtSoldNegativeCollapsed" Text="Negative trades" Style="padding-right: 5px; padding-left: 5px">
+
+        <RadzenDataGrid TItem="LogInfoItemDto" Data=@_logsBoughtSoldNegative AllowPaging="true" Responsive="true" AllowPickAllColumns="false" AllowRowSelectOnRowClick="false" PagerAlwaysVisible="true" PageSizeText="10" class="overflow-auto" Page="@DataGridLogsBoughtSoldPage">
+            <Columns>
+                <RadzenDataGridColumn Width="200px" TItem="LogInfoItemDto" Property="BoughtDate" Title="Bought date"></RadzenDataGridColumn>
+                <RadzenDataGridColumn Width="150px" TItem="LogInfoItemDto" Property="Symbol" Title="Symbol"></RadzenDataGridColumn>
+                <RadzenDataGridColumn TItem="LogInfoItemDto" Property="Quantity" Title="Quantity"></RadzenDataGridColumn>
+                <RadzenDataGridColumn TItem="LogInfoItemDto" Property="Close" Title="Current price"></RadzenDataGridColumn>
+                <RadzenDataGridColumn TItem="LogInfoItemDto" Property="PriceBought" Title="Bought"></RadzenDataGridColumn>
+                <RadzenDataGridColumn TItem="LogInfoItemDto" Property="PriceStopLoss" Title="Stop loss"></RadzenDataGridColumn>
+                <RadzenDataGridColumn TItem="LogInfoItemDto" Property="PriceProfit" Title="Profit"></RadzenDataGridColumn>
+                <RadzenDataGridColumn TItem="LogInfoItemDto" Property="PriceSold" Title="Sold"></RadzenDataGridColumn>
+                <RadzenDataGridColumn Width="200px" TItem="LogInfoItemDto" Property="SoldDate" Title="Sold date"></RadzenDataGridColumn>
+            </Columns>
+        </RadzenDataGrid>
+
+    </RadzenPanel>
+</div>
+
+<div class="row col-12" style="margin: 0px; padding-left: 5px; padding-right: 5px; margin-top: 5px; margin-bottom: 5px; padding-top: 5px; padding-bottom: 5px">
+    <RadzenPanel AllowCollapse="true" Collapsed="@panelBoughtSoldHistoryCollapsed" Text="History trades" Style="padding-right: 5px; padding-left: 5px">
+
+        <RadzenDataGrid TItem="LogInfoItemDto" Data=@_logsBoughtSoldHistory AllowPaging="true" Responsive="true" AllowPickAllColumns="false" AllowRowSelectOnRowClick="false" PagerAlwaysVisible="true" PageSizeText="10" class="overflow-auto" Page="@DataGridLogsBoughtSoldPage">
             <Columns>
                 <RadzenDataGridColumn Width="200px" TItem="LogInfoItemDto" Property="BoughtDate" Title="Bought date"></RadzenDataGridColumn>
                 <RadzenDataGridColumn Width="150px" TItem="LogInfoItemDto" Property="Symbol" Title="Symbol"></RadzenDataGridColumn>
