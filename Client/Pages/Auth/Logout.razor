@@ -1,0 +1,12 @@
+﻿@page "/logout"
+@inject NavigationManager NavigationManager
+@inject HttpClient Http
+@inject AuthenticationStateProvider authenticationStateProvider;
+@inject Blazored.LocalStorage.ILocalStorageService localStorage
+
+@using BlazorApp.Shared;
+@using Microsoft.AspNetCore.Components.Authorization;
+@using System.Security.Claims;
+
+<PageTitle>Log Out</PageTitle>
+

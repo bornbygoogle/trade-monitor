@@ -9,16 +9,17 @@ using System.Linq;
 
 namespace BlazorApp.Api
 {
-    public static class GetAccountInfosRealProfitFunction
+    public static class GetAccountInfosProfitFunction
     {
-        [FunctionName("GetAccountInfosRealProfit")]
-        public static IActionResult GetAccountInfosRealProfit([HttpTrigger(AuthorizationLevel.Anonymous, "get", Route = null)] HttpRequest req, ILogger log)
+        [FunctionName("GetAccountInfosProfit")]
+        public static IActionResult GetAccountInfosProfit([HttpTrigger(AuthorizationLevel.Anonymous, "get", Route = null)] HttpRequest req, ILogger log)
         {
             var accType = req.Query.Where(x => x.Key == "accType").FirstOrDefault().Value;
             var accHolder = req.Query.Where(x => x.Key == "accHolder").FirstOrDefault().Value;
             var nbrDays = req.Query.Where(x => x.Key == "nbrDays").FirstOrDefault().Value;
+            var real = req.Query.Where(x => x.Key == "real").FirstOrDefault().Value;
 
-            string sUrl = $"{ClsCommon.GetUrlServer()}/Server/GetAccountInfosRealProfit?accType={accType}&accHolder={accHolder}{(!string.IsNullOrEmpty(nbrDays) ? $"&nbrDays={nbrDays}" : string.Empty)}";
+            string sUrl = $"{ClsCommon.GetUrlServer()}/Server/GetAccountInfos{(real == "1" ? "Real" : "Simulated")}Profit?accType={accType}&accHolder={accHolder}{(!string.IsNullOrEmpty(nbrDays) ? $"&nbrDays={nbrDays}" : string.Empty)}";
             List<DataItem> accRealProfit = ClsCommon.ExecuteHttpGet<List<DataItem>>(sUrl);
 
             return new OkObjectResult(accRealProfit);

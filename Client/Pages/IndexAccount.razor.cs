@@ -4,8 +4,10 @@ using Microsoft.AspNetCore.Components;
 using Microsoft.JSInterop;
 using Newtonsoft.Json;
 using Radzen;
+using System.Collections.Generic;
 using System.Globalization;
 using System.Net.Http.Json;
+using System.Security.Cryptography;
 using System.Timers;
 
 namespace BlazorApp.Client.Pages
@@ -40,6 +42,7 @@ namespace BlazorApp.Client.Pages
         private CancellationTokenSource _cancelToken = null;
 
         private static System.Timers.Timer refreshTimer;
+        private static int executionCount = 0;
 
         private string _textCurrentAccount = string.Empty;
         private string _stringAccount = null;
@@ -47,24 +50,33 @@ namespace BlazorApp.Client.Pages
 
         private decimal? _accountSimulatedTotalTrades = null;
         private decimal? _accountSimulatedTotalPositiveTrades = null;
+        private string _accountSimulatedFirstTradeDate = null;
 
         private decimal? _accountRealTotalTrades = null;
         private decimal? _accountRealTotalPositiveTrades = null;
+        private string _accountRealFirstTradeDate = null;
 
         private bool _statSevenDays = true;
         private bool _statThirtyDays = false;
         private bool _statAllTimes = false;
 
         private List<DataItem> _nbrTrades = new List<DataItem>();
+        private List<DataItem> _durationAverageTrades = new List<DataItem>();
         private decimal? _totalTrades = 0;
         private decimal? _percentageSucceededTrades = 0;
         private bool _realPercentage = true;
 
+
+
         private List<DataItem> _profitSimulated = new List<DataItem>();
+
         private List<DataItem> _profitReal = new List<DataItem>();
 
         private List<LogInfoItemDto> _logsBoughtSold = null;
 
+        private string _labelLogsBoughtSoldHistory = null;
+        private string _labelLogsBoughtSoldPositive = null;
+        private string _labelLogsBoughtSoldNegative = null;
         private List<LogInfoItemDto> _logsBoughtSoldHistory = null;
         private List<LogInfoItemDto> _logsBoughtSoldPositive = null;
         private List<LogInfoItemDto> _logsBoughtSoldNegative = null;
@@ -131,6 +143,9 @@ namespace BlazorApp.Client.Pages
 
                 GestionTimer();
 
+                if (executionCount == 60)
+                    Interlocked.Exchange(ref executionCount, 0);
+
                 hasNewResult = true;
             }
             catch
@@ -142,40 +157,50 @@ namespace BlazorApp.Client.Pages
                 if (hasNewResult)
                     InvokeAsync(StateHasChanged);
 
+                Interlocked.Increment(ref executionCount);
+
                 refreshTimer.Start();
             }
         }
 
         private async void GestionTimer()
         {
-            //_stringAccount = await Http.GetStringAsync($"/api/GetInfos?accType=Spot&accHolder={CultureInfo.CurrentCulture.TextInfo.ToTitleCase(selectedAccount)}", _cancelToken.Token);
-
-            _accountSimulatedTotalTrades = await Http.GetFromJsonAsync<decimal>($"/api/GetAccountInfosSimulatedTotalTrades?accType=Spot&accHolder={CultureInfo.CurrentCulture.TextInfo.ToTitleCase(selectedAccount)}", _cancelToken.Token);
-            _accountSimulatedTotalPositiveTrades = await Http.GetFromJsonAsync<decimal>($"/api/GetAccountInfosSimulatedTotalPositiveTrades?accType=Spot&accHolder={CultureInfo.CurrentCulture.TextInfo.ToTitleCase(selectedAccount)}", _cancelToken.Token);
-
-            _accountRealTotalTrades = await Http.GetFromJsonAsync<decimal>($"/api/GetAccountInfosRealTotalTrades?accType=Spot&accHolder={CultureInfo.CurrentCulture.TextInfo.ToTitleCase(selectedAccount)}", _cancelToken.Token);
-            _accountRealTotalPositiveTrades = await Http.GetFromJsonAsync<decimal>($"/api/GetAccountInfosRealTotalPositiveTrades?accType=Spot&accHolder={CultureInfo.CurrentCulture.TextInfo.ToTitleCase(selectedAccount)}", _cancelToken.Token);
-
-            GestionPercentageTrade();
+            if (executionCount % 5 == 0)
+            {
+                GestionPercentageTrade();
+                GestionDurationAverageTrade();
+            }                
 
             List<DataItem> newListItemSimulated = null;
             List<DataItem> newListItemReal = null;
 
             if (_statSevenDays)
             {
-                newListItemSimulated = await Http.GetFromJsonAsync<List<DataItem>>($"/api/GetAccountInfosSimulatedProfit?accType=Spot&accHolder=An&nbrDays=7", _cancelToken.Token);
-                newListItemReal = await Http.GetFromJsonAsync<List<DataItem>>($"/api/GetAccountInfosRealProfit?accType=Spot&accHolder=An&nbrDays=7", _cancelToken.Token);
-            }                
+                newListItemSimulated = await Http.GetFromJsonAsync<List<DataItem>>($"/api/GetAccountInfosProfit?accType=Spot&accHolder=An&nbrDays=7&real=0", _cancelToken.Token);
+                newListItemReal = await Http.GetFromJsonAsync<List<DataItem>>($"/api/GetAccountInfosProfit?accType=Spot&accHolder=An&nbrDays=7&real=1", _cancelToken.Token);
+
+                _accountSimulatedFirstTradeDate = await Http.GetStringAsync($"/api/GetAccountInfosFirstTradeDate?accType=Spot&accHolder={CultureInfo.CurrentCulture.TextInfo.ToTitleCase(selectedAccount)}&nbrDays=7&real=0", _cancelToken.Token);
+                _accountRealFirstTradeDate = await Http.GetStringAsync($"/api/GetAccountInfosFirstTradeDate?accType=Spot&accHolder={CultureInfo.CurrentCulture.TextInfo.ToTitleCase(selectedAccount)}&nbrDays=7&real=1", _cancelToken.Token);
+            }
             else if (_statThirtyDays)
             {
-                newListItemSimulated = await Http.GetFromJsonAsync<List<DataItem>>($"/api/GetAccountInfosSimulatedProfit?accType=Spot&accHolder=An&nbrDays=30", _cancelToken.Token);
-                newListItemReal = await Http.GetFromJsonAsync<List<DataItem>>($"/api/GetAccountInfosRealProfit?accType=Spot&accHolder=An&nbrDays=30", _cancelToken.Token);
-            }                
+                newListItemSimulated = await Http.GetFromJsonAsync<List<DataItem>>($"/api/GetAccountInfosProfit?accType=Spot&accHolder=An&nbrDays=30&real=0", _cancelToken.Token);
+                newListItemReal = await Http.GetFromJsonAsync<List<DataItem>>($"/api/GetAccountInfosProfit?accType=Spot&accHolder=An&nbrDays=30&real=1", _cancelToken.Token);
+
+                _accountSimulatedFirstTradeDate = await Http.GetStringAsync($"/api/GetAccountInfosFirstTradeDate?accType=Spot&accHolder={CultureInfo.CurrentCulture.TextInfo.ToTitleCase(selectedAccount)}&nbrDays=30&real=0", _cancelToken.Token);
+                _accountRealFirstTradeDate = await Http.GetStringAsync($"/api/GetAccountInfosFirstTradeDate?accType=Spot&accHolder={CultureInfo.CurrentCulture.TextInfo.ToTitleCase(selectedAccount)}&nbrDays=30&real=1", _cancelToken.Token);
+            }
             else
             {
-                newListItemSimulated = await Http.GetFromJsonAsync<List<DataItem>>($"/api/GetAccountInfosSimulatedProfit?accType=Spot&accHolder=An", _cancelToken.Token);
-                newListItemReal = await Http.GetFromJsonAsync<List<DataItem>>($"/api/GetAccountInfosRealProfit?accType=Spot&accHolder=An", _cancelToken.Token);
+                newListItemSimulated = await Http.GetFromJsonAsync<List<DataItem>>($"/api/GetAccountInfosProfit?accType=Spot&accHolder=An&real=0", _cancelToken.Token);
+                newListItemReal = await Http.GetFromJsonAsync<List<DataItem>>($"/api/GetAccountInfosProfit?accType=Spot&accHolder=An&real=1", _cancelToken.Token);
+
+                _accountSimulatedFirstTradeDate = await Http.GetStringAsync($"/api/GetAccountInfosFirstTradeDate?accType=Spot&accHolder={CultureInfo.CurrentCulture.TextInfo.ToTitleCase(selectedAccount)}&real=1", _cancelToken.Token);
+                _accountRealFirstTradeDate = await Http.GetStringAsync($"/api/GetAccountInfosFirstTradeDate?accType=Spot&accHolder={CultureInfo.CurrentCulture.TextInfo.ToTitleCase(selectedAccount)}&real=0", _cancelToken.Token);
             }
+
+            _accountSimulatedFirstTradeDate = $"First trade at {_accountSimulatedFirstTradeDate}";
+            _accountRealFirstTradeDate = $"First trade at {_accountRealFirstTradeDate}";
 
             if (newListItemSimulated != null && _profitSimulated != null)
             {
@@ -316,9 +341,47 @@ namespace BlazorApp.Client.Pages
             }
         }
 
-        private void GestionPercentageTrade()
+        private async void GestionPercentageTrade()
         {
             _nbrTrades.Clear();
+
+            if (_realPercentage)
+            {
+                if (_statSevenDays)
+                {
+                    _accountRealTotalTrades = await Http.GetFromJsonAsync<decimal>($"/api/GetAccountInfosTotalTrades?accType=Spot&accHolder={CultureInfo.CurrentCulture.TextInfo.ToTitleCase(selectedAccount)}&nbrDays=7&real=1", _cancelToken.Token);
+                    _accountRealTotalPositiveTrades = await Http.GetFromJsonAsync<decimal>($"/api/GetAccountInfosTotalPositiveTrades?accType=Spot&accHolder={CultureInfo.CurrentCulture.TextInfo.ToTitleCase(selectedAccount)}&nbrDays=7&real=1", _cancelToken.Token);
+                }
+                else if (_statThirtyDays)
+                {
+                    _accountRealTotalTrades = await Http.GetFromJsonAsync<decimal>($"/api/GetAccountInfosTotalTrades?accType=Spot&accHolder={CultureInfo.CurrentCulture.TextInfo.ToTitleCase(selectedAccount)}&nbrDays=30&real=1", _cancelToken.Token);
+                    _accountRealTotalPositiveTrades = await Http.GetFromJsonAsync<decimal>($"/api/GetAccountInfosTotalPositiveTrades?accType=Spot&accHolder={CultureInfo.CurrentCulture.TextInfo.ToTitleCase(selectedAccount)}&nbrDays=30&real=1", _cancelToken.Token);
+                }
+                else
+                {
+                    _accountRealTotalTrades = await Http.GetFromJsonAsync<decimal>($"/api/GetAccountInfosTotalTrades?accType=Spot&accHolder={CultureInfo.CurrentCulture.TextInfo.ToTitleCase(selectedAccount)}&real=1", _cancelToken.Token);
+                    _accountRealTotalPositiveTrades = await Http.GetFromJsonAsync<decimal>($"/api/GetAccountInfosTotalPositiveTrades?accType=Spot&accHolder={CultureInfo.CurrentCulture.TextInfo.ToTitleCase(selectedAccount)}&real=1", _cancelToken.Token);
+                }
+            }
+            else
+            {
+                if (_statSevenDays)
+                {
+                    _accountSimulatedTotalTrades = await Http.GetFromJsonAsync<decimal>($"/api/GetAccountInfosTotalTrades?accType=Spot&accHolder={CultureInfo.CurrentCulture.TextInfo.ToTitleCase(selectedAccount)}&nbrDays=7&real=0", _cancelToken.Token);
+                    _accountSimulatedTotalPositiveTrades = await Http.GetFromJsonAsync<decimal>($"/api/GetAccountInfosTotalPositiveTrades?accType=Spot&accHolder={CultureInfo.CurrentCulture.TextInfo.ToTitleCase(selectedAccount)}&nbrDays=7&real=0", _cancelToken.Token);
+
+                }
+                else if (_statThirtyDays)
+                {
+                    _accountSimulatedTotalTrades = await Http.GetFromJsonAsync<decimal>($"/api/GetAccountInfosTotalTrades?accType=Spot&accHolder={CultureInfo.CurrentCulture.TextInfo.ToTitleCase(selectedAccount)}&nbrDays=30&real=0", _cancelToken.Token);
+                    _accountSimulatedTotalPositiveTrades = await Http.GetFromJsonAsync<decimal>($"/api/GetAccountInfosTotalPositiveTrades?accType=Spot&accHolder={CultureInfo.CurrentCulture.TextInfo.ToTitleCase(selectedAccount)}&nbrDays=30&real=0", _cancelToken.Token);
+                }
+                else
+                {
+                    _accountSimulatedTotalTrades = await Http.GetFromJsonAsync<decimal>($"/api/GetAccountInfosTotalTrades?accType=Spot&accHolder={CultureInfo.CurrentCulture.TextInfo.ToTitleCase(selectedAccount)}&real=0", _cancelToken.Token);
+                    _accountSimulatedTotalPositiveTrades = await Http.GetFromJsonAsync<decimal>($"/api/GetAccountInfosTotalPositiveTrades?accType=Spot&accHolder={CultureInfo.CurrentCulture.TextInfo.ToTitleCase(selectedAccount)}&real=0", _cancelToken.Token);
+                }
+            }
 
             if (_realPercentage)
             {
@@ -339,7 +402,6 @@ namespace BlazorApp.Client.Pages
 
                     _nbrTrades.Add(nbrTradesRealNotSucceeded);
                 }
-
             }
             else
             {
@@ -361,6 +423,26 @@ namespace BlazorApp.Client.Pages
                     _nbrTrades.Add(nbrTradesSimulatedNotSucceeded);
                 }
             }
+
+            _nbrTrades = _nbrTrades.ToList();
+        }
+
+        private async void GestionDurationAverageTrade()
+        {
+            List<DataItem> tmpListDataItem = null;
+
+            if (_statSevenDays)
+                tmpListDataItem = await Http.GetFromJsonAsync<List<DataItem>>($"/api/GetAccountInfosDurationAverageCompletedTrade?accType=Spot&accHolder={CultureInfo.CurrentCulture.TextInfo.ToTitleCase(selectedAccount)}&nbrDays=7&real={(_realPercentage ? "1" : "0")}", _cancelToken.Token);
+            else if (_statThirtyDays)
+                tmpListDataItem = await Http.GetFromJsonAsync<List<DataItem>>($"/api/GetAccountInfosDurationAverageCompletedTrade?accType=Spot&accHolder={CultureInfo.CurrentCulture.TextInfo.ToTitleCase(selectedAccount)}&nbrDays=30&real={(_realPercentage ? "1" : "0")}", _cancelToken.Token);
+            else
+                tmpListDataItem = await Http.GetFromJsonAsync<List<DataItem>>($"/api/GetAccountInfosDurationAverageCompletedTrade?accType=Spot&accHolder={CultureInfo.CurrentCulture.TextInfo.ToTitleCase(selectedAccount)}&real={(_realPercentage ? "1" : "0")}", _cancelToken.Token);
+
+            if (tmpListDataItem != null)
+            {
+                _durationAverageTrades.Clear();
+                _durationAverageTrades = tmpListDataItem.ToList();
+            }            
         }
 
         private async void GestionLogsBoughtSold()
@@ -368,14 +450,25 @@ namespace BlazorApp.Client.Pages
             if (!_logsClicked.HasValue || (_logsClicked.HasValue && (DateTime.Now - _logsClicked.Value).Ticks > TimeSpan.FromSeconds(10).Ticks))
             {
                 _logsClicked = null;
-                
+
                 _logsBoughtSold = await Http.GetFromJsonAsync<List<LogInfoItemDto>>($"/api/GetBoughtSold?accType=Spot&accHolder={CultureInfo.CurrentCulture.TextInfo.ToTitleCase(selectedAccount)}", _cancelToken.Token);
 
                 if (_logsBoughtSold != null)
                 {
                     _logsBoughtSoldHistory = _logsBoughtSold.Where(x => x.SoldDate.HasValue && x.PriceSold > 0).ToList().OrderByDescending(x => x.BsId).ToList();
+
+                    if (_logsBoughtSoldHistory != null)
+                        _labelLogsBoughtSoldHistory = $"History ({_logsBoughtSoldHistory.Count().ToString()} trades)";
+
                     _logsBoughtSoldPositive = _logsBoughtSold.Where(x => !x.SoldDate.HasValue && x.Close > x.PriceBought).ToList().OrderByDescending(x => x.BsId).ToList();
+
+                    if (_logsBoughtSoldPositive != null)
+                        _labelLogsBoughtSoldPositive = $"Positive ({_logsBoughtSoldPositive.Count().ToString()} trades)";
+
                     _logsBoughtSoldNegative = _logsBoughtSold.Where(x => !x.SoldDate.HasValue && x.Close <= x.PriceBought).ToList().OrderByDescending(x => x.BsId).ToList();
+
+                    if (_logsBoughtSoldNegative != null)
+                        _labelLogsBoughtSoldNegative = $"Negative ({_logsBoughtSoldNegative.Count().ToString()} trades)";
                 }
             }
         }

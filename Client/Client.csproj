@@ -9,9 +9,13 @@
 
   <ItemGroup>
     <None Remove="Pages\Index.razor~RF5646ae3f.TMP" />
+    <None Remove="Pages\IndexAccount.razor.cs~RF804b391c.TMP" />
   </ItemGroup>
   
   <ItemGroup>
+    <PackageReference Include="Blazored.LocalStorage" Version="4.3.0" />
+    <PackageReference Include="Blazored.Modal" Version="7.1.0" />
+    <PackageReference Include="Microsoft.AspNetCore.Components.Authorization" Version="6.0.13" />
     <PackageReference Include="Microsoft.AspNetCore.Components.WebAssembly" Version="6.0.10" />
     <PackageReference Include="Microsoft.AspNetCore.Components.WebAssembly.DevServer" Version="6.0.10" PrivateAssets="all" />
     <PackageReference Include="Newtonsoft.Json" Version="13.0.2" />

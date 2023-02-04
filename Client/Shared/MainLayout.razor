@@ -21,7 +21,7 @@
 
 <RadzenLayout style="grid-template-areas: 'rz-sidebar rz-header' 'rz-sidebar rz-body';">
     <RadzenHeader Style="background-color: #ffffff">
-        <div class="container-fluid" style="border: 0px none rgba(255, 255, 255, 0)">
+        <div class="container-fluid" style="border: 0px none rgba(255, 255, 255, 0); padding-left: auto; padding-right: auto">
             <div class="row justify-content-start align-items-center" style="margin: 0px">
                 <div class="col-lg-1 col-md-1 col-sm-1 col-xs-1 d-flex align-items-center ps-0 pl-0">
                     <RadzenSidebarToggle Click="@SidebarToggleClick" Style="color: #000000; background-color: rgba(78, 78, 78, 0)"></RadzenSidebarToggle>
@@ -55,8 +55,8 @@
                 @Body
             </div>
         </div>
-        <div class="row col-12" style="margin: auto; padding: auto;">
-            <RadzenPanel AllowCollapse="true" Collapsed="@panelLogCollapsed" Style="padding-left: 5px; padding-right: 5px">
+        <div class="row col-12" style="margin: 0px; padding-left: 5px; padding-right: 5px; margin-top: 5px; margin-bottom: 5px; padding-top: 5px; padding-bottom: 5px; padding: 0px">
+            <RadzenPanel AllowCollapse="true" Collapsed="@panelLogCollapsed" Style="padding-right: auto; padding-left: auto">
                 <HeaderTemplate>
                     <div class="row" style="padding: 0px; margin: 0px; padding-top: 5px; padding-bottom: 5px; max-width: 100%; width: 100%">
                         <div class="col-12 d-inline-flex" style="padding: 0px; margin: 0px; width: 100%; max-width: 100%">

@@ -19,7 +19,7 @@
                 </div>
             </div>
             <div class="row" style="padding: 0px; margin: 0px; padding-top: 5px; padding-bottom: 5px">
-                <div class="col-12" style="padding: 0px; margin: 0px">
+                <div class="col-lg-6 col-md-6 col-xs-12 col-sm-12" style="padding: 0px; margin: 0px">
                     @if (_nbrTrades != null)
                     {
                         <RadzenChart>
@@ -34,8 +34,23 @@
                                     </div>
                                 </TitleTemplate>
                             </RadzenDonutSeries>
-                            <RadzenLegend Position="Radzen.Blazor.LegendPosition.Right"></RadzenLegend>
+                            <RadzenLegend Position="Radzen.Blazor.LegendPosition.Bottom"></RadzenLegend>
                             <RadzenCategoryAxis Visible="false"></RadzenCategoryAxis>
+                        </RadzenChart>
+                    }
+                </div>
+                <div class="col-lg-6 col-md-6 col-xs-12 col-sm-12" style="padding: 0px; margin: 0px">
+                    @if (_durationAverageTrades != null)
+                    {
+                        <RadzenChart>
+                            <RadzenColumnSeries Data="@_durationAverageTrades.ToArray()" CategoryProperty="Base" Title="minutes" LineType="LineType.Dashed" ValueProperty="Profit">
+                                <RadzenSeriesDataLabels Visible="@showDataLabels" />
+                            </RadzenColumnSeries>
+                            <RadzenColumnOptions Radius="5" />
+                            <RadzenValueAxis Formatter="@ClsUtilCommon.FormatAsUSD">
+                                <RadzenGridLines Visible="true" />
+                                <RadzenAxisTitle Text="Average duration to complete trade" />
+                            </RadzenValueAxis>
                         </RadzenChart>
                     }
                 </div>

@@ -38,6 +38,7 @@ namespace BlazorApp.Client.Pages
         private CancellationTokenSource _cancelToken = null;
 
         private static System.Timers.Timer refreshTimer;
+        private static int executionCount = 0;
 
         private string _textCurrentAccount = string.Empty;
         private string _stringAccount = null;
@@ -57,6 +58,7 @@ namespace BlazorApp.Client.Pages
         private bool _tdCountDown = false;
 
         private List<DataItem> _nbrTrades = new List<DataItem>();
+        private List<DataItem> _durationAverageTrades = new List<DataItem>();
         private decimal? _totalTrades = 0;
         private decimal? _percentageSucceededTrades = 0;
         private bool _realPercentage = false;
@@ -134,6 +136,9 @@ namespace BlazorApp.Client.Pages
                 GestionTimer();
 
                 hasNewResult = true;
+
+                if (executionCount == 60)
+                    Interlocked.Exchange(ref executionCount, 0);
             }
             catch
             {
@@ -144,6 +149,8 @@ namespace BlazorApp.Client.Pages
                 if (hasNewResult)
                     InvokeAsync(StateHasChanged);
 
+                Interlocked.Increment(ref executionCount);
+
                 refreshTimer.Start();
             }
         }
@@ -153,11 +160,11 @@ namespace BlazorApp.Client.Pages
             List<DataItem> newListItem = null;
 
             if (_statSevenDays)
-                newListItem = await Http.GetFromJsonAsync<List<DataItem>>($"/api/GetAccountInfosSimulatedProfit?accType=Spot&accHolder=An&nbrDays=7", _cancelToken.Token);
+                newListItem = await Http.GetFromJsonAsync<List<DataItem>>($"/api/GetAccountInfosProfit?accType=Spot&accHolder=An&nbrDays=7&real=0", _cancelToken.Token);
             else if (_statThirtyDays)
-                newListItem = await Http.GetFromJsonAsync<List<DataItem>>($"/api/GetAccountInfosSimulatedProfit?accType=Spot&accHolder=An&nbrDays=30", _cancelToken.Token);
+                newListItem = await Http.GetFromJsonAsync<List<DataItem>>($"/api/GetAccountInfosProfit?accType=Spot&accHolder=An&nbrDays=30&real=0", _cancelToken.Token);
             else
-                newListItem = await Http.GetFromJsonAsync<List<DataItem>>($"/api/GetAccountInfosSimulatedProfit?accType=Spot&accHolder=An", _cancelToken.Token);
+                newListItem = await Http.GetFromJsonAsync<List<DataItem>>($"/api/GetAccountInfosProfit?accType=Spot&accHolder=An&real=0", _cancelToken.Token);
 
             if (newListItem != null && _profitSimulated != null)
             {
@@ -165,7 +172,11 @@ namespace BlazorApp.Client.Pages
                 _profitSimulated.AddRange(newListItem);
             }
 
-            GestionPercentageTrade();
+            if (executionCount % 5 == 0)
+            {
+                GestionPercentageTrade();
+                GestionDurationAverageTrade();
+            }
 
             if (_tdPotential)
                 _logsPotential = await Http.GetFromJsonAsync<List<LogInfoItemDto>>($"/api/GetLogKlinePotential?accType=Spot&accHolder=An", _cancelToken.Token);
@@ -175,131 +186,12 @@ namespace BlazorApp.Client.Pages
                 _logsPotential = await Http.GetFromJsonAsync<List<LogInfoItemDto>>($"/api/GetLogKlineTDCountDown?accType=Spot&accHolder=An", _cancelToken.Token);
         }
 
-        private void CalculateProfitQuotes()
-        {
-            if (!string.IsNullOrEmpty(_stringAccount))
-            {
-                _account = JsonConvert.DeserializeObject<AccountDto>(_stringAccount);
-
-                if (_account != null)
-                {
-                    _profitSimulated.Clear();
-                    _profitReal.Clear();
-
-                    foreach (var itemQuote in _account.ListQuotes)
-                    {
-                        double totalBoughtSimulated = 0;
-                        double totalSoldSimulated = 0;
-
-                        Dictionary<string, double> dictBoughtSimulated = new Dictionary<string, double>();
-                        Dictionary<string, double> dictSoldSimulated = new Dictionary<string, double>();
-
-                        var statAccountSimulated = _account.SimulatedAccountProfitSevenDays;
-
-                        if (_statThirtyDays)
-                            statAccountSimulated = _account.SimulatedAccountProfitThirtyDays;
-                        else if (_statAllTimes)
-                            statAccountSimulated = _account.SimulatedAccountProfitAllTimes;
-
-                        foreach (var itemProfit in statAccountSimulated)
-                        {
-                            double listQuoteSold = (double)itemProfit.CompletedDetailsSold.Where(x => x.Key == itemQuote).Sum(x => x.Value);
-                            double listQuoteBought = (double)itemProfit.CompletedDetailsBought.Where(x => x.Key == itemQuote).Sum(x => x.Value);
-
-                            if (dictBoughtSimulated.ContainsKey(itemQuote))
-                            {
-                                dictBoughtSimulated.TryGetValue(itemQuote, out totalBoughtSimulated);
-                                totalBoughtSimulated += listQuoteBought;
-
-                                dictBoughtSimulated.Remove(itemQuote);
-                                dictBoughtSimulated.Add(itemQuote, totalBoughtSimulated);
-                            }
-                            else
-                                dictBoughtSimulated.Add(itemQuote, listQuoteBought);
-
-                            if (dictSoldSimulated.ContainsKey(itemQuote))
-                            {
-                                dictSoldSimulated.TryGetValue(itemQuote, out totalSoldSimulated);
-                                totalSoldSimulated += listQuoteSold;
-
-                                dictSoldSimulated.Remove(itemQuote);
-                                dictSoldSimulated.Add(itemQuote, totalSoldSimulated);
-                            }
-                            else
-                                dictSoldSimulated.Add(itemQuote, listQuoteSold);
-                        }
-
-                        DataItem quoteSimulated = new DataItem();
-                        quoteSimulated.Base = itemQuote;
-                        quoteSimulated.Profit = totalSoldSimulated - totalBoughtSimulated;
-
-                        if (_profitSimulated.Any(x => x.Base == quoteSimulated.Base))
-                            _profitSimulated.Remove(quoteSimulated);
-
-                        _profitSimulated.Add(quoteSimulated);
-
-                        if (_account.RealAccountProfitAllTimes != null)
-                        {
-                            double totalBoughtReal = 0;
-                            double totalSoldReal = 0;
-                            Dictionary<string, double> dictBoughtReal = new Dictionary<string, double>();
-                            Dictionary<string, double> dictSoldReal = new Dictionary<string, double>();
-
-                            var statAccountReal = _account.RealAccountProfitSevenDays;
-
-                            if (_statThirtyDays)
-                                statAccountReal = _account.RealAccountProfitThirtyDays;
-                            else if (_statAllTimes)
-                                statAccountReal = _account.RealAccountProfitAllTimes;
-
-                            foreach (var itemProfit in statAccountReal)
-                            {
-                                double listQuoteSold = (double)itemProfit.CompletedDetailsSold.Where(x => x.Key == itemQuote).Sum(x => x.Value);
-                                double listQuoteBought = (double)itemProfit.CompletedDetailsBought.Where(x => x.Key == itemQuote).Sum(x => x.Value);
-
-                                if (dictBoughtReal.ContainsKey(itemQuote))
-                                {
-                                    dictBoughtReal.TryGetValue(itemQuote, out totalBoughtReal);
-                                    totalBoughtReal += listQuoteBought;
-
-                                    dictBoughtReal.Remove(itemQuote);
-                                    dictBoughtReal.Add(itemQuote, totalBoughtReal);
-                                }
-                                else
-                                    dictBoughtReal.Add(itemQuote, listQuoteBought);
-
-                                if (dictSoldReal.ContainsKey(itemQuote))
-                                {
-                                    dictSoldReal.TryGetValue(itemQuote, out totalSoldReal);
-                                    totalSoldReal += listQuoteSold;
-
-                                    dictSoldReal.Remove(itemQuote);
-                                    dictSoldReal.Add(itemQuote, totalSoldReal);
-                                }
-                                else
-                                    dictSoldReal.Add(itemQuote, listQuoteSold);
-                            }
-
-                            DataItem quoteReal = new DataItem();
-                            quoteReal.Base = itemQuote;
-                            quoteReal.Profit = totalSoldReal - totalBoughtReal;
-
-                            if (_profitReal.Any(x => x.Base == quoteReal.Base))
-                                _profitReal.Remove(quoteReal);
-
-                            _profitReal.Add(quoteReal);
-                        }
-                    }
-                }
-            }
-        }
-
         private async void GestionPercentageTrade()
         {
             _nbrTrades.Clear();
 
-            _accountSimulatedTotalTrades = await Http.GetFromJsonAsync<decimal>($"/api/GetAccountInfosSimulatedTotalTrades?accType=Spot&accHolder=An", _cancelToken.Token);
-            _accountSimulatedTotalPositiveTrades = await Http.GetFromJsonAsync<decimal>($"/api/GetAccountInfosSimulatedTotalPositiveTrades?accType=Spot&accHolder=An", _cancelToken.Token);
+            _accountSimulatedTotalTrades = await Http.GetFromJsonAsync<decimal>($"/api/GetAccountInfosTotalTrades?accType=Spot&accHolder=An&real=0", _cancelToken.Token);
+            _accountSimulatedTotalPositiveTrades = await Http.GetFromJsonAsync<decimal>($"/api/GetAccountInfosTotalPositiveTrades?accType=Spot&accHolder=An&real=0", _cancelToken.Token);
 
             if (_accountSimulatedTotalPositiveTrades.HasValue && _accountSimulatedTotalTrades.HasValue)
             {
@@ -317,6 +209,24 @@ namespace BlazorApp.Client.Pages
                 _percentageSucceededTrades = Math.Round(((_accountSimulatedTotalPositiveTrades ?? 0) * 100) / (_accountSimulatedTotalTrades ?? 1), 2);
 
                 _nbrTrades.Add(nbrTradesSimulatedNotSucceeded);
+            }
+        }
+
+        private async void GestionDurationAverageTrade()
+        {
+            List<DataItem> tmpListDataItem = null;
+
+            if (_statSevenDays)
+                tmpListDataItem = await Http.GetFromJsonAsync<List<DataItem>>($"/api/GetAccountInfosDurationAverageCompletedTrade?accType=Spot&accHolder=An&nbrDays=7&real={(_realPercentage ? "1" : "0")}", _cancelToken.Token);
+            else if (_statThirtyDays)
+                tmpListDataItem = await Http.GetFromJsonAsync<List<DataItem>>($"/api/GetAccountInfosDurationAverageCompletedTrade?accType=Spot&accHolder=An&nbrDays=30&real={(_realPercentage ? "1" : "0")}", _cancelToken.Token);
+            else
+                tmpListDataItem = await Http.GetFromJsonAsync<List<DataItem>>($"/api/GetAccountInfosDurationAverageCompletedTrade?accType=Spot&accHolder=An&real={(_realPercentage ? "1" : "0")}", _cancelToken.Token);
+
+            if (tmpListDataItem != null)
+            {
+                _durationAverageTrades.Clear();
+                _durationAverageTrades = tmpListDataItem.ToList();
             }
         }
 
