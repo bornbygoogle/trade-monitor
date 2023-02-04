@@ -169,7 +169,7 @@ namespace BlazorApp.Client.Pages
             {
                 GestionPercentageTrade();
                 GestionDurationAverageTrade();
-            }                
+            }
 
             List<DataItem> newListItemSimulated = null;
             List<DataItem> newListItemReal = null;
@@ -398,7 +398,9 @@ namespace BlazorApp.Client.Pages
                     nbrTradesRealNotSucceeded.Profit = (double)((_accountRealTotalTrades - _accountRealTotalPositiveTrades) ?? 0);
 
                     _totalTrades = _accountRealTotalTrades ?? 0;
-                    _percentageSucceededTrades = Math.Round(((_accountRealTotalPositiveTrades ?? 0) * 100) / (_accountRealTotalTrades ?? 1), 2);
+
+                    if (_accountRealTotalTrades.HasValue && _accountRealTotalTrades.Value > 0)
+                        _percentageSucceededTrades = Math.Round(((_accountRealTotalPositiveTrades ?? 0) * 100) / (_accountRealTotalTrades ?? 1), 2);
 
                     _nbrTrades.Add(nbrTradesRealNotSucceeded);
                 }
@@ -418,7 +420,9 @@ namespace BlazorApp.Client.Pages
                     nbrTradesSimulatedNotSucceeded.Profit = (double)((_accountSimulatedTotalTrades - _accountSimulatedTotalPositiveTrades) ?? 0);
 
                     _totalTrades = _accountSimulatedTotalTrades ?? 0;
-                    _percentageSucceededTrades = Math.Round(((_accountSimulatedTotalPositiveTrades ?? 0) * 100) / (_accountSimulatedTotalTrades ?? 1), 2);
+
+                    if (_accountSimulatedTotalTrades.HasValue && _accountSimulatedTotalTrades.Value > 0)
+                        _percentageSucceededTrades = Math.Round(((_accountSimulatedTotalPositiveTrades ?? 0) * 100) / (_accountSimulatedTotalTrades ?? 1), 2);
 
                     _nbrTrades.Add(nbrTradesSimulatedNotSucceeded);
                 }
@@ -442,7 +446,7 @@ namespace BlazorApp.Client.Pages
             {
                 _durationAverageTrades.Clear();
                 _durationAverageTrades = tmpListDataItem.ToList();
-            }            
+            }
         }
 
         private async void GestionLogsBoughtSold()
