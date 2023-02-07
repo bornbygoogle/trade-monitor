@@ -44,7 +44,6 @@ namespace BlazorApp.Client.Pages
         private static System.Timers.Timer refreshTimer;
         private static int executionCount = 0;
 
-        private string _textCurrentAccount = string.Empty;
         private string _stringAccount = null;
         private AccountDto _account = null;
 
@@ -137,8 +136,6 @@ namespace BlazorApp.Client.Pages
             try
             {
                 refreshTimer.Stop();
-
-                _textCurrentAccount = $"Account {selectedAccount.ToUpper()} in USD";
 
                 GestionTimer();
 

@@ -78,19 +78,36 @@
             <div class="row" style="padding: 0px; margin: 0px; padding-top: 5px; padding-bottom: 5px">
                 <div class="d-lg-inline-flex d-md-inline-flex col-lg-12 col-md-12 col-sm-0 col-xs-0 d-none" style="padding: 0px; margin: 0px">
                     <RadzenChart Style="width: 100%; max-width: 100%" Visible="true" ColorScheme="Radzen.Blazor.ColorScheme.Pastel">
-                        <RadzenColumnSeries Data="@_boughtReal.ToArray()" CategoryProperty="Base" Title="Bought" ValueProperty="Profit">
+                        <RadzenColumnSeries Data="@_boughtReal.Where(x => x.Base == "USDT" || x.Base == "BUSD").ToArray()" CategoryProperty="Base" Title="Bought" ValueProperty="Profit">
                             <RadzenSeriesDataLabels Visible="@showDataLabels" />
                         </RadzenColumnSeries>
-                        <RadzenColumnSeries Data="@_soldReal.ToArray()" CategoryProperty="Base" Title="Sold" ValueProperty="Profit">
+                        <RadzenColumnSeries Data="@_soldReal.Where(x => x.Base == "USDT" || x.Base == "BUSD").ToArray()" CategoryProperty="Base" Title="Sold" ValueProperty="Profit">
                             <RadzenSeriesDataLabels Visible="@showDataLabels" />
                         </RadzenColumnSeries>
-                        <RadzenColumnSeries Data="@_profitReal.ToArray()" CategoryProperty="Base" Title="Profit" ValueProperty="Profit">
+                        <RadzenColumnSeries Data="@_profitReal.Where(x => x.Base == "USDT" || x.Base == "BUSD").ToArray()" CategoryProperty="Base" Title="Profit" ValueProperty="Profit">
                             <RadzenSeriesDataLabels Visible="@showDataLabels" />
                         </RadzenColumnSeries>
                         <RadzenColumnOptions Radius="5" />
                         <RadzenValueAxis Formatter="@ClsUtilCommon.FormatAsUSD">
                             <RadzenGridLines Visible="true" />
-                            <RadzenAxisTitle Text="@(_textCurrentAccount)" />
+                            <RadzenAxisTitle Text="Stable coins" />
+                        </RadzenValueAxis>
+                        <RadzenLegend Position="Radzen.Blazor.LegendPosition.Bottom"></RadzenLegend>
+                    </RadzenChart>
+                    <RadzenChart Style="width: 100%; max-width: 100%" Visible="true" ColorScheme="Radzen.Blazor.ColorScheme.Pastel">
+                        <RadzenColumnSeries Data="@_boughtReal.Where(x => x.Base != "USDT" && x.Base != "BUSD").ToArray()" CategoryProperty="Base" Title="Bought" ValueProperty="Profit">
+                            <RadzenSeriesDataLabels Visible="@showDataLabels" />
+                        </RadzenColumnSeries>
+                        <RadzenColumnSeries Data="@_soldReal.Where(x => x.Base != "USDT" && x.Base != "BUSD").ToArray()" CategoryProperty="Base" Title="Sold" ValueProperty="Profit">
+                            <RadzenSeriesDataLabels Visible="@showDataLabels" />
+                        </RadzenColumnSeries>
+                        <RadzenColumnSeries Data="@_profitReal.Where(x => x.Base != "USDT" && x.Base != "BUSD").ToArray()" CategoryProperty="Base" Title="Profit" ValueProperty="Profit">
+                            <RadzenSeriesDataLabels Visible="@showDataLabels" />
+                        </RadzenColumnSeries>
+                        <RadzenColumnOptions Radius="5" />
+                        <RadzenValueAxis Formatter="@ClsUtilCommon.FormatAsUSD">
+                            <RadzenGridLines Visible="true" />
+                            <RadzenAxisTitle Text="BTC, ETH, BNB" />
                         </RadzenValueAxis>
                         <RadzenLegend Position="Radzen.Blazor.LegendPosition.Bottom"></RadzenLegend>
                     </RadzenChart>

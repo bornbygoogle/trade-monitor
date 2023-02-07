@@ -232,8 +232,22 @@ namespace BlazorApp.Client.Pages
         {
             _nbrTrades.Clear();
 
-            _accountSimulatedTotalTrades = await Http.GetFromJsonAsync<decimal>($"/api/GetAccountInfosTotalTrades?accType=Spot&accHolder=An&real=0", _cancelToken.Token);
-            _accountSimulatedTotalPositiveTrades = await Http.GetFromJsonAsync<decimal>($"/api/GetAccountInfosTotalPositiveTrades?accType=Spot&accHolder=An&real=0", _cancelToken.Token);
+            if (_statSevenDays)
+            {
+                _accountSimulatedTotalTrades = await Http.GetFromJsonAsync<decimal>($"/api/GetAccountInfosTotalTrades?accType=Spot&accHolder=An&nbrDays=7&real=0", _cancelToken.Token);
+                _accountSimulatedTotalPositiveTrades = await Http.GetFromJsonAsync<decimal>($"/api/GetAccountInfosTotalPositiveTrades?accType=Spot&accHolder=An&nbrDays=7&real=0", _cancelToken.Token);
+            }
+            else if (_statThirtyDays)
+            {
+                _accountSimulatedTotalTrades = await Http.GetFromJsonAsync<decimal>($"/api/GetAccountInfosTotalTrades?accType=Spot&accHolder=An&nbrDays=30&real=0", _cancelToken.Token);
+                _accountSimulatedTotalPositiveTrades = await Http.GetFromJsonAsync<decimal>($"/api/GetAccountInfosTotalPositiveTrades?accType=Spot&accHolder=An&nbrDays=30&real=0", _cancelToken.Token);
+            }
+            else
+            {
+                _accountSimulatedTotalTrades = await Http.GetFromJsonAsync<decimal>($"/api/GetAccountInfosTotalTrades?accType=Spot&accHolder=An&real=0", _cancelToken.Token);
+                _accountSimulatedTotalPositiveTrades = await Http.GetFromJsonAsync<decimal>($"/api/GetAccountInfosTotalPositiveTrades?accType=Spot&accHolder=An&real=0", _cancelToken.Token);
+            }
+
 
             if (_accountSimulatedTotalPositiveTrades.HasValue && _accountSimulatedTotalTrades.HasValue)
             {
