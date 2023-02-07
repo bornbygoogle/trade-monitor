@@ -13,9 +13,10 @@
                 <div class="col-12 d-inline-flex" style="padding: 0px; margin: 0px">
                     <div class="col-lg-5 col-md-4 col-sm-4 col-xs-4 d-inline-flex" style="padding: 0px; width: 100%; max-width: 100%; text-align: center; vertical-align: middle">
                         <RadzenText Text="Percentage succeeded trades" Style="width: 100%; vertical-align: middle; margin-top: auto; margin-bottom: auto" TextAlign="Radzen.TextAlign.Left" />
+                        <RadzenText Text="@_accountSimulatedFirstTradeDate" Style="width: 100%; vertical-align: middle; margin-top: auto; margin-bottom: auto" TextAlign="Radzen.TextAlign.Left" />
                     </div>
-                    <div class="col-lg-3 col-md-3 col-sm-4 col-xs-4 d-inline-flex" style="padding-left: auto; padding-right: auto"><RadzenButton Style="width: 100%; max-width: 100%; padding: 0px" Variant="@(_realPercentage ? Radzen.Variant.Filled : Radzen.Variant.Outlined)" Text="REAL TRADES" Size="Radzen.ButtonSize.Medium"></RadzenButton></div>
-                    <div class="col-lg-3 col-md-3 col-sm-4 col-xs-4 d-inline-flex" style="padding-left: auto; padding-right: auto"><RadzenButton Variant="@(!_realPercentage ? Radzen.Variant.Filled : Radzen.Variant.Outlined)" Style="width: 100%; max-width: 100%; padding: 0px" Text="POSSIBLE TRADES" Size="Radzen.ButtonSize.Medium"></RadzenButton></div>
+                    <div class="col-lg-3 col-md-3 col-sm-4 col-xs-4 d-inline-flex" style="padding-left: auto; padding-right: auto"><RadzenButton Style="width: 100%; max-width: 100%; padding: 0px" Variant="Radzen.Variant.Outlined" Text="REAL TRADES" Size="Radzen.ButtonSize.Medium"></RadzenButton></div>
+                    <div class="col-lg-3 col-md-3 col-sm-4 col-xs-4 d-inline-flex" style="padding-left: auto; padding-right: auto"><RadzenButton Variant="Radzen.Variant.Filled" Style="width: 100%; max-width: 100%; padding: 0px" Text="POSSIBLE TRADES" Size="Radzen.ButtonSize.Medium"></RadzenButton></div>
                 </div>
             </div>
             <div class="row" style="padding: 0px; margin: 0px; padding-top: 5px; padding-bottom: 5px">
@@ -73,17 +74,23 @@
                 </div>
             </div>
             <div class="row" style="padding: 0px; margin: 0px; padding-top: 5px; padding-bottom: 5px">
-                @if (_profitSimulated != null)
+                @if (_boughtSimulated != null && _soldSimulated != null && _profitSimulated != null)
                 {
                     <div class="d-lg-inline-flex d-md-inline-flex col-lg-12 col-md-12 col-sm-0 col-xs-0 d-none" style="padding: 0px; margin: 0px">
                         <RadzenChart Style="width: 100%; max-width: 100%" Visible="true" ColorScheme="Radzen.Blazor.ColorScheme.Pastel">
-                            <RadzenColumnSeries Data="@_profitSimulated.ToArray()" CategoryProperty="Base" Title="Possible Trades" ValueProperty="Profit">
+                            <RadzenColumnSeries Data="@_boughtSimulated.ToArray()" CategoryProperty="Base" Title="Bought" ValueProperty="Profit">
+                                <RadzenSeriesDataLabels Visible="@showDataLabels" />
+                            </RadzenColumnSeries>
+                            <RadzenColumnSeries Data="@_soldSimulated.ToArray()" CategoryProperty="Base" Title="Sold" ValueProperty="Profit">
+                                <RadzenSeriesDataLabels Visible="@showDataLabels" />
+                            </RadzenColumnSeries>
+                            <RadzenColumnSeries Data="@_profitSimulated.ToArray()" CategoryProperty="Base" Title="Profit" ValueProperty="Profit">
                                 <RadzenSeriesDataLabels Visible="@showDataLabels" />
                             </RadzenColumnSeries>
                             <RadzenColumnOptions Radius="5" />
                             <RadzenValueAxis Formatter="@ClsUtilCommon.FormatAsUSD">
                                 <RadzenGridLines Visible="true" />
-                                <RadzenAxisTitle Text="" />
+                                <RadzenAxisTitle Text="Values in USD" />
                             </RadzenValueAxis>
                             <RadzenLegend Position="Radzen.Blazor.LegendPosition.Bottom"></RadzenLegend>
                         </RadzenChart>

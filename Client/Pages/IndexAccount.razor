@@ -13,18 +13,10 @@
                 <div class="col-12 d-inline-flex" style="padding: 0px; margin: 0px">
                     <div class="col-lg-5 col-md-4 col-sm-4 col-xs-4" style="padding: 0px; width: 100%; max-width: 100%; text-align: center; vertical-align: middle">
                         <RadzenText Text="Percentage succeeded trades" Style="width: 100%; vertical-align: middle; margin-top: auto; margin-bottom: auto" TextAlign="Radzen.TextAlign.Left" />
-                        @if (_realPercentage)
-                        {
-                            <RadzenText Text="@_accountRealFirstTradeDate" Style="width: 100%; vertical-align: middle; margin-top: auto; margin-bottom: auto" TextAlign="Radzen.TextAlign.Left" />
-                        }
-                        else
-                        {
-                            <RadzenText Text="@_accountSimulatedFirstTradeDate" Style="width: 100%; vertical-align: middle; margin-top: auto; margin-bottom: auto" TextAlign="Radzen.TextAlign.Left" />
-                        }
                     </div>
 
-                    <div class="col-lg-3 col-md-3 col-sm-4 col-xs-4 d-inline-flex" style="padding-left: auto; padding-right: auto"><RadzenButton Style="width: 100%; max-width: 100%; padding: 0px" Variant="@(_realPercentage ? Radzen.Variant.Filled : Radzen.Variant.Outlined)" Text="REAL TRADES" Size="Radzen.ButtonSize.Medium" Click="@ButtonGetRealTradesPercentageClick"></RadzenButton></div>
-                    <div class="col-lg-3 col-md-3 col-sm-4 col-xs-4 d-inline-flex" style="padding-left: auto; padding-right: auto"><RadzenButton Variant="@(!_realPercentage ? Radzen.Variant.Filled : Radzen.Variant.Outlined)" Style="width: 100%; max-width: 100%; padding: 0px" Text="POSSIBLE TRADES" Size="Radzen.ButtonSize.Medium" Click="@ButtonGetPossibleTradesPercentageClick"></RadzenButton></div>
+                    <div class="col-lg-3 col-md-3 col-sm-4 col-xs-4 d-inline-flex" style="padding-left: auto; padding-right: auto"><RadzenButton Style="width: 100%; max-width: 100%; padding: 0px" Variant="Radzen.Variant.Filled" Text="REAL TRADES" Size="Radzen.ButtonSize.Medium"></RadzenButton></div>
+                    <div class="col-lg-3 col-md-3 col-sm-4 col-xs-4 d-inline-flex" style="padding-left: auto; padding-right: auto"><RadzenButton Variant="Radzen.Variant.Outlined" Style="width: 100%; max-width: 100%; padding: 0px" Text="POSSIBLE TRADES" Size="Radzen.ButtonSize.Medium"></RadzenButton></div>
                 </div>
             </div>
             <div class="row" style="padding: 0px; margin: 0px; padding-top: 15px; padding-bottom: 15px; margin-top: 15px; margin-bottom: 15px;">
@@ -60,7 +52,7 @@
                             <RadzenColumnOptions Radius="5" />
                             <RadzenValueAxis Formatter="@ClsUtilCommon.FormatAsUSD">
                                 <RadzenGridLines Visible="true" />
-                                <RadzenAxisTitle Text="Average duration to complete trade"/>
+                                <RadzenAxisTitle Text="Average duration to complete trade" />
                             </RadzenValueAxis>
                         </RadzenChart>
                     }
@@ -86,10 +78,13 @@
             <div class="row" style="padding: 0px; margin: 0px; padding-top: 5px; padding-bottom: 5px">
                 <div class="d-lg-inline-flex d-md-inline-flex col-lg-12 col-md-12 col-sm-0 col-xs-0 d-none" style="padding: 0px; margin: 0px">
                     <RadzenChart Style="width: 100%; max-width: 100%" Visible="true" ColorScheme="Radzen.Blazor.ColorScheme.Pastel">
-                        <RadzenColumnSeries Data="@_profitSimulated.ToArray()" CategoryProperty="Base" Title="Possible Trades" ValueProperty="Profit">
+                        <RadzenColumnSeries Data="@_boughtReal.ToArray()" CategoryProperty="Base" Title="Bought" ValueProperty="Profit">
                             <RadzenSeriesDataLabels Visible="@showDataLabels" />
                         </RadzenColumnSeries>
-                        <RadzenColumnSeries Data="@_profitReal.ToArray()" CategoryProperty="Base" Title="Real Trades" ValueProperty="Profit">
+                        <RadzenColumnSeries Data="@_soldReal.ToArray()" CategoryProperty="Base" Title="Sold" ValueProperty="Profit">
+                            <RadzenSeriesDataLabels Visible="@showDataLabels" />
+                        </RadzenColumnSeries>
+                        <RadzenColumnSeries Data="@_profitReal.ToArray()" CategoryProperty="Base" Title="Profit" ValueProperty="Profit">
                             <RadzenSeriesDataLabels Visible="@showDataLabels" />
                         </RadzenColumnSeries>
                         <RadzenColumnOptions Radius="5" />
@@ -110,20 +105,6 @@
                                     <div class="col-10 d-inline-flex" style="padding: 0px; margin: 0px">
                                         <RadzenText Text="@itemRealProfit.Base" Style="margin: 0px"></RadzenText>
                                         <RadzenText Text="@itemRealProfit.Profit.ToString(CultureInfo.InvariantCulture)" Style="margin: 0px; padding-left: auto; padding-right: auto; margin-left: auto; margin-right: auto"></RadzenText>
-                                    </div>
-                                </div>
-                            }
-                        </ChildContent>
-                    </RadzenPanel>
-                    <RadzenPanel Collapsed="true" Style="vertical-align: middle; margin-top: auto; margin-bottom: auto; width: 100%; max-width: 100%" Text="Simulated profit" AllowCollapse="true">
-                        <ChildContent>
-                            @foreach (var itemSimulatedProfit in _profitSimulated)
-                            {
-                                <div class="row">
-                                    <div class="col-2"></div>
-                                    <div class="col-10 d-inline-flex" style="padding: 0px; margin: 0px">
-                                        <RadzenText Text="@itemSimulatedProfit.Base" Style="margin: 0px"></RadzenText>
-                                        <RadzenText Text="@itemSimulatedProfit.Profit.ToString(CultureInfo.InvariantCulture)" Style="margin: 0px; padding-left: auto; padding-right: auto; margin-left: auto; margin-right: auto"></RadzenText>
                                     </div>
                                 </div>
                             }

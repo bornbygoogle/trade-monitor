@@ -37,6 +37,7 @@ namespace BlazorApp.Client.Pages.Auth
                 var res = result.Split("||REF||");
                 if (res != null && res.Count() == 2)
                 {
+                    await localStorage.SetItemAsync($"accountName", CultureInfo.CurrentCulture.TextInfo.ToTitleCase(user.UserName) );
                     await localStorage.SetItemAsync($"accessToken", res[0]);
                     await localStorage.SetItemAsync($"refreshToken", res[1]);
 

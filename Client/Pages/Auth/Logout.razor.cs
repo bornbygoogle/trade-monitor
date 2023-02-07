@@ -22,6 +22,7 @@
 
                     if (result == "logged out")
                     {
+                        await localStorage.RemoveItemAsync($"accountName");
                         await localStorage.RemoveItemAsync($"accessToken");
                         await localStorage.RemoveItemAsync($"refreshToken");
                         ((ApiAuthenticationStateProvider)authenticationStateProvider).MarkUserAsLoggedOut();
