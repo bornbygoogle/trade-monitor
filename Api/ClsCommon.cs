@@ -19,7 +19,7 @@ namespace BlazorApp.Api
 
         public static string URL_SERVER = "http://cache-service.minhan-tran.fr";
         public static string URL_DEV = "https://localhost:7132";
-        public const bool USE_LOCAL_SERVER = true;
+        public const bool USE_LOCAL_SERVER = false;
 
         private static HttpClient _httpClient;
 
