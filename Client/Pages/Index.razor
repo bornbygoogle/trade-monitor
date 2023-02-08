@@ -23,7 +23,7 @@
                 <div class="col-lg-6 col-md-6 col-xs-12 col-sm-12" style="padding: 0px; margin: 0px">
                     @if (_nbrTrades != null)
                     {
-                        <RadzenChart ColorScheme="ColorScheme.Palette">
+                        <RadzenChart ColorScheme="ColorScheme.Divergent">
                             <RadzenDonutSeries Data="@_nbrTrades.ToArray()" CategoryProperty="Base" ValueProperty="Profit">
                                 <ChildContent>
                                     <RadzenSeriesDataLabels Visible="true" />

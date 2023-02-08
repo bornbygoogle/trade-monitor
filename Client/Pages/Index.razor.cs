@@ -195,6 +195,7 @@ namespace BlazorApp.Client.Pages
                 _accountSimulatedFirstTradeDate = await Http.GetStringAsync($"/api/GetAccountInfosFirstTradeDate?accType=Spot&accHolder=An&real=0", _cancelToken.Token);
             }
 
+            _accountSimulatedFirstTradeDate = $"First trade at {_accountSimulatedFirstTradeDate}";
 
             if (newListItemBought != null && newListItemBought != null)
             {
