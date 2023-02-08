@@ -58,16 +58,14 @@ namespace BlazorApp.Client.Pages
         private bool _tdCombo = false;
         private bool _tdCountDown = false;
 
-        private List<DataItem> _nbrTrades = new List<DataItem>();
-        private List<DataItem> _durationAverageTrades = new List<DataItem>();
+        private List<DataItem> _nbrTrades = null;
+        private List<DataItem> _durationAverageTrades = null;
         private decimal? _totalTrades = 0;
         private decimal? _percentageSucceededTrades = 0;
 
-        private List<string> _listSymbols = new List<string>() { "USDT", "BTC", "ETH" };
-
-        private List<DataItem> _boughtSimulated = new List<DataItem>();
-        private List<DataItem> _soldSimulated = new List<DataItem>();
-        private List<DataItem> _profitSimulated = new List<DataItem>();
+        private List<DataItem> _boughtSimulated = null;
+        private List<DataItem> _soldSimulated = null;
+        private List<DataItem> _profitSimulated = null;
 
         private List<LogInfoItemDto> _logsPotential = null;
 
@@ -104,26 +102,41 @@ namespace BlazorApp.Client.Pages
 
             try
             {
-                if (_cancelToken == null)
-                    _cancelToken = new CancellationTokenSource();
+                _cancelToken = new CancellationTokenSource();
 
                 if (_boughtSimulated == null)
                     _boughtSimulated = new List<DataItem>();
+                else
+                    _boughtSimulated?.Clear();
 
                 if (_soldSimulated == null)
                     _soldSimulated = new List<DataItem>();
+                else
+                    _soldSimulated?.Clear();
 
                 if (_profitSimulated == null)
                     _profitSimulated = new List<DataItem>();
+                else
+                    _profitSimulated?.Clear();
+
+                if (_nbrTrades == null)
+                    _nbrTrades = new List<DataItem>();
+                else
+                    _nbrTrades?.Clear();
+
+                if (_durationAverageTrades == null)
+                    _durationAverageTrades = new List<DataItem>();
+                else
+                    _durationAverageTrades?.Clear();
+
+                _logsPotential?.Clear();
 
                 if (refreshTimer == null)
                 {
                     refreshTimer = new System.Timers.Timer(TimeSpan.FromSeconds(ClsUtilCommon.TIMER_DURATION).TotalMilliseconds);
                     refreshTimer.Elapsed += RefreshTimer;
                     refreshTimer.Enabled = true;
-                }
-
-                
+                }                
             }
             catch (Exception ex)
             {
