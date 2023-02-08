@@ -12,7 +12,6 @@
             <div class="row" style="padding: 0px; margin: 0px; padding-top: 5px; padding-bottom: 5px">
                 <div class="col-12 d-inline-flex" style="padding: 0px; margin: 0px">
                     <div class="col-lg-5 col-md-4 col-sm-4 col-xs-4 d-inline-flex" style="padding: 0px; width: 100%; max-width: 100%; text-align: center; vertical-align: middle">
-                        <RadzenText Text="Percentage succeeded trades" Style="width: 100%; vertical-align: middle; margin-top: auto; margin-bottom: auto" TextAlign="Radzen.TextAlign.Left" />
                         <RadzenText Text="@_accountSimulatedFirstTradeDate" Style="width: 100%; vertical-align: middle; margin-top: auto; margin-bottom: auto" TextAlign="Radzen.TextAlign.Left" />
                     </div>
                     <div class="col-lg-3 col-md-3 col-sm-4 col-xs-4 d-inline-flex" style="padding-left: auto; padding-right: auto"></div>
@@ -26,7 +25,7 @@
                         <RadzenChart ColorScheme="ColorScheme.Divergent">
                             <RadzenDonutSeries Data="@_nbrTrades.ToArray()" CategoryProperty="Base" ValueProperty="Profit">
                                 <ChildContent>
-                                    <RadzenSeriesDataLabels Visible="true" />
+                                    <RadzenSeriesDataLabels Visible="false" />
                                 </ChildContent>
                                 <TitleTemplate>
                                     <div class="rz-donut-content">
@@ -36,7 +35,6 @@
                                 </TitleTemplate>
                             </RadzenDonutSeries>
                             <RadzenLegend Position="Radzen.Blazor.LegendPosition.Bottom"></RadzenLegend>
-                            <RadzenCategoryAxis Visible="false"></RadzenCategoryAxis>
                         </RadzenChart>
                     }
                 </div>
