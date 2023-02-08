@@ -69,6 +69,7 @@ namespace BlazorApp.Client.Pages
         private string _labelLogsBoughtSoldHistory = null;
         private string _labelLogsBoughtSoldPositive = null;
         private string _labelLogsBoughtSoldNegative = null;
+
         private List<LogInfoItemDto> _logsBoughtSoldHistory = null;
         private List<LogInfoItemDto> _logsBoughtSoldPositive = null;
         private List<LogInfoItemDto> _logsBoughtSoldNegative = null;

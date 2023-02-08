@@ -42,6 +42,7 @@ namespace BlazorApp.Client.Shared
 
         private string SelectedSymbol = null;
         private List<string> SymbolsInString = null;
+        private string labelListSymbols = string.Empty;
 
         private bool _onlyLogTrading = true;
         private bool _onlyLogTradingInfos = false;
@@ -78,6 +79,8 @@ namespace BlazorApp.Client.Shared
                 _cancelToken = new CancellationTokenSource();
 
                 SymbolsInString = await Http.GetFromJsonAsync<List<string>>($"/api/GetListStringSymbols?accType=Spot&accHolder=An", _cancelToken.Token);
+
+                labelListSymbols = $"{SymbolsInString.Count} symbols";
 
                 if (refreshTimer == null)
                 {

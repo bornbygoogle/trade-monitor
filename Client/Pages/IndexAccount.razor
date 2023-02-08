@@ -131,7 +131,7 @@
 </div>
 
 <div class="row col-12" style="margin: 0px; padding-left: 5px; padding-right: 5px; margin-top: 5px; margin-bottom: 5px; padding-top: 5px; padding-bottom: 5px">
-    <RadzenPanel AllowCollapse="true" Collapsed="@panelBoughtSoldPositiveCollapsed" Text="Positive trades" Style="padding-right: 5px; padding-left: 5px">
+    <RadzenPanel AllowCollapse="true" Collapsed="@panelBoughtSoldPositiveCollapsed" Text="@_labelLogsBoughtSoldPositive" Style="padding-right: 5px; padding-left: 5px">
         @if (_logsBoughtSoldPositive != null)
         {
             <RadzenDataGrid TItem="LogInfoItemDto" Data=@_logsBoughtSoldPositive AllowPaging="true" Responsive="true" AllowPickAllColumns="false" AllowRowSelectOnRowClick="false" PagerAlwaysVisible="true" PageSizeText="10" class="overflow-auto" Page="@DataGridLogsBoughtSoldPage">
@@ -153,7 +153,7 @@
 </div>
 
 <div class="row col-12" style="margin: 0px; padding-left: 5px; padding-right: 5px; margin-top: 5px; margin-bottom: 5px; padding-top: 5px; padding-bottom: 5px">
-    <RadzenPanel AllowCollapse="true" Collapsed="@panelBoughtSoldNegativeCollapsed" Text="Negative trades" Style="padding-right: 5px; padding-left: 5px">
+    <RadzenPanel AllowCollapse="true" Collapsed="@panelBoughtSoldNegativeCollapsed" Text="@_labelLogsBoughtSoldNegative" Style="padding-right: 5px; padding-left: 5px">
         @if (_logsBoughtSoldNegative != null)
         {
             <RadzenDataGrid TItem="LogInfoItemDto" Data=@_logsBoughtSoldNegative AllowPaging="true" Responsive="true" AllowPickAllColumns="false" AllowRowSelectOnRowClick="false" PagerAlwaysVisible="true" PageSizeText="10" class="overflow-auto" Page="@DataGridLogsBoughtSoldPage">
@@ -175,7 +175,7 @@
 </div>
 
 <div class="row col-12" style="margin: 0px; padding-left: 5px; padding-right: 5px; margin-top: 5px; margin-bottom: 5px; padding-top: 5px; padding-bottom: 5px">
-    <RadzenPanel AllowCollapse="true" Collapsed="@panelBoughtSoldHistoryCollapsed" Text="History trades" Style="padding-right: 5px; padding-left: 5px">
+    <RadzenPanel AllowCollapse="true" Collapsed="@panelBoughtSoldHistoryCollapsed" Text="@_labelLogsBoughtSoldHistory" Style="padding-right: 5px; padding-left: 5px">
         @if (_logsBoughtSoldHistory != null)
         {
             <RadzenDataGrid TItem="LogInfoItemDto" Data=@_logsBoughtSoldHistory AllowPaging="true" Responsive="true" AllowPickAllColumns="false" AllowRowSelectOnRowClick="false" PagerAlwaysVisible="true" PageSizeText="10" class="overflow-auto" Page="@DataGridLogsBoughtSoldPage">

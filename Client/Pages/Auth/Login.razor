@@ -15,34 +15,23 @@
 
 <div class="container-fluid">
     <div class="row">
-        <div class="col-lg-6 col-md-6 col-sm-12 mx-auto mt-12 mb-12">
-            <div class="card">
-                <div class="card-body">
-                    <h5 class="card-title">Please enter your details</h5>
-                    <EditForm Model="user" OnValidSubmit="HandleLogin">
-                        <DataAnnotationsValidator />
-                        <ValidationSummary />
+        <div class="col-xl-3"></div>
+        <div class="col-xl-6 p-auto">
+            <RadzenCard class="p-5">
+                @if (ShowErrors)
+                {
+                    <RadzenText TextStyle="TextStyle.H5" TagName="TagName.H2" Class="mb-4 text-bg-danger">
+                        @Error
+                    </RadzenText>
+                }
 
-                        <div class="form-group mt-2 mb-2">
-                            <label for="username">Username</label>
-                            <InputText Id="username" Class="form-control" @bind-Value="user.UserName" />
-                            <ValidationMessage For="@(() => user.UserName)" />
-                        </div>
-                        <div class="form-group mt-2 mb-2">
-                            <label for="password">Password</label>
-                            <InputText Id="password" type="password" Class="form-control" @bind-Value="user.Password" />
-                            <ValidationMessage For="@(() => user.Password)" />
-                        </div>
-                        <button type="submit" class="btn btn-primary"><span>Submit</span> <span class="oi oi-account-login" aria-hidden="true"></span></button>
-                    </EditForm>
-                    @if (ShowErrors)
-                    {
-                        <div class="alert alert-danger pt-1 mt-10 pb-1 mb-10" role="alert">
-                            <p>@Error</p>
-                        </div>
-                    }
-                </div>
-            </div>
+                <RadzenTemplateForm Data=@("LoginWithRegisterAndReset")>
+                    <RadzenLogin Login=@(args => OnLogin(args, "Login with register and password reset"))
+                                 ResetPassword=@(args => OnResetPassword(args, "Login with register and password reset"))
+                                 Register=@(args => OnRegister("Login with register and password reset")) />
+                </RadzenTemplateForm>
+            </RadzenCard>
         </div>
+        <div class="col-xl-3"></div>
     </div>
 </div>
