@@ -69,7 +69,7 @@ namespace BlazorApp.Client.Pages
 
         private bool panelPotentialCollapsed = true;
 
-        bool showDataLabels = false;
+        bool showDataLabels = true;
 
         public void Dispose()
         {
