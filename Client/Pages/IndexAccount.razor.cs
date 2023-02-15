@@ -79,7 +79,7 @@ namespace BlazorApp.Client.Pages
         private bool panelBoughtSoldHistoryCollapsed = true;
 
 
-        bool showDataLabels = false;
+        bool showDataLabels = true;
 
         public void Dispose()
         {
