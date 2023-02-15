@@ -9,16 +9,27 @@ namespace BlazorApp.Api
 {
     public static class GetAccountInfosTotalTradesFunction
     {
+        private static bool _onWork = false;
+
         [FunctionName("GetAccountInfosTotalTrades")]
         public static IActionResult GetAccountInfosTotalTrades([HttpTrigger(AuthorizationLevel.Anonymous, "get", Route = null)] HttpRequest req, ILogger log)
         {
-            var accType = req.Query.Where(x => x.Key == "accType").FirstOrDefault().Value;
-            var accHolder = req.Query.Where(x => x.Key == "accHolder").FirstOrDefault().Value;
-            var nbrDays = req.Query.Where(x => x.Key == "nbrDays").FirstOrDefault().Value;
-            var real = req.Query.Where(x => x.Key == "real").FirstOrDefault().Value;
+            decimal accSimulatedTotalTrades = 0;
 
-            string sUrl = $"{ClsCommon.GetUrlServer()}/Server/GetAccountInfos{(real == "1" ? "Real" : "Simulated")}TotalTrades?accType={accType}&accHolder={accHolder}{(!string.IsNullOrEmpty(nbrDays) ? $"&nbrDays={nbrDays}" : string.Empty)}";
-            decimal accSimulatedTotalTrades = ClsCommon.ExecuteHttpGet<decimal>(sUrl);
+            if (!_onWork)
+            {
+                _onWork = true;
+
+                var accType = req.Query.Where(x => x.Key == "accType").FirstOrDefault().Value;
+                var accHolder = req.Query.Where(x => x.Key == "accHolder").FirstOrDefault().Value;
+                var nbrDays = req.Query.Where(x => x.Key == "nbrDays").FirstOrDefault().Value;
+                var real = req.Query.Where(x => x.Key == "real").FirstOrDefault().Value;
+
+                string sUrl = $"{ClsCommon.GetUrlServer()}/Server/GetAccountInfos{(real == "1" ? "Real" : "Simulated")}CompletedTrades?accType={accType}&accHolder={accHolder}{(!string.IsNullOrEmpty(nbrDays) ? $"&nbrDays={nbrDays}" : string.Empty)}";
+                accSimulatedTotalTrades = ClsCommon.ExecuteHttpGet<decimal>(sUrl);
+
+                _onWork = false;
+            }
 
             return new OkObjectResult(accSimulatedTotalTrades);
         }

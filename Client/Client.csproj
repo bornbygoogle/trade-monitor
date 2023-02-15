@@ -10,6 +10,7 @@
   <ItemGroup>
     <None Remove="Pages\Index.razor~RF5646ae3f.TMP" />
     <None Remove="Pages\IndexAccount.razor.cs~RF804b391c.TMP" />
+    <None Remove="Pages\jiglgkhe.mpo~" />
   </ItemGroup>
   
   <ItemGroup>

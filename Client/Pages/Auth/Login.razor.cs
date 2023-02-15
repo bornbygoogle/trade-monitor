@@ -1,6 +1,4 @@
-﻿using BlazorApp.Shared.Auth;
-using Radzen;
-using System;
+﻿using Radzen;
 using System.Globalization;
 
 namespace BlazorApp.Client.Pages.Auth
@@ -71,7 +69,7 @@ namespace BlazorApp.Client.Pages.Auth
                 var res = result.Split("||REF||");
                 if (res != null && res.Count() == 2)
                 {
-                    await localStorage.SetItemAsync($"accountName", CultureInfo.CurrentCulture.TextInfo.ToTitleCase(args.Username) );
+                    await localStorage.SetItemAsync($"accountName", CultureInfo.CurrentCulture.TextInfo.ToTitleCase(args.Username));
                     await localStorage.SetItemAsync($"accessToken", res[0]);
                     await localStorage.SetItemAsync($"refreshToken", res[1]);
 

@@ -2,9 +2,7 @@
 using BlazorApp.Shared.CoreDto;
 using Microsoft.AspNetCore.Components;
 using Microsoft.JSInterop;
-using Newtonsoft.Json;
 using Radzen;
-using System.Globalization;
 using System.Net.Http.Json;
 using System.Timers;
 
@@ -136,7 +134,7 @@ namespace BlazorApp.Client.Pages
                     refreshTimer = new System.Timers.Timer(TimeSpan.FromSeconds(ClsUtilCommon.TIMER_DURATION).TotalMilliseconds);
                     refreshTimer.Elapsed += RefreshTimer;
                     refreshTimer.Enabled = true;
-                }                
+                }
             }
             catch (Exception ex)
             {
@@ -188,9 +186,9 @@ namespace BlazorApp.Client.Pages
                 newListItemBought = await Http.GetFromJsonAsync<List<DataItem>>($"/api/GetAccountInfosBought?accType=Spot&accHolder=An&nbrDays=7&real=0", _cancelToken.Token);
                 newListItemSold = await Http.GetFromJsonAsync<List<DataItem>>($"/api/GetAccountInfosSold?accType=Spot&accHolder=An&nbrDays=7&real=0", _cancelToken.Token);
                 newListItemProfit = await Http.GetFromJsonAsync<List<DataItem>>($"/api/GetAccountInfosProfit?accType=Spot&accHolder=An&nbrDays=7&real=0", _cancelToken.Token);
-                
+
                 _accountSimulatedFirstTradeDate = await Http.GetStringAsync($"/api/GetAccountInfosFirstTradeDate?accType=Spot&accHolder=An&nbrDays=7&real=0", _cancelToken.Token);
-            }   
+            }
             else if (_statThirtyDays)
             {
                 newListItemBought = await Http.GetFromJsonAsync<List<DataItem>>($"/api/GetAccountInfosBought?accType=Spot&accHolder=An&nbrDays=30&real=0", _cancelToken.Token);
@@ -198,7 +196,7 @@ namespace BlazorApp.Client.Pages
                 newListItemProfit = await Http.GetFromJsonAsync<List<DataItem>>($"/api/GetAccountInfosProfit?accType=Spot&accHolder=An&nbrDays=30&real=0", _cancelToken.Token);
 
                 _accountSimulatedFirstTradeDate = await Http.GetStringAsync($"/api/GetAccountInfosFirstTradeDate?accType=Spot&accHolder=An&nbrDays=30&real=0", _cancelToken.Token);
-            }            
+            }
             else
             {
                 newListItemBought = await Http.GetFromJsonAsync<List<DataItem>>($"/api/GetAccountInfosBought?accType=Spot&accHolder=An&real=0", _cancelToken.Token);
@@ -230,7 +228,7 @@ namespace BlazorApp.Client.Pages
 
             if (executionCount % 5 == 0)
             {
-                GestionPercentageTrade();
+                GestionCompletedTrades();
                 GestionDurationAverageTrade();
             }
 
@@ -242,44 +240,27 @@ namespace BlazorApp.Client.Pages
                 _logsPotential = await Http.GetFromJsonAsync<List<LogInfoItemDto>>($"/api/GetLogKlineTDCountDown?accType=Spot&accHolder=An", _cancelToken.Token);
         }
 
-        private async void GestionPercentageTrade()
+        private async void GestionCompletedTrades()
         {
             _nbrTrades.Clear();
 
+            List<DataItem> listNbrTrades = null;
+
             if (_statSevenDays)
             {
-                _accountSimulatedTotalTrades = await Http.GetFromJsonAsync<decimal>($"/api/GetAccountInfosTotalTrades?accType=Spot&accHolder=An&nbrDays=7&real=0", _cancelToken.Token);
-                _accountSimulatedTotalPositiveTrades = await Http.GetFromJsonAsync<decimal>($"/api/GetAccountInfosTotalPositiveTrades?accType=Spot&accHolder=An&nbrDays=7&real=0", _cancelToken.Token);
+                listNbrTrades = await Http.GetFromJsonAsync<List<DataItem>>($"/api/GetAccountInfosCompletedTrade?accType=Spot&accHolder=An&nbrDays=7&real=0", _cancelToken.Token);
             }
             else if (_statThirtyDays)
             {
-                _accountSimulatedTotalTrades = await Http.GetFromJsonAsync<decimal>($"/api/GetAccountInfosTotalTrades?accType=Spot&accHolder=An&nbrDays=30&real=0", _cancelToken.Token);
-                _accountSimulatedTotalPositiveTrades = await Http.GetFromJsonAsync<decimal>($"/api/GetAccountInfosTotalPositiveTrades?accType=Spot&accHolder=An&nbrDays=30&real=0", _cancelToken.Token);
+                listNbrTrades = await Http.GetFromJsonAsync<List<DataItem>>($"/api/GetAccountInfosCompletedTrade?accType=Spot&accHolder=An&nbrDays=30&real=0", _cancelToken.Token);
             }
             else
             {
-                _accountSimulatedTotalTrades = await Http.GetFromJsonAsync<decimal>($"/api/GetAccountInfosTotalTrades?accType=Spot&accHolder=An&real=0", _cancelToken.Token);
-                _accountSimulatedTotalPositiveTrades = await Http.GetFromJsonAsync<decimal>($"/api/GetAccountInfosTotalPositiveTrades?accType=Spot&accHolder=An&real=0", _cancelToken.Token);
+                listNbrTrades = await Http.GetFromJsonAsync<List<DataItem>>($"/api/GetAccountInfosCompletedTrade?accType=Spot&accHolder=An&real=0", _cancelToken.Token);
             }
 
-
-            if (_accountSimulatedTotalPositiveTrades.HasValue && _accountSimulatedTotalTrades.HasValue)
-            {
-                DataItem nbrTradesSimulatedSucceeded = new DataItem();
-                nbrTradesSimulatedSucceeded.Base = "Succeeded trade";
-                nbrTradesSimulatedSucceeded.Profit = (double)(_accountSimulatedTotalPositiveTrades ?? 0);
-
-                _nbrTrades.Add(nbrTradesSimulatedSucceeded);
-
-                DataItem nbrTradesSimulatedNotSucceeded = new DataItem();
-                nbrTradesSimulatedNotSucceeded.Base = "Failed trade";
-                nbrTradesSimulatedNotSucceeded.Profit = (double)((_accountSimulatedTotalTrades - _accountSimulatedTotalPositiveTrades) ?? 0);
-
-                _totalTrades = _accountSimulatedTotalTrades ?? 0;
-                _percentageSucceededTrades = Math.Round(((_accountSimulatedTotalPositiveTrades ?? 0) * 100) / (_accountSimulatedTotalTrades ?? 1), 2);
-
-                _nbrTrades.Add(nbrTradesSimulatedNotSucceeded);
-            }
+            if (listNbrTrades != null && listNbrTrades.Count > 0) 
+                _nbrTrades.AddRange(listNbrTrades);
         }
 
         private async void GestionDurationAverageTrade()

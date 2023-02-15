@@ -23,18 +23,14 @@
                     @if (_nbrTrades != null)
                     {
                         <RadzenChart ColorScheme="ColorScheme.Divergent">
-                            <RadzenDonutSeries Data="@_nbrTrades.ToArray()" CategoryProperty="Base" ValueProperty="Profit">
-                                <ChildContent>
-                                    <RadzenSeriesDataLabels Visible="false" />
-                                </ChildContent>
-                                <TitleTemplate>
-                                    <div class="rz-donut-content">
-                                        <div>@(_totalTrades) trades</div>
-                                        <div>@(_percentageSucceededTrades)%</div>
-                                    </div>
-                                </TitleTemplate>
-                            </RadzenDonutSeries>
-                            <RadzenLegend Position="Radzen.Blazor.LegendPosition.Bottom"></RadzenLegend>
+                            <RadzenColumnSeries Data="@_nbrTrades.ToArray()" CategoryProperty="Base" Title="trades" LineType="LineType.Dashed" ValueProperty="Profit">
+                                <RadzenSeriesDataLabels Visible="true" />
+                            </RadzenColumnSeries>
+                            <RadzenColumnOptions Radius="5" />
+                            <RadzenValueAxis Formatter="@ClsUtilCommon.FormatAsUSD">
+                                <RadzenGridLines Visible="true" />
+                                <RadzenAxisTitle Text="Number trades per asset" />
+                            </RadzenValueAxis>
                         </RadzenChart>
                     }
                 </div>
@@ -43,7 +39,7 @@
                     {
                         <RadzenChart ColorScheme="ColorScheme.Divergent">
                             <RadzenColumnSeries Data="@_durationAverageTrades.ToArray()" CategoryProperty="Base" Title="minutes" LineType="LineType.Dashed" ValueProperty="Profit">
-                                <RadzenSeriesDataLabels Visible="@showDataLabels" />
+                                <RadzenSeriesDataLabels Visible="true" />
                             </RadzenColumnSeries>
                             <RadzenColumnOptions Radius="5" />
                             <RadzenValueAxis Formatter="@ClsUtilCommon.FormatAsUSD">

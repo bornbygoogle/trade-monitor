@@ -9,6 +9,8 @@ namespace BlazorApp.Api
 {
     public static class GetAccountInfosProfitQuoteFunction
     {
+        private static bool _onWork = false;
+
         [FunctionName("GetAccountInfosProfitQuote")]
         public static IActionResult GetAccountInfosProfitQuote([HttpTrigger(AuthorizationLevel.Anonymous, "get", Route = null)] HttpRequest req, ILogger log)
         {

@@ -9,14 +9,14 @@ using System.Linq;
 
 namespace BlazorApp.Api
 {
-    public static class GetAccountInfosDurationAverageCompletedTradeFunction
+    public static class GetAccountInfosCompletedTradeFunction
     {
         private static bool _onWork = false;
 
-        [FunctionName("GetAccountInfosDurationAverageCompletedTrade")]
-        public static IActionResult GetAccountInfosDurationAverageCompletedTrade([HttpTrigger(AuthorizationLevel.Anonymous, "get", Route = null)] HttpRequest req, ILogger log)
+        [FunctionName("GetAccountInfosCompletedTrade")]
+        public static IActionResult GetAccountInfosSimulatedCompletedTrade([HttpTrigger(AuthorizationLevel.Anonymous, "get", Route = null)] HttpRequest req, ILogger log)
         {
-            List<DataItem> listDurationAverageCompletedTrade = null;
+            List<DataItem> accTotalTrades = null;
 
             if (!_onWork)
             {
@@ -27,18 +27,16 @@ namespace BlazorApp.Api
                 var nbrDays = req.Query.Where(x => x.Key == "nbrDays").FirstOrDefault().Value;
                 var real = req.Query.Where(x => x.Key == "real").FirstOrDefault().Value;
 
-                string sUrl = $"{ClsCommon.GetUrlServer()}/Server/GetAccountInfos{(real == "1" ? "Real" : "Simulated")}DurationAverageCompletedTrade?accType={accType}&accHolder={accHolder}{(!string.IsNullOrEmpty(nbrDays) ? $"&nbrDays={nbrDays}" : string.Empty)}";
-                listDurationAverageCompletedTrade = ClsCommon.ExecuteHttpGet<List<DataItem>>(sUrl);
+                string sUrl = $"{ClsCommon.GetUrlServer()}/Server/GetAccountInfos{(real == "1" ? "Real" : "Simulated")}CompletedTrade?accType={accType}&accHolder={accHolder}{(!string.IsNullOrEmpty(nbrDays) ? $"&nbrDays={nbrDays}" : string.Empty)}";
+                accTotalTrades = ClsCommon.ExecuteHttpGet<List<DataItem>>(sUrl);
 
                 _onWork = false;
             }
 
-            if (listDurationAverageCompletedTrade != null)
-                return new OkObjectResult(listDurationAverageCompletedTrade);
+            if (accTotalTrades != null)
+                return new OkObjectResult(accTotalTrades);
             else
                 return new OkObjectResult(null);
-
-            
         }
     }
 }
