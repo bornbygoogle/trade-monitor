@@ -177,6 +177,10 @@ namespace BlazorApp.Client.Pages
 
         private async void GestionTimer()
         {
+            _boughtSimulated?.Clear();
+            _soldSimulated?.Clear();
+            _profitSimulated?.Clear();
+
             List<DataItem> newListItemBought = null;
             List<DataItem> newListItemSold = null;
             List<DataItem> newListItemProfit = null;
@@ -209,22 +213,13 @@ namespace BlazorApp.Client.Pages
             _accountSimulatedFirstTradeDate = $"First trade at {_accountSimulatedFirstTradeDate}";
 
             if (newListItemBought != null && newListItemBought != null)
-            {
-                _boughtSimulated.Clear();
                 _boughtSimulated.AddRange(newListItemBought);
-            }
 
             if (newListItemSold != null && newListItemSold != null)
-            {
-                _soldSimulated.Clear();
                 _soldSimulated.AddRange(newListItemSold);
-            }
 
             if (newListItemProfit != null && _profitSimulated != null)
-            {
-                _profitSimulated.Clear();
                 _profitSimulated.AddRange(newListItemProfit);
-            }
 
             if (executionCount % 5 == 0)
             {
@@ -242,7 +237,7 @@ namespace BlazorApp.Client.Pages
 
         private async void GestionCompletedTrades()
         {
-            _nbrTrades.Clear();
+            _nbrTrades?.Clear();
 
             List<DataItem> listNbrTrades = null;
 
@@ -265,6 +260,8 @@ namespace BlazorApp.Client.Pages
 
         private async void GestionDurationAverageTrade()
         {
+            _durationAverageTrades?.Clear();
+
             List<DataItem> tmpListDataItem = null;
 
             if (_statSevenDays)
@@ -275,10 +272,7 @@ namespace BlazorApp.Client.Pages
                 tmpListDataItem = await Http.GetFromJsonAsync<List<DataItem>>($"/api/GetAccountInfosDurationAverageCompletedTrade?accType=Spot&accHolder=An&real=0", _cancelToken.Token);
 
             if (tmpListDataItem != null)
-            {
-                _durationAverageTrades.Clear();
                 _durationAverageTrades = tmpListDataItem.ToList();
-            }
         }
 
         protected void ButtonStatSevenDaysClick(Microsoft.AspNetCore.Components.Web.MouseEventArgs args)

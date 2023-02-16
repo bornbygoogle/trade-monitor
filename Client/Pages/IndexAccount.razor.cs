@@ -190,6 +190,10 @@ namespace BlazorApp.Client.Pages
                 GestionDurationAverageTrade();
             }
 
+            _boughtReal?.Clear();
+            _soldReal?.Clear();
+            _profitReal?.Clear();
+
             List<DataItem> newListItemBought = null;
             List<DataItem> newListItemSold = null;
             List<DataItem> newListItemProfit = null;
@@ -222,22 +226,13 @@ namespace BlazorApp.Client.Pages
             _accountRealFirstTradeDate = $"First trade at {_accountRealFirstTradeDate}";
 
             if (newListItemBought != null && newListItemBought != null)
-            {
-                _boughtReal.Clear();
                 _boughtReal.AddRange(newListItemBought);
-            }
 
             if (newListItemSold != null && newListItemSold != null)
-            {
-                _soldReal.Clear();
                 _soldReal.AddRange(newListItemSold);
-            }
 
             if (newListItemProfit != null && newListItemProfit != null)
-            {
-                _profitReal.Clear();
                 _profitReal.AddRange(newListItemProfit);
-            }
 
             GestionLogsBoughtSold();
         }
@@ -312,7 +307,7 @@ namespace BlazorApp.Client.Pages
 
         private async void GestionCompletedTrades()
         {
-            _nbrTrades.Clear();
+            _nbrTrades?.Clear();
 
             List<DataItem> listNbrTrades = null;
 
@@ -335,6 +330,8 @@ namespace BlazorApp.Client.Pages
 
         private async void GestionDurationAverageTrade()
         {
+            _durationAverageTrades?.Clear();
+
             List<DataItem> tmpListDataItem = null;
 
             if (_statSevenDays)
@@ -345,10 +342,7 @@ namespace BlazorApp.Client.Pages
                 tmpListDataItem = await Http.GetFromJsonAsync<List<DataItem>>($"/api/GetAccountInfosDurationAverageCompletedTrade?accType=Spot&accHolder={CultureInfo.CurrentCulture.TextInfo.ToTitleCase(selectedAccount)}&real=1", _cancelToken.Token);
 
             if (tmpListDataItem != null)
-            {
-                _durationAverageTrades.Clear();
                 _durationAverageTrades = tmpListDataItem.ToList();
-            }
         }
 
         private async void GestionLogsBoughtSold()
