@@ -177,54 +177,54 @@ namespace BlazorApp.Client.Pages
 
         private async void GestionTimer()
         {
-            _boughtSimulated?.Clear();
-            _soldSimulated?.Clear();
-            _profitSimulated?.Clear();
-
-            List<DataItem> newListItemBought = null;
-            List<DataItem> newListItemSold = null;
-            List<DataItem> newListItemProfit = null;
-
-            if (_statSevenDays)
-            {
-                newListItemBought = await Http.GetFromJsonAsync<List<DataItem>>($"/api/GetAccountInfosBought?accType=Spot&accHolder=An&nbrDays=7&real=0", _cancelToken.Token);
-                newListItemSold = await Http.GetFromJsonAsync<List<DataItem>>($"/api/GetAccountInfosSold?accType=Spot&accHolder=An&nbrDays=7&real=0", _cancelToken.Token);
-                newListItemProfit = await Http.GetFromJsonAsync<List<DataItem>>($"/api/GetAccountInfosProfit?accType=Spot&accHolder=An&nbrDays=7&real=0", _cancelToken.Token);
-
-                _accountSimulatedFirstTradeDate = await Http.GetStringAsync($"/api/GetAccountInfosFirstTradeDate?accType=Spot&accHolder=An&nbrDays=7&real=0", _cancelToken.Token);
-            }
-            else if (_statThirtyDays)
-            {
-                newListItemBought = await Http.GetFromJsonAsync<List<DataItem>>($"/api/GetAccountInfosBought?accType=Spot&accHolder=An&nbrDays=30&real=0", _cancelToken.Token);
-                newListItemSold = await Http.GetFromJsonAsync<List<DataItem>>($"/api/GetAccountInfosSold?accType=Spot&accHolder=An&nbrDays=30&real=0", _cancelToken.Token);
-                newListItemProfit = await Http.GetFromJsonAsync<List<DataItem>>($"/api/GetAccountInfosProfit?accType=Spot&accHolder=An&nbrDays=30&real=0", _cancelToken.Token);
-
-                _accountSimulatedFirstTradeDate = await Http.GetStringAsync($"/api/GetAccountInfosFirstTradeDate?accType=Spot&accHolder=An&nbrDays=30&real=0", _cancelToken.Token);
-            }
-            else
-            {
-                newListItemBought = await Http.GetFromJsonAsync<List<DataItem>>($"/api/GetAccountInfosBought?accType=Spot&accHolder=An&real=0", _cancelToken.Token);
-                newListItemSold = await Http.GetFromJsonAsync<List<DataItem>>($"/api/GetAccountInfosSold?accType=Spot&accHolder=An&real=0", _cancelToken.Token);
-                newListItemProfit = await Http.GetFromJsonAsync<List<DataItem>>($"/api/GetAccountInfosProfit?accType=Spot&accHolder=An&real=0", _cancelToken.Token);
-
-                _accountSimulatedFirstTradeDate = await Http.GetStringAsync($"/api/GetAccountInfosFirstTradeDate?accType=Spot&accHolder=An&real=0", _cancelToken.Token);
-            }
-
             _accountSimulatedFirstTradeDate = $"First trade at {_accountSimulatedFirstTradeDate}";
-
-            if (newListItemBought != null && newListItemBought != null)
-                _boughtSimulated.AddRange(newListItemBought);
-
-            if (newListItemSold != null && newListItemSold != null)
-                _soldSimulated.AddRange(newListItemSold);
-
-            if (newListItemProfit != null && _profitSimulated != null)
-                _profitSimulated.AddRange(newListItemProfit);
 
             if (executionCount % 5 == 0)
             {
                 GestionCompletedTrades();
                 GestionDurationAverageTrade();
+
+                _boughtSimulated?.Clear();
+                _soldSimulated?.Clear();
+                _profitSimulated?.Clear();
+
+                List<DataItem> newListItemBought = null;
+                List<DataItem> newListItemSold = null;
+                List<DataItem> newListItemProfit = null;
+
+                if (_statSevenDays)
+                {
+                    newListItemBought = await Http.GetFromJsonAsync<List<DataItem>>($"/api/GetAccountInfosBought?accType=Spot&accHolder=An&nbrDays=7&real=0", _cancelToken.Token);
+                    newListItemSold = await Http.GetFromJsonAsync<List<DataItem>>($"/api/GetAccountInfosSold?accType=Spot&accHolder=An&nbrDays=7&real=0", _cancelToken.Token);
+                    newListItemProfit = await Http.GetFromJsonAsync<List<DataItem>>($"/api/GetAccountInfosProfit?accType=Spot&accHolder=An&nbrDays=7&real=0", _cancelToken.Token);
+
+                    _accountSimulatedFirstTradeDate = await Http.GetStringAsync($"/api/GetAccountInfosFirstTradeDate?accType=Spot&accHolder=An&nbrDays=7&real=0", _cancelToken.Token);
+                }
+                else if (_statThirtyDays)
+                {
+                    newListItemBought = await Http.GetFromJsonAsync<List<DataItem>>($"/api/GetAccountInfosBought?accType=Spot&accHolder=An&nbrDays=30&real=0", _cancelToken.Token);
+                    newListItemSold = await Http.GetFromJsonAsync<List<DataItem>>($"/api/GetAccountInfosSold?accType=Spot&accHolder=An&nbrDays=30&real=0", _cancelToken.Token);
+                    newListItemProfit = await Http.GetFromJsonAsync<List<DataItem>>($"/api/GetAccountInfosProfit?accType=Spot&accHolder=An&nbrDays=30&real=0", _cancelToken.Token);
+
+                    _accountSimulatedFirstTradeDate = await Http.GetStringAsync($"/api/GetAccountInfosFirstTradeDate?accType=Spot&accHolder=An&nbrDays=30&real=0", _cancelToken.Token);
+                }
+                else
+                {
+                    newListItemBought = await Http.GetFromJsonAsync<List<DataItem>>($"/api/GetAccountInfosBought?accType=Spot&accHolder=An&real=0", _cancelToken.Token);
+                    newListItemSold = await Http.GetFromJsonAsync<List<DataItem>>($"/api/GetAccountInfosSold?accType=Spot&accHolder=An&real=0", _cancelToken.Token);
+                    newListItemProfit = await Http.GetFromJsonAsync<List<DataItem>>($"/api/GetAccountInfosProfit?accType=Spot&accHolder=An&real=0", _cancelToken.Token);
+
+                    _accountSimulatedFirstTradeDate = await Http.GetStringAsync($"/api/GetAccountInfosFirstTradeDate?accType=Spot&accHolder=An&real=0", _cancelToken.Token);
+                }
+
+                if (newListItemBought != null && newListItemBought != null)
+                    _boughtSimulated.AddRange(newListItemBought);
+
+                if (newListItemSold != null && newListItemSold != null)
+                    _soldSimulated.AddRange(newListItemSold);
+
+                if (newListItemProfit != null && _profitSimulated != null)
+                    _profitSimulated.AddRange(newListItemProfit);
             }
 
             if (_tdPotential)
