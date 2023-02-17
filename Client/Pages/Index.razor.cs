@@ -44,7 +44,7 @@ namespace BlazorApp.Client.Pages
 
         private decimal? _accountSimulatedTotalTrades = null;
         private decimal? _accountSimulatedTotalPositiveTrades = null;
-        private string _accountSimulatedFirstTradeDate = null;
+        private string _lbAccountSimulatedFirstTradeDate = null;
 
         private bool _statSevenDays = true;
         private bool _statThirtyDays = false;
@@ -177,8 +177,6 @@ namespace BlazorApp.Client.Pages
 
         private async void GestionTimer()
         {
-            _accountSimulatedFirstTradeDate = $"First trade at {_accountSimulatedFirstTradeDate}";
-
             if (executionCount % 5 == 0)
             {
                 GestionCompletedTrades();
@@ -191,6 +189,8 @@ namespace BlazorApp.Client.Pages
                 List<DataItem> newListItemBought = null;
                 List<DataItem> newListItemSold = null;
                 List<DataItem> newListItemProfit = null;
+
+                string _accountSimulatedFirstTradeDate = null;
 
                 if (_statSevenDays)
                 {
@@ -217,6 +217,8 @@ namespace BlazorApp.Client.Pages
                     _accountSimulatedFirstTradeDate = await Http.GetStringAsync($"/api/GetAccountInfosFirstTradeDate?accType=Spot&accHolder=An&real=0", _cancelToken.Token);
                 }
 
+                _lbAccountSimulatedFirstTradeDate = $"First trade at {_accountSimulatedFirstTradeDate}";
+
                 if (newListItemBought != null && newListItemBought != null)
                     _boughtSimulated.AddRange(newListItemBought);
 
@@ -225,7 +227,7 @@ namespace BlazorApp.Client.Pages
 
                 if (newListItemProfit != null && _profitSimulated != null)
                     _profitSimulated.AddRange(newListItemProfit);
-            }
+            }            
 
             if (_tdPotential)
                 _logsPotential = await Http.GetFromJsonAsync<List<LogInfoItemDto>>($"/api/GetLogKlinePotential?accType=Spot&accHolder=An", _cancelToken.Token);

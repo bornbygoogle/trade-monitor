@@ -47,7 +47,7 @@ namespace BlazorApp.Client.Pages
 
         private decimal? _accountRealTotalTrades = null;
         private decimal? _accountRealTotalPositiveTrades = null;
-        private string _accountRealFirstTradeDate = null;
+        private string _lbAccountRealFirstTradeDate = null;
 
         private bool _statSevenDays = true;
         private bool _statThirtyDays = false;
@@ -58,9 +58,12 @@ namespace BlazorApp.Client.Pages
         private decimal? _totalTrades = 0;
         private decimal? _percentageSucceededTrades = 0;
 
-        private List<DataItem> _boughtReal = null;
-        private List<DataItem> _soldReal = null;
-        private List<DataItem> _profitReal = null;
+        private List<DataItem> _boughtRealStableCoins = null;
+        private List<DataItem> _boughtRealCrypto = null;
+        private List<DataItem> _soldRealStableCoins = null;
+        private List<DataItem> _soldRealCrypto = null;
+        private List<DataItem> _profitRealStableCoins = null;
+        private List<DataItem> _profitRealCrypto = null;
 
         private List<LogInfoItemDto> _logsBoughtSold = null;
 
@@ -79,7 +82,7 @@ namespace BlazorApp.Client.Pages
         private bool panelBoughtSoldHistoryCollapsed = true;
 
 
-        bool showDataLabels = true;
+        bool showDataLabels = false;
 
         public void Dispose()
         {
@@ -106,20 +109,35 @@ namespace BlazorApp.Client.Pages
             {
                 _cancelToken = new CancellationTokenSource();
 
-                if (_boughtReal == null)
-                    _boughtReal = new List<DataItem>();
+                if (_boughtRealStableCoins == null)
+                    _boughtRealStableCoins = new List<DataItem>();
                 else
-                    _boughtReal?.Clear();
+                    _boughtRealStableCoins?.Clear();
 
-                if (_soldReal == null)
-                    _soldReal = new List<DataItem>();
+                if (_boughtRealCrypto == null)
+                    _boughtRealCrypto = new List<DataItem>();
                 else
-                    _soldReal?.Clear();
+                    _boughtRealCrypto?.Clear();
 
-                if (_profitReal == null)
-                    _profitReal = new List<DataItem>();
+                if (_soldRealStableCoins == null)
+                    _soldRealStableCoins = new List<DataItem>();
                 else
-                    _profitReal?.Clear();
+                    _soldRealStableCoins?.Clear();
+
+                if (_soldRealCrypto == null)
+                    _soldRealCrypto = new List<DataItem>();
+                else
+                    _soldRealCrypto?.Clear();
+
+                if (_profitRealStableCoins == null)
+                    _profitRealStableCoins = new List<DataItem>();
+                else
+                    _profitRealStableCoins?.Clear();
+
+                if (_profitRealCrypto == null)
+                    _profitRealCrypto = new List<DataItem>();
+                else
+                    _profitRealCrypto?.Clear();
 
                 if (_nbrTrades == null)
                     _nbrTrades = new List<DataItem>();
@@ -189,13 +207,18 @@ namespace BlazorApp.Client.Pages
                 GestionCompletedTrades();
                 GestionDurationAverageTrade();
 
-                _boughtReal?.Clear();
-                _soldReal?.Clear();
-                _profitReal?.Clear();
+                _boughtRealStableCoins?.Clear();
+                _boughtRealCrypto?.Clear();
+                _soldRealStableCoins?.Clear();
+                _soldRealCrypto?.Clear();
+                _profitRealStableCoins?.Clear();
+                _profitRealCrypto?.Clear();
 
                 List<DataItem> newListItemBought = null;
                 List<DataItem> newListItemSold = null;
                 List<DataItem> newListItemProfit = null;
+
+                string _accountRealFirstTradeDate = null;
 
                 if (_statSevenDays)
                 {
@@ -222,16 +245,65 @@ namespace BlazorApp.Client.Pages
                     _accountRealFirstTradeDate = await Http.GetStringAsync($"/api/GetAccountInfosFirstTradeDate?accType=Spot&accHolder={CultureInfo.CurrentCulture.TextInfo.ToTitleCase(selectedAccount)}&real=1", _cancelToken.Token);
                 }
 
-                _accountRealFirstTradeDate = $"First trade at {_accountRealFirstTradeDate}";
+                _lbAccountRealFirstTradeDate = $"First trade at {_accountRealFirstTradeDate}";
 
                 if (newListItemBought != null && newListItemBought != null)
-                    _boughtReal.AddRange(newListItemBought);
+                {
+                    if (newListItemBought.Any(x => x.Base == "USDT" || x.Base == "BUSD"))
+                    {
+                        var listNewListItemBought = newListItemBought.Where(x => x.Base == "USDT" || x.Base == "BUSD").ToArray();
+
+                        if (listNewListItemBought != null && listNewListItemBought.Length > 0)
+                            _boughtRealStableCoins.AddRange(listNewListItemBought);
+                    }
+
+
+                    if (newListItemBought.Any(x => x.Base != "USDT" && x.Base != "BUSD"))
+                    {
+                        var listNewListItemBought = newListItemBought.Where(x => x.Base != "USDT" && x.Base != "BUSD").ToArray();
+
+                        if (listNewListItemBought != null && listNewListItemBought.Length > 0)
+                            _boughtRealCrypto.AddRange(listNewListItemBought);
+                    }
+                }
 
                 if (newListItemSold != null && newListItemSold != null)
-                    _soldReal.AddRange(newListItemSold);
+                {
+                    if (newListItemSold.Any(x => x.Base == "USDT" || x.Base == "BUSD"))
+                    {
+                        var listNewListItemSold = newListItemSold.Where(x => x.Base == "USDT" || x.Base == "BUSD").ToArray();
+
+                        if (listNewListItemSold != null && listNewListItemSold.Length > 0)
+                            _soldRealStableCoins.AddRange(listNewListItemSold);
+                    }
+
+                    if (newListItemSold.Any(x => x.Base != "USDT" && x.Base != "BUSD"))
+                    {
+                        var listNewListItemSold = newListItemSold.Where(x => x.Base != "USDT" && x.Base != "BUSD").ToArray();
+
+                        if (listNewListItemSold != null && listNewListItemSold.Length > 0)
+                            _soldRealCrypto.AddRange(listNewListItemSold);
+                    }
+                }
 
                 if (newListItemProfit != null && newListItemProfit != null)
-                    _profitReal.AddRange(newListItemProfit);
+                {
+                    if (newListItemProfit.Any(x => x.Base == "USDT" || x.Base == "BUSD"))
+                    {
+                        var listNewListItemProfit = newListItemProfit.Where(x => x.Base == "USDT" || x.Base == "BUSD").ToArray();
+
+                        if (listNewListItemProfit != null && listNewListItemProfit.Length > 0)
+                            _profitRealStableCoins.AddRange(listNewListItemProfit);
+                    }
+
+                    if (newListItemProfit.Any(x => x.Base != "USDT" && x.Base != "BUSD"))
+                    {
+                        var listNewListItemProfit = newListItemProfit.Where(x => x.Base != "USDT" && x.Base != "BUSD").ToArray();
+
+                        if (listNewListItemProfit != null && listNewListItemProfit.Length > 0)
+                            _profitRealCrypto.AddRange(listNewListItemProfit);
+                    }
+                }
             }
 
             GestionLogsBoughtSold();
