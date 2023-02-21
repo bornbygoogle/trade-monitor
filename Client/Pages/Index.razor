@@ -107,20 +107,23 @@
                         </RadzenChart>
                     </div>
                     <div class="col-sm-12 col-xs-12 d-lg-none d-md-none" style="padding: 0px; margin: 0px">
-                        <RadzenPanel Collapsed="true" Style="vertical-align: middle; margin-top: auto; margin-bottom: auto; width: 100%; max-width: 100%" Text="Simulated profit" AllowCollapse="true">
-                            <ChildContent>
-                                @foreach (var itemSimulatedProfit in _profitSimulated)
-                                {
-                                    <div class="row">
-                                        <div class="col-2"></div>
-                                        <div class="col-10 d-inline-flex" style="padding: 0px; margin: 0px">
-                                            <RadzenText Text="@itemSimulatedProfit.Base" Style="margin: 0px"></RadzenText>
-                                            <RadzenText Text="@itemSimulatedProfit.Profit.ToString(CultureInfo.InvariantCulture)" Style="margin: 0px; padding-left: auto; padding-right: auto; margin-left: auto; margin-right: auto"></RadzenText>
+                        @if (_profitSimulated != null)
+                        {
+                            <RadzenPanel Collapsed="true" Style="vertical-align: middle; margin-top: auto; margin-bottom: auto; width: 100%; max-width: 100%" Text="Simulated profit" AllowCollapse="true">
+                                <ChildContent>
+                                    @foreach (var itemSimulatedProfit in _profitSimulated)
+                                    {
+                                        <div class="row">
+                                            <div class="col-2"></div>
+                                            <div class="col-10 d-inline-flex" style="padding: 0px; margin: 0px">
+                                                <RadzenText Text="@itemSimulatedProfit.Base" Style="margin: 0px"></RadzenText>
+                                                <RadzenText Text="@itemSimulatedProfit.Profit.ToString(CultureInfo.InvariantCulture)" Style="margin: 0px; padding-left: auto; padding-right: auto; margin-left: auto; margin-right: auto"></RadzenText>
+                                            </div>
                                         </div>
-                                    </div>
-                                }
-                            </ChildContent>
-                        </RadzenPanel>
+                                    }
+                                </ChildContent>
+                            </RadzenPanel>
+                        }
                     </div>
                 }
             </div>
@@ -144,15 +147,18 @@
             </div>
         </HeaderTemplate>
         <ChildContent>
-            <RadzenDataGrid TItem="LogInfoItemDto" Data=@_logsPotential AllowPaging="true" Responsive="true" AllowPickAllColumns="false" AllowRowSelectOnRowClick="false" PagerAlwaysVisible="true" PageSizeText="10" class="overflow-auto">
-                <Columns>
-                    <RadzenDataGridColumn Width="130px" TItem="LogInfoItemDto" Property="Symbol" Title="Symbol"></RadzenDataGridColumn>
-                    <RadzenDataGridColumn TItem="LogInfoItemDto" Property="Side" Title="Buy / Sell"></RadzenDataGridColumn>
-                    <RadzenDataGridColumn TItem="LogInfoItemDto" Property="TdCombo" Title="Position in TD"></RadzenDataGridColumn>
-                    <RadzenDataGridColumn TItem="LogInfoItemDto" Property="TdResistanceCombo" Title="Resistance"></RadzenDataGridColumn>
-                    <RadzenDataGridColumn TItem="LogInfoItemDto" Property="TdSupportCombo" Title="Support"></RadzenDataGridColumn>
-                </Columns>
-            </RadzenDataGrid>
+            @if (_logsPotential != null)
+            {
+                <RadzenDataGrid TItem="LogInfoItemDto" Data=@_logsPotential AllowPaging="true" Responsive="true" AllowPickAllColumns="false" AllowRowSelectOnRowClick="false" PagerAlwaysVisible="true" PageSizeText="10" class="overflow-auto">
+                    <Columns>
+                        <RadzenDataGridColumn Width="130px" TItem="LogInfoItemDto" Property="Symbol" Title="Symbol"></RadzenDataGridColumn>
+                        <RadzenDataGridColumn TItem="LogInfoItemDto" Property="Side" Title="Buy / Sell"></RadzenDataGridColumn>
+                        <RadzenDataGridColumn TItem="LogInfoItemDto" Property="TdCombo" Title="Position in TD"></RadzenDataGridColumn>
+                        <RadzenDataGridColumn TItem="LogInfoItemDto" Property="TdResistanceCombo" Title="Resistance"></RadzenDataGridColumn>
+                        <RadzenDataGridColumn TItem="LogInfoItemDto" Property="TdSupportCombo" Title="Support"></RadzenDataGridColumn>
+                    </Columns>
+                </RadzenDataGrid>
+            }
         </ChildContent>
     </RadzenPanel>
 </div>
