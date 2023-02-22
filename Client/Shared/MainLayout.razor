@@ -70,15 +70,18 @@
                     </div>
                 </HeaderTemplate>
                 <ChildContent>
-                    <RadzenDataGrid TItem="LogInfoItemDto" Data=@_logs AllowPaging="true" Responsive="true" AllowPickAllColumns="false" AllowRowSelectOnRowClick="false" PagerAlwaysVisible="true" PageSizeText="20" class="overflow-auto" Page="DataGridLogsPageChanged">
-                        <Columns>
-                            <RadzenDataGridColumn Width="180px" TItem="LogInfoItemDto" Property="LogTime" Title="Date"></RadzenDataGridColumn>
-                            <RadzenDataGridColumn Width="110px" TItem="LogInfoItemDto" Property="AccountHolder" Title="Holder"></RadzenDataGridColumn>
-                            <RadzenDataGridColumn Width="150px" TItem="LogInfoItemDto" Property="Service" Title="Service"></RadzenDataGridColumn>
-                            <RadzenDataGridColumn Width="130px" TItem="LogInfoItemDto" Property="Symbol" Title="Symbol"></RadzenDataGridColumn>
-                            <RadzenDataGridColumn TItem="LogInfoItemDto" Property="Message" Title="Message"></RadzenDataGridColumn>
-                        </Columns>
-                    </RadzenDataGrid>
+                    @if (_logs != null)
+                    {
+                        <RadzenDataGrid TItem="LogInfoItemDto" Data=@_logs AllowPaging="true" Responsive="true" AllowPickAllColumns="false" AllowRowSelectOnRowClick="false" PagerAlwaysVisible="true" PageSizeText="20" class="overflow-auto" Page="DataGridLogsPageChanged">
+                            <Columns>
+                                <RadzenDataGridColumn Width="180px" TItem="LogInfoItemDto" Property="LogTime" Title="Date"></RadzenDataGridColumn>
+                                <RadzenDataGridColumn Width="110px" TItem="LogInfoItemDto" Property="AccountHolder" Title="Holder"></RadzenDataGridColumn>
+                                <RadzenDataGridColumn Width="150px" TItem="LogInfoItemDto" Property="Service" Title="Service"></RadzenDataGridColumn>
+                                <RadzenDataGridColumn Width="130px" TItem="LogInfoItemDto" Property="Symbol" Title="Symbol"></RadzenDataGridColumn>
+                                <RadzenDataGridColumn TItem="LogInfoItemDto" Property="Message" Title="Message"></RadzenDataGridColumn>
+                            </Columns>
+                        </RadzenDataGrid>
+                    }
                 </ChildContent>
             </RadzenPanel>
         </div>
